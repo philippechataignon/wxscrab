@@ -1,0 +1,53 @@
+--- wxscrab.py	2009-03-02 13:32:22.028728612 +0100
++++ wxscrab_demo.py	2009-02-27 10:28:00.253818075 +0100
+@@ -4,7 +4,6 @@
+ import settings
+ import frame
+ import net
+-import dlgconn
+ import frame_score
+ import utils
+ import skin
+@@ -15,6 +14,9 @@
+ import son
+ import time
+ import msg
++import random
++import socket
++import cPickle as pickle
+ 
+ #Reglage encoding
+ import sys
+@@ -26,8 +28,30 @@
+     def OnInit(self) :
+         wx.InitAllImageHandlers()
+         self.settings = settings.settings("settings.xml")
+-        # Appelle la frame de connexion au début
+-        dlgconn.dlgconnframe(None, self)
++        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
++        try :
++            sock.connect(("wxscrab.ath.cx",12345))
++            nick = "demo" + str(random.randint(1,65000))
++            m = msg.msg("joueur",nick, nick)
++            sock.send(pickle.dumps(m) + net.net.term)
++            recv  = sock.recv(1024)
++            ret = pickle.loads(recv)
++            if ret.cmd == "connect" :
++                if ret.param[0] == 0 :
++                    sock.close()
++                    utils.errordlg(ret.param[1],"Erreur")
++                    return False
++                else :
++                    sock.setblocking(0)
++                    self.cree_all(nick, sock, ret.param[0])
++            else :
++                sock.close()
++                utils.errordlg("Erreur retour connexion","Pickle error")
++                return False
++        except socket.error, (errno, errmsg) :
++            sock.close()
++            utils.errordlg(errmsg, "Erreur de connexion")
++            return False
+         return True
+ 
+ ## Création

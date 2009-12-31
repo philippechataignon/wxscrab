@@ -1,0 +1,11 @@
+syntax:glob
+*.pyc
+*.pyo
+*.o
+*.so
+*.partie
+win/dist
+settings.xml
+gen_part
+Makefile.dep
+win/setup*

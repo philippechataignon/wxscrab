@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skin>
+    <rep_images>default</rep_images>
+    <icone>images/wxscrab.ico</icone>
+    <size>48</size>
+    <fontsize>28</fontsize>
+    <pointfontsize>8</pointfontsize>
+    <size_chrono>28</size_chrono>
+    <size_def>14</size_def>
+    <size_score>20</size_score>
+    <offset_coord>32</offset_coord>
+    <frame_h>1450</frame_h>
+    <frame_v>1200</frame_v>
+    <fill>20</fill>
+    <fontcol name="tempjoker">WHITE</fontcol>
+    <fontcol name="tempnorm">BLUE</fontcol>
+    <fontcol name="signes">BLUE</fontcol>
+    <fontcol name="fixejoker">GREY</fontcol>
+    <fontcol name="fixenorm">BLACK</fontcol>
+    <fontcol name="points">GREY</fontcol>
+</skin>

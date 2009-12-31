@@ -1,0 +1,6 @@
+cd gen
+make
+ln gen_part ../server
+
+python setup.py build
+sudo python setup.py install
