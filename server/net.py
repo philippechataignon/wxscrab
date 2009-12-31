@@ -14,19 +14,17 @@ class net (asyncore.dispatcher):
         self.set_reuse_addr()
         self.bind(('', port))
         self.listen(5)
+        self.actifs = []
 
     def handle_accept(self) :
         sock, addr = self.accept()
         if sock is not None :
-            channel(sock, self)
+            self.actifs.append(channel(sock, self))
             print "Connexion de %s" % repr(addr)
          
     def envoi_all(self, mm) :
-        for c in asyncore.socket_map.values() :
-            try :
-                c.envoi(mm) 
-            except AttributeError :
-                pass
+        for c in self.actifs :
+            c.envoi(mm) 
 
 class channel(asynchat.async_chat) :
     term = "\r\n\r\n"
@@ -36,6 +34,7 @@ class channel(asynchat.async_chat) :
         self.buffer = []
         self.set_terminator(channel.term)
         self.lock = threading.Lock()
+        self.envoi_actif = True
         
     def collect_incoming_data(self, data):
         self.lock.acquire()
@@ -47,15 +46,16 @@ class channel(asynchat.async_chat) :
         txt = "".join(self.buffer)
         self.buffer = []
         self.lock.release()
-        try:
-            mm = pickle.loads(txt)
-            if self.server.parent.options.verbose == True :
-                print "<- %s" % mm.cmd
-            self.server.parent.traite(self, mm)
-        except pickle.PicklingError:
-            pass
+        mm = pickle.loads(txt)
+        if self.server.parent.options.verbose == True :
+            print "<- %s" % mm.cmd
+        self.server.parent.traite(self, mm)
+        
+    def handle_error(self) :
+        print "handle_error"
 
     def handle_close(self) :
+        self.server.actifs.remove(self)
         print "Deconnect %s" % repr(self)
         self.server.parent.deconnect(self)
         self.close()

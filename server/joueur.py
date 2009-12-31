@@ -52,7 +52,7 @@ class joueurs :
             return 1
 
     def deconnect(self, channel) :
-        for nick,j in self.liste.iteritems() :
+        for nick, j in self.liste.iteritems() :
             if j.channel == channel :
                 j.connect = False
                 j.channel = None
