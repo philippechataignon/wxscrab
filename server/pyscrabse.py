@@ -38,8 +38,8 @@ class main(threading.Thread):
         self.next = threading.Event()
 
     def run(self, f_attente=True) :
-        fin = False
-        while not fin :
+        loop = True
+        while loop :
             self.pa = partie.partie(self.options)
             self.log = logger.logger(self.pa.get_nom_partie())
             self.gr = grille.grille()
@@ -59,7 +59,7 @@ class main(threading.Thread):
                     break
             self.info("Fin de la partie")
             self.log.fin_partie()
-            fin = (self.options.game != "")
+            loop = (self.options.game is None)
 
     def attente(self, tps) :
         self.attention.wait(tps)
