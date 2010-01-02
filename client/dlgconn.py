@@ -14,7 +14,7 @@ import cPickle as pickle
 
 class dlgconnframe(wx.Frame):
     def __init__(self, parent, app) :
-        wx.Frame.__init__(self, parent, -1, "wxScrab Connexion", pos=(350,250))
+        wx.Frame.__init__(self, parent, -1, "wxScrab Connexion", size=(420,230))
         self.app = app
         panel = wx.Panel(self, -1)
         self.settings = app.settings
@@ -60,8 +60,7 @@ class dlgconnframe(wx.Frame):
         border = wx.BoxSizer()
         border.Add(conn,0,wx.ALL,10)
         panel.SetSizerAndFit(border)
-        self.SetSize(self.GetBestSize())
-
+        # self.SetSize(self.GetBestSize())
         self.Show()
 
     def conn(self, evt) :

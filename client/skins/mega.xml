@@ -2,15 +2,15 @@
 <skin>
     <rep_images>default</rep_images>
     <icone>images/wxscrab.ico</icone>
-    <size>48</size>
-    <fontsize>28</fontsize>
-    <pointfontsize>8</pointfontsize>
-    <size_chrono>28</size_chrono>
-    <size_def>14</size_def>
-    <size_score>20</size_score>
+    <size>54</size>
+    <fontsize>32</fontsize>
+    <pointfontsize>10</pointfontsize>
+    <size_chrono>48</size_chrono>
+    <size_def>16</size_def>
+    <size_score>28</size_score>
     <offset_coord>32</offset_coord>
-    <frame_h>1450</frame_h>
-    <frame_v>1000</frame_v>
+    <frame_h>1750</frame_h>
+    <frame_v>1150</frame_v>
     <fill>20</fill>
     <fontcol name="tempjoker">WHITE</fontcol>
     <fontcol name="tempnorm">BLUE</fontcol>
