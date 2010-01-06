@@ -344,14 +344,15 @@ Game_setrack_random_aux(Game game, Playedrack p, set_rack_mode mode, unsigned sh
     min = Game_getnrounds(game)<15 ? 2 : 1 ;
     /* pas assez de consonnes ou de voyelles */
     if (Bag_nvowels(b) < min || Bag_nconsonants(b) < min) {
-            if (Bag_njoker(b) == 0 ) {
-                // si plus de joker => fin
-                Bag_destroy(b);
-                return 3;
-            } else {
-                // sinon on abaisse le mini pour tirage OK
-                min = 0;
-            }
+        if (Bag_njoker(b) == 0 ) {
+            // si plus de joker => fin
+            Bag_destroy(b);
+            return 3;
+        } else {
+            // sinon on abaisse le mini pour tirage OK
+            // Playedrack_check_rack assure qu'il y a un joker quand min=0
+            min = 0;
+        }
     }
 
     nold = Playedrack_nold(p);

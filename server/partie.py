@@ -17,7 +17,7 @@ class partie:
             rep = "partie"
             nom_partie = "p_%s.partie" % time.strftime("%Y%m%d%H%M%S")
             self.file_partie = os.path.join(rep, nom_partie)
-            os.system("./gen_part -d %s > %s" % (self.options.dico, self.file_partie))
+            os.system("../gen/gen_part -d %s > %s" % (self.options.dico, self.file_partie))
         else :
             self.file_partie = self.options.game
         self.dom = xml.dom.minidom.parse(self.file_partie)
