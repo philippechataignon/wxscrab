@@ -21,6 +21,7 @@ class frame(wx.Frame):
         self.tiny = tiny
         self.max_props = 8
         self.tour = 0
+        self.liste_skin = ("default", "tiny", "big", "mega")
         fill = self.app.skin.get("fill")
 
         #Creation et dessin du timer
@@ -102,10 +103,12 @@ class frame(wx.Frame):
         #Barre de menu
         if not self.tiny :
             menubar = wx.MenuBar()
+
             menu1 = wx.Menu()
             menu1.Append(101,"Quitter\tCtrl-Q")
+            self.Bind(wx.EVT_MENU, self.quit, id=101)
+
             menubar.Append(menu1,"Fichier")
-            menu2 = wx.Menu()
             menupol = wx.Menu()
             for i in range(8,14) :
                 menupol.Append(200+i,str(i),"Changer la police des messages serveur", wx.ITEM_RADIO)
@@ -113,13 +116,25 @@ class frame(wx.Frame):
             pset = int(self.app.settings.get("policeserv"))
             menupol.Check(200+pset, True)
             self.set_police_msgs(pset)
-            menu2.AppendMenu(200,"Taille police", menupol)
+
+            menuskin = wx.Menu()
+            for i, t in enumerate(self.liste_skin):
+                menuskin.Append(400+i, t, "Taille de la grille", wx.ITEM_RADIO)
+                self.Bind(wx.EVT_MENU, self.menu_skin, id=400+i)
+            #pset = int(self.app.settings.get("skin"))
+            # menupol.Check(400+pset, True)
+            #self.set_police_msgs(pset)
+
+            menu2 = wx.Menu()
+            menu2.AppendMenu(299,"Taille police", menupol)
+            menu2.AppendMenu(499,"Skin", menuskin)
             menubar.Append(menu2,"Options")
-            self.Bind(wx.EVT_MENU, self.quit, id=101)
+
             menu3 = wx.Menu()
             menu3.Append(301,"A propos\tCtrl-A")
             menubar.Append(menu3,"Aide")
             self.Bind(wx.EVT_MENU, self.about, id=301)
+
             self.SetMenuBar(menubar)
 
             #Barre de status
@@ -215,6 +230,13 @@ class frame(wx.Frame):
         i = e.GetId()-200
         self.app.settings.set("policeserv", str(i))
         self.set_police_msgs(i)
+
+    def menu_skin(self, e) :
+        i = e.GetId()-400
+        skin = self.liste_skin[i]
+        self.app.settings.set("skin", skin)
+        self.app.settings.write()
+        utils.errordlg("Relancer le programme pour prendre en compte le nouveau skin","Attention")
 
     def about(self, e):
         info = wx.AboutDialogInfo()
