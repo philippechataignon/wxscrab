@@ -16,8 +16,6 @@ class dlgconnframe(wx.Frame):
     def __init__(self, parent, app, complet=False) :
         wx.Frame.__init__(self, parent, -1, "wxScrab Connexion", pos=(350,250))
         self.app = app
-        self.liste_skin = ("default", "tiny", "big", "mega")
-        self.liste_case = ("8","9","10")
         panel = wx.Panel(self, -1)
         self.settings = app.settings
         icon = wx.Icon('images/wxscrab.ico', wx.BITMAP_TYPE_ICO)
@@ -57,12 +55,12 @@ class dlgconnframe(wx.Frame):
             conn.Add(space)
 
             conn.Add(wx.StaticText(panel, -1, "Skin  :"), -1, b)
-            self.box_skin = wx.ComboBox(panel, -1, style=wx.CB_READONLY, choices=self.liste_skin, size=(200,-1))
+            self.box_skin = wx.ComboBox(panel, -1, style=wx.CB_READONLY, choices=self.settings.liste_skin, size=(200,-1))
             self.box_skin.SetStringSelection(self.settings.get("skin"))
             self.Bind(wx.EVT_COMBOBOX, self.skin_click, self.box_skin)
             conn.Add(self.box_skin)
             conn.Add(wx.StaticText(panel, -1, "Tirage  :"), -1, b)
-            self.box_case = wx.ComboBox(panel, -1, style=wx.CB_READONLY, choices=self.liste_case, size=(50,-1))
+            self.box_case = wx.ComboBox(panel, -1, style=wx.CB_READONLY, choices=self.settings.liste_case, size=(50,-1))
             self.box_case.SetStringSelection(self.settings.get("tirage_nbpos"))
             self.Bind(wx.EVT_COMBOBOX, self.case_click, self.box_case)
             conn.Add(self.box_case)
@@ -133,12 +131,12 @@ class dlgconnframe(wx.Frame):
  
     def skin_click(self, e) :
         p = self.box_skin.GetSelection()
-        skin = self.liste_skin[p]
+        skin = self.settings.liste_skin[p]
         self.app.settings.set("skin", skin)
 
     def case_click(self, e) :
         p = self.box_case.GetSelection()
-        case = self.liste_case[p]
+        case = self.settings.liste_case[p]
         self.app.settings.set("tirage_nbpos", case)
 
     def complet_click(self, e) :

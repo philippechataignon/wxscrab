@@ -21,7 +21,6 @@ class frame(wx.Frame):
         self.tiny = tiny
         self.max_props = 8
         self.tour = 0
-        self.liste_skin = ("default", "tiny", "big", "mega")
         fill = self.app.skin.get("fill")
 
         #Creation et dessin du timer
@@ -118,7 +117,7 @@ class frame(wx.Frame):
             self.set_police_msgs(pset)
 
             menuskin = wx.Menu()
-            for i, t in enumerate(self.liste_skin):
+            for i, t in enumerate(self.app.settings.liste_skin):
                 menuskin.Append(400+i, t, "Taille de la grille", wx.ITEM_RADIO)
                 self.Bind(wx.EVT_MENU, self.menu_skin, id=400+i)
             #pset = int(self.app.settings.get("skin"))
@@ -233,7 +232,7 @@ class frame(wx.Frame):
 
     def menu_skin(self, e) :
         i = e.GetId()-400
-        skin = self.liste_skin[i]
+        skin = self.app.settings.liste_skin[i]
         self.app.settings.set("skin", skin)
         self.app.settings.write()
         utils.errordlg("Relancer le programme pour prendre en compte le nouveau skin","Attention")
