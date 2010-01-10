@@ -9,9 +9,9 @@
     <size_def>14</size_def>
     <size_score>20</size_score>
     <offset_coord>32</offset_coord>
-    <frame_h>1450</frame_h>
-    <frame_v>1000</frame_v>
-    <fill>20</fill>
+    <frame_h>1500</frame_h>
+    <frame_v>1100</frame_v>
+    <fill>16</fill>
     <fontcol name="tempjoker">WHITE</fontcol>
     <fontcol name="tempnorm">BLUE</fontcol>
     <fontcol name="signes">BLUE</fontcol>

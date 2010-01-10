@@ -2,10 +2,21 @@
 # -*- coding: utf-8 -*-
 import xml.dom.minidom
 import os
+import sys
 
 class settings :
-    def __init__(self, file='settings.xml') :
-        self.file = file
+    def __init__(self) :
+        self.liste_skin = ("default", "tiny", "big")
+        self.liste_case = ("8","9","10")
+        nom = "settings.xml"
+        appname = "wxscrab"
+        if sys.platform == 'win32':
+            appdata = os.path.join(os.environ['APPDATA'], appname)
+        else:
+            appdata = os.path.expanduser(os.path.join("~", "." + appname))
+        if not os.path.exists(appdata) :
+            os.mkdir(appdata)
+        self.file = os.path.join(appdata, nom)
         self.dic = {'servers' : ['wxscrab.ath.cx'],
                     'pseudo' : '',
                     'port' : '1989',
@@ -14,8 +25,8 @@ class settings :
                     'tirage_nbpos' : '8',
                     'policeserv' : '12'}
 
-        if os.path.isfile(file) :
-            dom = xml.dom.minidom.parse(file)
+        if os.path.isfile(self.file) :
+            dom = xml.dom.minidom.parse(self.file)
             s = dom.getElementsByTagName("settings")[0]
             for n in s.childNodes:
                 if n.nodeType != s.TEXT_NODE:

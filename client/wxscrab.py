@@ -25,7 +25,7 @@ wx.SetDefaultPyEncoding("utf8")
 class App(wx.App):
     def OnInit(self) :
         wx.InitAllImageHandlers()
-        self.settings = settings.settings("settings.xml")
+        self.settings = settings.settings()
         # Appelle la frame de connexion au début
         dlgconn.dlgconnframe(None, self)
         return True

@@ -1,5 +1,5 @@
 rmdir /S /Q dist
-setup.py py2exe -d dist
+c:\python26\python.exe setup.py py2exe -d dist
 rmdir /S /Q build
 copy wxscrab.nsi dist
 copy msvcp90.dll dist

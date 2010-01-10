@@ -79,7 +79,7 @@ Bag_ntiles(Bag b)
 int
 Bag_njoker(Bag b)
 {
-    return b->tiles[TILES_NUMBER - 1] ;
+    return b->tiles[JOKER_TILE] ;
 }
 
 int
