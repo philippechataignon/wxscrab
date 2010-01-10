@@ -21,25 +21,34 @@ for tour in tree.findall("tour") :
     tab.append(dic)
 cum = {}
 liste_nick.sort()
-print """
+
+print """\
+<html>
+<head>
+<style type="text/css">
+th  {text-align:center; border-bottom: 1px solid; border-left: 1px solid}
+td  {text-align:right;border-left: 1px dashed; }
+td.l  {text-align:left;border-left: 1px dashed; }
+.extr  {text-align:center;border-left: 1px solid;}
+</style>
+</head>
+<body>
+"""
+print """\
 <table style="border: 1px solid" cellpadding="2">
   <tr>
-  <th style="border: 1px solid">Tour</th>
+  <th>Tour</th>
 """
 for nick in liste_nick :
     cum[nick] = 0 
-    print """<th colspan="5"  style="border: 1px solid">%s</th>""" % nick
-print """
+    print """<th colspan="5">%s</th>""" % nick
+print """\
   </tr>
   <tr>
   <td>&nbsp;</td>
 """
 for nick in liste_nick :
-    print """<th  style="border-left: 1px solid; border-bottom: 1px solid" >Coord</th>
-                 <th  style="border-left: 1px dashed; border-bottom: 1px solid">Mot</th>
-                 <th  style="border-left: 1px dashed; border-bottom: 1px solid; text-align:right">Score</th>
-                 <th  style="border-left: 1px dashed; border-bottom: 1px solid; text-align:right">Cumul</th>
-                 <th  style="border-left: 1px dashed; border-bottom: 1px solid; text-align:right">% Top</th>"""
+    print "<th>Coord</th> <th>Mot</th> <th>Score</th> <th>Cumul</th> <th>% Top</th>"
 print "</tr>"
 
 for tour in xrange(len(tab)) :
@@ -47,17 +56,12 @@ for tour in xrange(len(tab)) :
     print "<td>%d</td>" % (tour+1)
     for nick in liste_nick :
         dic = tab[tour]
-	if nick in dic :
-		cum[nick] += dic[nick][2]
-		print """<td  style="border-left: 1px solid; text-align:center" >%s</td>
-			 <td  style="border-left: 1px dashed">%s</td>
-			 <td  style="border-left: 1px dashed; text-align:right">%d</td>
-			 <td  style="border-left: 1px dashed; text-align:right">%d</td>
-			 <td  style="border-left: 1px dashed; text-align:right">%4.2f</td>""" \
-		    % (dic[nick][0], dic[nick][1], dic[nick][2], cum[nick], cum[nick]/cum[nom_top]*100)
-    print "</tr>"
-
-
-print """
-</table>
-"""
+        if nick in dic :
+            cum[nick] += dic[nick][2]
+            val = (dic[nick][0], dic[nick][1], "%d"%dic[nick][2], "%d"%cum[nick], "%4.2f"%(cum[nick]/cum[nom_top]*100))
+        else :
+            val= ("&nbsp;",)*5
+        print """<td class="extr">%s</td> <td class="l">%s</td> <td >%s</td> <td >%s</td> <td >%s<s/td>""" % val
+    print "</tr>" 
+print "</table>"
+print "</html>"
