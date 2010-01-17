@@ -1,3 +1,4 @@
+#!/bin/sh
 cd gen
 make
 python setup.py build
