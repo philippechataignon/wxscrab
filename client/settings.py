@@ -6,7 +6,7 @@ import sys
 
 class settings :
     def __init__(self) :
-        self.liste_skin = ("default", "tiny", "big")
+        self.liste_skin = ("default", "tiny", "small", "big")
         self.liste_case = ("8","9","10")
         nom = "settings.xml"
         appname = "wxscrab"

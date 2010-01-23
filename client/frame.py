@@ -100,7 +100,7 @@ class frame(wx.Frame):
         chat_sizer.Add(self.buttonchat,0, wx.ALL|wx.ALIGN_RIGHT, fill)
 
         #Barre de menu
-        if not self.tiny :
+        if  self.app.skin.get("menu") :
             menubar = wx.MenuBar()
 
             menu1 = wx.Menu()
@@ -136,13 +136,14 @@ class frame(wx.Frame):
 
             self.SetMenuBar(menubar)
 
+        if  self.app.skin.get("status") :
             #Barre de status
             self.st = self.CreateStatusBar()
             self.st.SetFieldsCount(2)
             self.st.SetStatusWidths([-1, -5])
 
         #Sizers
-        if self.tiny :
+        if  self.app.skin.get("layout") == "alt" :
             sizer1 = wx.BoxSizer(wx.HORIZONTAL)
             sizer1.Add(tirage_sizer,1, wx.EXPAND|wx.ALIGN_RIGHT)
             sizer1.Add(timer_sizer, 0, wx.EXPAND)
