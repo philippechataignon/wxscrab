@@ -12,7 +12,9 @@
     <frame_h>800</frame_h>
     <frame_v>440</frame_v>
     <fill>1</fill>
-
+    <status>0</status>
+    <menu>0</menu>
+    <layout>alt</layout>
     <fontcol name="tempjoker">WHITE</fontcol>
     <fontcol name="tempnorm">BLUE</fontcol>
     <fontcol name="signes">BLUE</fontcol>
