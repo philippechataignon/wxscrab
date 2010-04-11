@@ -44,7 +44,6 @@ class frame(wx.Frame):
         #tirage_sizer.Add(boutons_sizer, 0, wx.ALIGN_CENTRE_VERTICAL, 0)
         #tirage_sizer.Add((2*fill,0),0)
 
-
         #Creation et dessin de la grille
         grille_box = wx.StaticBox(self.panel,-1, "Grille")
         grille_sizer = wx.StaticBoxSizer(grille_box)
@@ -149,9 +148,6 @@ class frame(wx.Frame):
 
         #Sizers
         sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer1.Add(timer_sizer, 0, wx.EXPAND)
-        sizer1.Add( (fill,fill), 0)
-        sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
 
         sizer2 = wx.BoxSizer(wx.VERTICAL)
         sizer2.Add(msgs_sizer,   1, wx.EXPAND)
@@ -163,11 +159,17 @@ class frame(wx.Frame):
         sizer = wx.GridBagSizer(hgap=fill, vgap=fill) 
 
         if  self.app.skin.get("layout") == "alt" :
+            sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
+            sizer1.Add( (fill,fill), 0)
+            sizer1.Add(timer_sizer, 0, wx.EXPAND)
             sizer.Add(grille_sizer, pos=(0,0))
             sizer2.Add(sizer1)
             sizer.Add(sizer2, pos=(0,1),  flag = wx.EXPAND|wx.ALIGN_RIGHT)
             sizer.AddGrowableCol(1) 
         else :
+            sizer1.Add(timer_sizer, 0, wx.EXPAND)
+            sizer1.Add( (fill,fill), 0)
+            sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
             sizer.Add(sizer1, pos=(0,0))
             sizer.Add(grille_sizer, pos=(1,0))
             sizer.Add(sizer2, pos=(0,1), span=(2,1), flag = wx.EXPAND|wx.ALIGN_RIGHT)
