@@ -9,8 +9,7 @@
     <size_def>16</size_def>
     <size_score>28</size_score>
     <offset_coord>32</offset_coord>
-    <frame_h>1750</frame_h>
-    <frame_v>1150</frame_v>
+    <chat_size>800</chat_size>
     <fill>20</fill>
     <fontcol name="tempjoker">WHITE</fontcol>
     <fontcol name="tempnorm">BLUE</fontcol>

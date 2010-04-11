@@ -14,9 +14,10 @@ import coord
 
 class frame(wx.Frame):
     def __init__(self, parent, app, tiny = False) :
-        wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick, size=(app.skin.get("frame_h"), app.skin.get("frame_v")))
+        # wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick, size=(app.skin.get("frame_h"), app.skin.get("frame_v")))
+        wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick)
         self.SetIcon(wx.Icon(app.skin.get("icone"), wx.BITMAP_TYPE_ICO))
-        self.panel = wx.Panel(self, -1)
+        self.panel = wx.Panel(self)
         self.app = app
         self.tiny = tiny
         self.max_props = 8
@@ -24,80 +25,84 @@ class frame(wx.Frame):
         fill = self.app.skin.get("fill")
 
         #Creation et dessin du timer
+        timer_box  = wx.StaticBox(self.panel,-1, "Temps")
+        timer_sizer = wx.StaticBoxSizer(timer_box)
         self.timer = wx.StaticText(self.panel, -1, str(utils.convert_time(0)))
         font = wx.Font(self.app.skin.get("size_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.timer.SetFont(font)
-        timer_box  = wx.StaticBox(self.panel,-1, "Temps")
-        timer_sizer = wx.StaticBoxSizer(timer_box)
         timer_sizer.Add((fill,0),0)
         timer_sizer.Add(self.timer, 0, wx.ALL|wx.EXPAND, fill) 
         timer_sizer.Add((fill,0),0)
 
         #Creation et dessin du tirage
-        self.tirage = tirage.tirage(self.panel, self.app)
-        bouton_alpha = wx.Button(self.panel, 30, "A", style=wx.BU_EXACTFIT)
-        self.Bind(wx.EVT_BUTTON, self.alpha_click, bouton_alpha)
-        bouton_rand = wx.Button(self.panel, 31, "R", style=wx.BU_EXACTFIT)
-        self.Bind(wx.EVT_BUTTON, self.rand_click, bouton_rand)
         tirage_box = wx.StaticBox(self.panel,-1, "Tirage")
         tirage_sizer = wx.StaticBoxSizer(tirage_box)
-        tirage_sizer.Add((2*fill,0),0)
+        tirage_sizer.Add((fill,0),0)
+        self.tirage = tirage.tirage(self.panel, self.app)
         tirage_sizer.Add(self.tirage, 0, wx.ALL|wx.EXPAND, fill)
-        boutons_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        boutons_sizer.Add(bouton_alpha, 0, wx.EXPAND, 0)
-        boutons_sizer.Add((fill,0),0)
-        boutons_sizer.Add(bouton_rand, 0, wx.EXPAND, 0)
-        tirage_sizer.Add((20,0),0)
-        tirage_sizer.Add(boutons_sizer, 0, wx.ALIGN_CENTRE_VERTICAL, 0)
-        tirage_sizer.Add((2*fill,0),0)
+        tirage_sizer.Add((fill,0),0)
+        #tirage_sizer.Add(boutons_sizer, 0, wx.ALIGN_CENTRE_VERTICAL, 0)
+        #tirage_sizer.Add((2*fill,0),0)
+
 
         #Creation et dessin de la grille
-        self.grille = grille.grille(self.panel, self.app)
         grille_box = wx.StaticBox(self.panel,-1, "Grille")
         grille_sizer = wx.StaticBoxSizer(grille_box)
+        self.grille = grille.grille(self.panel, self.app)
         grille_sizer.Add(self.grille, 0, wx.ALL|wx.EXPAND, 0)
 
         #Creation des items dans la box messages
-        self.msgs = wx.TextCtrl(self.panel, -1, "", size=(-1, -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
-        self.msgs.SetDefaultStyle(wx.TextAttr(font=wx.Font(self.app.skin.get("size_def"), wx.SWISS, wx.NORMAL, wx.NORMAL)))
         msgs_box   = wx.StaticBox(self.panel,-1, "Messages")
         msgs_sizer = wx.StaticBoxSizer(msgs_box, wx.VERTICAL)
+        self.msgs = wx.TextCtrl(self.panel, -1, "", size=(app.skin.get("chat_size"), -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
+        self.msgs.SetDefaultStyle(wx.TextAttr(font=wx.Font(self.app.skin.get("size_def"), wx.SWISS, wx.NORMAL, wx.NORMAL)))
         msgs_sizer.Add(self.msgs, 1, wx.ALL|wx.EXPAND, fill)
 
         #Creation box proposition
-        self.props = wx.ComboBox(self.panel, -1, style=wx.CB_READONLY) 
-        #self.props.Insert("", 0, "")
-        self.buttonpose = wx.Button(self.panel, 11,"Poser le mot")
-        self.buttonpose.Enable(False)
-        self.Bind(wx.EVT_COMBOBOX, self.props_click, self.props)
-        self.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
         props_box  = wx.StaticBox(self.panel,-1, "Propositions")
         props_sizer = wx.StaticBoxSizer(props_box, wx.HORIZONTAL)
+        self.props = wx.ComboBox(self.panel, -1, style=wx.CB_READONLY) 
         props_sizer.Add(self.props, 1, wx.ALL, fill) 
-        props_sizer.Add(self.buttonpose, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
+        self.buttonpose = wx.Button(self.panel, 11,"Poser le mot")
+        self.buttonpose.Enable(False)
         self.buttonpose.SetDefault()
+        props_sizer.Add(self.buttonpose, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
+        self.Bind(wx.EVT_COMBOBOX, self.props_click, self.props)
+        self.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
 
         #Creation box score
+        score_box  = wx.StaticBox(self.panel,-1, "Score")
+        score_sizer = wx.StaticBoxSizer(score_box, wx.HORIZONTAL)
         self.score = wx.StaticText(self.panel, -1, "")
         font = wx.Font(self.app.skin.get("size_score"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.score.SetFont(font)
-        buttscore = wx.Button(self.panel, 12, "Scores")
-        self.Bind(wx.EVT_BUTTON, self.show_score, buttscore)
-        score_box  = wx.StaticBox(self.panel,-1, "Score")
-        score_sizer = wx.StaticBoxSizer(score_box, wx.HORIZONTAL)
         score_sizer.Add(self.score, 1, wx.ALL, fill) 
+        buttscore = wx.Button(self.panel, 12, "Scores")
         score_sizer.Add(buttscore, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
+        self.Bind(wx.EVT_BUTTON, self.show_score, buttscore)
 
         #Creation du chat
-        self.txtchatin = wx.TextCtrl(self.panel, -1, "")
-        self.buttonchat = wx.Button(self.panel, fill, "Ok")
-        self.Bind(wx.EVT_BUTTON, self.chat_click, self.buttonchat)
-        self.txtchatin.Bind(wx.EVT_SET_FOCUS,self.chat_focus)
-        self.txtchatin.Bind(wx.EVT_KILL_FOCUS, self.chat_nofocus)
         chat_box = wx.StaticBox(self.panel, -1, "Chat")
         chat_sizer = wx.StaticBoxSizer(chat_box, wx.HORIZONTAL)
+        self.txtchatin = wx.TextCtrl(self.panel, -1, "")
         chat_sizer.Add(self.txtchatin,1, wx.ALL, fill)
+        self.buttonchat = wx.Button(self.panel, fill, "Envoi msg")
         chat_sizer.Add(self.buttonchat,0, wx.ALL|wx.ALIGN_RIGHT, fill)
+        self.Bind(wx.EVT_BUTTON, self.chat_click, self.buttonchat)
+
+        # cadres boutons 
+        bouton_box = wx.StaticBox(self.panel,-1, "Commandes")
+        bouton_alpha = wx.Button(self.panel, 30, "Tirage Alpha", style=wx.BU_EXACTFIT)
+        bouton_rand = wx.Button(self.panel, 31, "Tirage Random", style=wx.BU_EXACTFIT)
+        #wx.GridSizer(rows=3, cols=3, hgap=5, vgap=5)
+        bouton_sizer = wx.StaticBoxSizer(bouton_box, wx.HORIZONTAL)
+        bouton_sizer.Add((fill,0),0)
+        bouton_sizer.Add(bouton_alpha, 0, wx.EXPAND, 0)
+        bouton_sizer.Add((fill,0),0)
+        bouton_sizer.Add(bouton_rand, 0, wx.EXPAND, 0)
+        bouton_sizer.Add((fill,0),0)
+        self.Bind(wx.EVT_BUTTON, self.alpha_click, bouton_alpha)
+        self.Bind(wx.EVT_BUTTON, self.rand_click, bouton_rand)
 
         #Barre de menu
         if  self.app.skin.get("menu") :
@@ -143,42 +148,33 @@ class frame(wx.Frame):
             self.st.SetStatusWidths([-1, -5])
 
         #Sizers
-        if  self.app.skin.get("layout") == "alt" :
-            sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer1.Add(tirage_sizer,1, wx.EXPAND|wx.ALIGN_RIGHT)
-            sizer1.Add(timer_sizer, 0, wx.EXPAND)
-
-            sizer3 = wx.BoxSizer(wx.VERTICAL)
-            sizer3.Add(grille_sizer, 0, wx.EXPAND|wx.ALIGN_RIGHT)
-
-            sizer2a = wx.BoxSizer(wx.VERTICAL)
-            sizer2a.Add(props_sizer, 0, wx.EXPAND)
-            sizer2a.Add(score_sizer, 0, wx.EXPAND)
-            sizer2a.Add(chat_sizer, 0, wx.EXPAND)
-            sizer2a.Add(sizer1, 0, wx.EXPAND)
-        else :
-            sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer1.Add(timer_sizer, 0, wx.EXPAND)
-            sizer1.Add( (fill,fill), 0)
-            sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
-
-            sizer3 = wx.BoxSizer(wx.VERTICAL)
-            sizer3.Add(sizer1, 0)
-            sizer3.Add(grille_sizer, 0, wx.EXPAND|wx.ALIGN_RIGHT)
-
-            sizer2a = wx.BoxSizer(wx.VERTICAL)
-            sizer2a.Add(props_sizer,0, wx.EXPAND)
-            sizer2a.Add(score_sizer,0,wx.EXPAND)
-            sizer2a.Add(chat_sizer,0,wx.EXPAND)
+        sizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer1.Add(timer_sizer, 0, wx.EXPAND)
+        sizer1.Add( (fill,fill), 0)
+        sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
 
         sizer2 = wx.BoxSizer(wx.VERTICAL)
-        sizer2.Add(msgs_sizer,1, wx.EXPAND)
-        sizer2.Add(sizer2a,1, wx.EXPAND)
+        sizer2.Add(msgs_sizer,   1, wx.EXPAND)
+        sizer2.Add(props_sizer,  0, wx.EXPAND)
+        sizer2.Add(score_sizer,  0, wx.EXPAND)
+        sizer2.Add(bouton_sizer, 0, wx.EXPAND)
+        sizer2.Add(chat_sizer,   0, wx.EXPAND)
 
-        border=wx.BoxSizer(wx.HORIZONTAL)
-        border.Add(sizer3, 0, wx.EXPAND|wx.ALL, fill)
-        border.Add(sizer2, 1, wx.EXPAND|wx.ALL, fill)
-        self.panel.SetSizerAndFit(border)
+        sizer = wx.GridBagSizer(hgap=fill, vgap=fill) 
+
+        if  self.app.skin.get("layout") == "alt" :
+            sizer.Add(grille_sizer, pos=(0,0))
+            sizer2.Add(sizer1)
+            sizer.Add(sizer2, pos=(0,1),  flag = wx.EXPAND|wx.ALIGN_RIGHT)
+            sizer.AddGrowableCol(1) 
+        else :
+            sizer.Add(sizer1, pos=(0,0))
+            sizer.Add(grille_sizer, pos=(1,0))
+            sizer.Add(sizer2, pos=(0,1), span=(2,1), flag = wx.EXPAND|wx.ALIGN_RIGHT)
+            sizer.AddGrowableCol(1) 
+
+        self.panel.SetSizer(sizer) 
+        sizer.Fit(self)
 
 # Gestionnaires evenement
     def alpha_click(self, e) :
@@ -192,12 +188,6 @@ class frame(wx.Frame):
             m = msg.msg("chat", self.txtchatin.GetValue())
             self.app.envoi(m)
             self.txtchatin.SetValue("")
-
-    def chat_focus(self, e):
-        self.buttonchat.SetDefault()
-
-    def chat_nofocus(self, e) :
-        self.buttonpose.SetDefault()
 
     def props_click(self, e) :
         if self.grille.saisie_ok :
