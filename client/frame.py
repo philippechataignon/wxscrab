@@ -92,12 +92,11 @@ class frame(wx.Frame):
         # cadres boutons 
         bouton_box = wx.StaticBox(self.panel,-1, "Commandes")
         bouton_sizer = wx.StaticBoxSizer(bouton_box, wx.HORIZONTAL)
-        bouton_sizer.Add((fill,0),0)
-        ligne_sizer = wx.GridSizer(rows=1, cols=5, hgap=fill, vgap=fill)
+        ligne_sizer = wx.GridSizer(rows=1, cols=4, hgap=fill, vgap=fill)
         boutons = ( ("Tirage Alpha", self.button_alpha),
                     ("Tirage Random", self.button_random),
                     ("Restart", self.button_restart),
-                    ("Chrono", self.button_chrono),
+                #    ("Chrono", self.button_chrono),
                     ("Next", self.button_next),
                 )
         for label, handler in boutons :
@@ -105,7 +104,7 @@ class frame(wx.Frame):
             ligne_sizer.Add(bouton, flag=wx.EXPAND)
             self.Bind(wx.EVT_BUTTON, handler, bouton)
             #bouton_sizer.Add((fill,0),0)
-        bouton_sizer.Add(ligne_sizer)
+        bouton_sizer.Add(ligne_sizer, flag=wx.EXPAND)
 
         #Barre de menu
         if  self.app.skin.get("menu") :

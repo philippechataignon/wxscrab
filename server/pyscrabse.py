@@ -31,11 +31,11 @@ class main(threading.Thread):
         self.chrono = self.options.chrono
         self.tour_on = False
         self.attention = threading.Event()
-        self.restart   = threading.Event()
-        self.stop      = threading.Event()
-        self.stop_chrono  = threading.Event()
-        self.start_chrono = threading.Event()
-        self.next = threading.Event()
+        self.categ_vote = ('restart', 'next')
+        self.votes = {}
+        self.votants = {}
+        self.lock_vote = threading.Lock()
+        self.init_vote()
 
     def run(self, f_attente=True) :
         loop = True
@@ -63,22 +63,18 @@ class main(threading.Thread):
 
     def attente(self, tps) :
         self.attention.wait(tps)
-        if self.attention.isSet() :
+        if self.attention.is_set() :
             self.attention.clear()
-            if self.restart.isSet() :
-                self.restart.clear()
+            if self.votes['restart'] == len(self.jo) :
+                self.lock_vote.acquire()
+                self.votes['restart'] = 0
+                self.lock_vote.release()
                 return True
-            elif self.stop_chrono.isSet() :
-                self.stop_chrono.clear()
-                self.start_chrono.wait()
-                self.start_chrono.clear()
-                return False
-            elif self.stop.isSet() :
-                raise Exception("stop")
-                return False
-            elif self.next.isSet() and self.tour_on :
-                self.next.clear()
+            if self.votes['next'] == len(self.jo) and self.tour_on :
+                self.lock_vote.acquire()
+                self.votes['next'] = 0
                 self.chrono = 1
+                self.lock_vote.release()
                 return False
         return False
 
@@ -91,6 +87,7 @@ class main(threading.Thread):
         self.net.envoi_all(m)
         self.tour_on = True
         self.chrono = self.options.chrono
+        self.init_vote()
         while self.chrono >= 0 :
             self.net.envoi_all(msg.msg("chrono", self.chrono))
             if self.attente(1) :
@@ -168,21 +165,12 @@ class main(threading.Thread):
         elif c == 'asktour' :
             channel.envoi(msg.msg("tour", self.tour_on))
         elif c == 'chat' :
-            if mm.param == "/restart" :
-                self.attention.set()
-                self.restart.set()
-            elif mm.param == "/stop" :
-                self.attention.set()
-                self.stop_chrono.set()
-            elif mm.param == "/start" :
-                self.attention.set()
-                self.start_chrono.set()
-            elif mm.param == "/next" :
-                self.attention.set()
-                self.next.set()
-            else :
-                m = msg.msg("info", mm.param, mm.id)
-                self.net.envoi_all(m)
+            m = msg.msg("info", mm.param, mm.id)
+            self.net.envoi_all(m)
+        elif c == "restart" :
+            self.vote("restart", channel)
+        elif c == "next" :
+            self.vote("next", channel)
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
@@ -192,6 +180,25 @@ class main(threading.Thread):
     def info(self, txt) :
         m = msg.msg("info", txt)
         self.net.envoi_all(m)
+
+    def vote(self, categ, channel) :
+        if categ in self.categ_vote :
+            self.lock_vote.acquire()
+            if channel not in self.votants[categ] :
+                self.votes[categ] += 1
+                self.votants[categ].append(channel)
+            self.lock_vote.release()
+            self.attention.set()
+            print categ
+        else :
+            print "Erreur categ vote"
+
+    def init_vote(self) :
+        self.lock_vote.acquire()
+        for categ in self.categ_vote :
+            self.votes[categ] = 0
+            self.votants[categ] = []
+        self.lock_vote.release()
 
 if __name__ == '__main__' :
     usage = "usage: %prog [options] [fichier_partie]"
