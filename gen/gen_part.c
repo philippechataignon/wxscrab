@@ -39,18 +39,45 @@
 int verbeux = 0;
 
 int
+cmp_score_best(score_best score_a, score_best score_b)
+{
+    // renvoit 1 si score_a > score_b, 0 si =, -1 sinon
+    int d_pts   = score_a.pts   - score_b.pts ;
+    int d_nb    = score_a.nb    - score_b.nb ;
+    int d_retir = score_a.retir - score_b.retir ;
+    //printf("%d %d %d\n", d_pts,d_nb,d_retir) ;
+    if (d_retir > 0)
+        return 1 ;
+    if (d_retir == 0 && d_pts > 0)
+        return 1 ;
+    if (d_retir == 0 && d_pts == 0 && d_nb > 0)
+        return 1 ;
+    if (d_retir == 0 && d_pts == 0 && d_nb == 0)
+        return 0 ;
+    return -1 ;
+}
+
+int
 cmp_score(score score_a, score score_b)
 {
-    // renvoit 1 si score_a > score_b
-    if (score_a.best > score_b.best)
+    // renvoit 1 si score_a > score_b, 0 si =, -1 sinon
+    int d_best  = cmp_score_best(score_a.best, score_b.best) ;
+    int d_cross = score_a.cross - score_b.cross ;
+    int d_scrab = score_a.scrab - score_b.scrab ;
+    int d_joker = score_a.joker - score_b.joker ;
+    int d_pc    = score_a.pc    - score_b.pc ;
+    //printf("%d %d %d %d %d \n", d_best,d_cross,d_scrab,d_joker,d_pc) ;
+    if (d_joker > 0 )
         return 1 ;
-    if ((score_a.best == score_b.best) && (score_a.cross > score_b.cross))
+    if (d_joker == 0 && d_best > 0)
         return 1 ;
-    if ((score_a.best == score_b.best) && (score_a.cross == score_b.cross) && (score_a.scrab > score_b.scrab))
+    if (d_joker == 0 && d_best == 0 && d_cross > 0)
         return 1 ;
-    if ((score_a.best == score_b.best) && (score_a.cross == score_b.cross) && (score_a.scrab == score_b.scrab) && (score_a.pc > score_b.pc))
+    if (d_joker == 0 && d_best == 0 && d_cross == 0 && d_scrab > 0)
         return 1 ;
-    if ((score_a.best == score_b.best) && (score_a.cross == score_b.cross) && (score_a.scrab == score_b.scrab) && (score_a.pc == score_b.pc))
+    if (d_joker == 0 && d_best == 0 && d_cross == 0 && d_scrab == 0 && d_pc > 0 )
+        return 1 ;
+    if (d_joker == 0 && d_best == 0 && d_cross == 0 && d_scrab == 0 && d_pc == 0)
         return 0 ;
     return -1 ;
 }
@@ -93,19 +120,19 @@ print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int
 score 
 traite(Game game, int num, unsigned short int state[3]) 
 {
-    score w_score ;
-    w_score.cross = traite_cross(game,num) ;
-    w_score.best  = traite_best(game,num,state) ; 
-    w_score.scrab = traite_scrab(game,num) ;
-    w_score.pc    = traite_pc(game,num) ;
-
     if (verbeux >=1) {
         char mot[WORD_SIZE_MAX] ;
         char coord[COOR_SIZE_MAX];
         Game_getsearchedcoord(game,num,coord);
         Game_getsearchedword(game,num,mot) ;
-        //printf("<verbeux>%s - %s (%d)</verbeux>\n",coord, mot,score );
+        printf("<mot>%s - %s</mot>\n",coord, mot);
     }
+    score w_score ;
+    w_score.cross = traite_cross(game,num) ;
+    w_score.best  = traite_best(game,num,state) ; 
+    w_score.scrab = traite_scrab(game,num) ;
+    w_score.pc    = traite_pc(game,num) ;
+    w_score.joker = traite_joker(game,num) ;
     return w_score ;
 }
 
@@ -136,26 +163,46 @@ traite_scrab(Game game, int num)
 }
 
 int 
-traite_pc(Game game, int num) 
+traite_joker(Game game, int num) 
 {
     int i;
-    int score = 0 ;
+    int score = 2 ;
     Round round ;
-
     round=Round_create() ;
     Game_getsearchedround(game,num,round) ;
 
     for(i=0; i < Round_wordlen(round); i++) {
         if (Round_playedfromrack(round,i)) {
             if (Round_joker(round,i)) {
-                score -= 10000000 ;
+                score -= 1 ;
+            }
+        }
+    }
+    Round_destroy(round) ;
+    if (verbeux >=2) {
+        printf("<score_joker>%d</score_joker>\n", score);
+    }
+    return score ;
+}
+
+int 
+traite_pc(Game game, int num) 
+{
+    int i;
+    int score = 0 ;
+    Round round ;
+    round=Round_create() ;
+    Game_getsearchedround(game,num,round) ;
+
+    for(i=0; i < Round_wordlen(round); i++) {
+        if (Round_playedfromrack(round,i)) {
+            if (Round_joker(round,i)) {
                 score += Tiles_pc[Round_gettile(round,i)] ;
             } else {
                 score -= Tiles_pc[Round_gettile(round,i)] ;
             }
         }
     }
-
     Round_destroy(round) ;
     if (verbeux >=2) {
         printf("<score_pc>%d</score_pc>\n", score);
@@ -163,11 +210,11 @@ traite_pc(Game game, int num)
     return score ;
 }
 
-int 
+score_best
 traite_best(Game game, int num, unsigned short int state[3]) 
 {
     int i;
-    int score = 0 ;
+    score_best sscore ;
     unsigned short int contexte[3] ;
     Game g ;
     int tir ;
@@ -183,26 +230,27 @@ traite_best(Game game, int num, unsigned short int state[3])
     /* joue le round num dans la copie de game */
     Game_play_round(g,Results_get(game->searchresults,num)) ;
     // tir vaut 1 si retirage ; -1 si vide et 0 sinon
-    if ( (tir=Game_setrack_random(g,state)) == -1) {
-        score = 0 ;
+    tir=Game_setrack_random(g,state) ;
+    sscore.retir = 2 - (tir == 1) ;
+    if ( tir == -1) {
+        sscore.pts = 0 ;
+        sscore.nb  = 0 ;
         goto fin ;
     }
     Game_search(g);
     if (Game_getnresults(g) == 0) {
-        score = 0 ;
+        sscore.pts = 0 ;
+        sscore.nb  = 0 ;
     } else {
-        score = Game_getsearchedpoints(g, 0) ;
+        sscore.pts = Game_getsearchedpoints(g, 0) ;
+        sscore.nb  = Game_getntotal(g) ;
     }
-    if (tir == 1) {
-        score -= 10 ;
-    }
+
     if (verbeux >=2) {
-        printf("<score_best_pts>%d</score_best_pts>\n", score);
-        printf("<best_sol>%d</best_sol>\n", Game_getntotal(g));
-        printf("<tirage>%d</tirage>\n", tir);
+        printf("<best_pts>%d</best_pts>\n", sscore.pts);
+        printf("<best_sol>%d</best_sol>\n", sscore.nb);
+        printf("<best_tirage>%d</best_tirage>\n", sscore.retir);
     }
-    score *= 10000 ;
-    score += Game_getntotal(g)*10 ;
 
     if (verbeux >= 3) {
         char mot[WORD_SIZE_MAX] ;
@@ -210,7 +258,7 @@ traite_best(Game game, int num, unsigned short int state[3])
         for (i=0 ; i<Game_getnresults(g); i++) {
             Game_getsearchedcoord(g,i,coord);
             Game_getsearchedword(g,i,mot) ;
-            printf("<mot>%s - %s - %d</mot>\n",coord, mot,score );
+            printf("<mot>%s - %s</mot>\n",coord, mot );
         }
     }
 
@@ -220,10 +268,7 @@ fin:
     for (i=0 ; i<3 ; i++) {
         state[i]=contexte[i] ;
     }
-    if (verbeux >=2) {
-        printf("<score_best>%d</score_best>\n", score);
-    }
-    return score ;
+    return sscore ;
 }
 
 int 
@@ -249,7 +294,7 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
         int i,res;
         int joue;
         score w_score ;
-        memset(&w_score, 0, sizeof(score));
+        //memset(&w_score, 0, sizeof(score));
         score t_score ;
         int change_tirage = 0 ;
         res = Game_setrack_random(game,state) ;
