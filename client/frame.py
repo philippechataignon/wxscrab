@@ -41,8 +41,6 @@ class frame(wx.Frame):
         self.tirage = tirage.tirage(self.panel, self.app)
         tirage_sizer.Add(self.tirage, 0, wx.ALL|wx.EXPAND, fill)
         tirage_sizer.Add((fill,0),0)
-        #tirage_sizer.Add(boutons_sizer, 0, wx.ALIGN_CENTRE_VERTICAL, 0)
-        #tirage_sizer.Add((2*fill,0),0)
 
         #Creation et dessin de la grille
         grille_box = wx.StaticBox(self.panel,-1, "Grille")
@@ -92,19 +90,20 @@ class frame(wx.Frame):
         # cadres boutons 
         bouton_box = wx.StaticBox(self.panel,-1, "Commandes")
         bouton_sizer = wx.StaticBoxSizer(bouton_box, wx.HORIZONTAL)
-        ligne_sizer = wx.GridSizer(rows=1, cols=4, hgap=fill, vgap=fill)
+        ligne_sizer = wx.GridSizer(cols=5, hgap=fill, vgap=fill)
         boutons = ( ("Tirage Alpha", self.button_alpha),
                     ("Tirage Random", self.button_random),
                     ("Restart", self.button_restart),
                 #    ("Chrono", self.button_chrono),
                     ("Next", self.button_next),
+                    ("Pose précédent", self.button_pose_last),
                 )
         for label, handler in boutons :
-            bouton = wx.Button(self.panel, label=label, )
-            ligne_sizer.Add(bouton, flag=wx.EXPAND)
+            bouton = wx.Button(self.panel, label=label)
+            ligne_sizer.Add(bouton, wx.EXPAND)
             self.Bind(wx.EVT_BUTTON, handler, bouton)
             #bouton_sizer.Add((fill,0),0)
-        bouton_sizer.Add(ligne_sizer, flag=wx.EXPAND)
+        bouton_sizer.Add(ligne_sizer, wx.EXPAND)
 
         #Barre de menu
         if  self.app.skin.get("menu") :
@@ -216,6 +215,13 @@ class frame(wx.Frame):
             self.grille.pose_mot(coo, mot, jeton.TEMP)
         else :
             self.home_props()
+
+    def button_pose_last(self, e) :
+        if self.props.Count >= 2 and self.grille.saisie_ok :
+            self.grille.reinit_saisie()
+            coo, mot = self.props.GetClientData(1)
+            m = msg.msg("propo",(coo, mot, 0))
+            self.app.envoi(m)
 
     def pose(self, e) :
         p = self.props.GetSelection()
