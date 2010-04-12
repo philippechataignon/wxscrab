@@ -28,9 +28,18 @@ extern "C"
     
 #define WORDSIZE_MAX 16
 #define SEARCHRESULTLINE_MAX 50
+#define SCORE_INTERNAL_MAX 5000
 
+typedef struct {
+    int best ;
+    int cross ;
+    int scrab ;
+    int pc ;
+} score ;
+
+int cmp_score(score score_a, score score_b) ;
 int print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int nbsol) ;
-int traite(Game game, int num, unsigned short int state[3]) ;
+score traite(Game game, int num, unsigned short int state[3]) ;
 int traite_cross(Game game, int num) ;
 int traite_scrab(Game game, int num) ;
 int traite_pc   (Game game, int num) ;

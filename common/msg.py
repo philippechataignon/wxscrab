@@ -3,9 +3,11 @@
 
 class msg :
     list_cmd = ("propo", "joueur", "chat", "tick", 
-	"askgrille", "asktour", "askscore", "asktirage", "askinfo",
+        "askgrille", "asktour", "askscore", "asktirage", "askinfo",
     	"connect", "error", "grille", "chrono", "mot_top", 
-	"new", "tour", "score", "tirage", "valid", "info", "infojoueur")
+        "new", "tour", "score", "tirage", "valid", "info", "infojoueur",
+        "next", "restart", "chrono", 
+        )
 
     def __init__(self, cmd, param=None, id=None) :
         if cmd in msg.list_cmd :

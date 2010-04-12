@@ -131,7 +131,7 @@ Bag_replacetile(Bag b, tile_t t)
 }
 
 tile_t
-Bag_select_random(Bag b,unsigned short int etat[3])
+Bag_select_random(Bag b, unsigned short int etat[3])
 {
     int i;
     int n = (int)(erand48(etat) * b->ntiles);

@@ -25,8 +25,6 @@
 #include "round.h"
 #include "results.h"
 
-#define RESULTS_INTERNAL_MAX 5000
-
 struct tresults {
     Round list [RESULTS_INTERNAL_MAX];
     int nresults; /* nb de tops */

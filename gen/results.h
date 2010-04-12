@@ -26,6 +26,8 @@ extern "C"
 {
 #endif 
 
+#define RESULTS_INTERNAL_MAX 5000
+
 #include "round.h"
   /*************************
    * Results is a container. The structure

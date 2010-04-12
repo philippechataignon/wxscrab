@@ -39,6 +39,23 @@
 int verbeux = 0;
 
 int
+cmp_score(score score_a, score score_b)
+{
+    // renvoit 1 si score_a > score_b
+    if (score_a.best > score_b.best)
+        return 1 ;
+    if ((score_a.best == score_b.best) && (score_a.cross > score_b.cross))
+        return 1 ;
+    if ((score_a.best == score_b.best) && (score_a.cross == score_b.cross) && (score_a.scrab > score_b.scrab))
+        return 1 ;
+    if ((score_a.best == score_b.best) && (score_a.cross == score_b.cross) && (score_a.scrab == score_b.scrab) && (score_a.pc > score_b.pc))
+        return 1 ;
+    if ((score_a.best == score_b.best) && (score_a.cross == score_b.cross) && (score_a.scrab == score_b.scrab) && (score_a.pc == score_b.pc))
+        return 0 ;
+    return -1 ;
+}
+
+int
 print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int nbsol)
 {
     char word  [WORD_SIZE_MAX];
@@ -73,23 +90,23 @@ print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int
     return 0;
 }
 
-int 
+score 
 traite(Game game, int num, unsigned short int state[3]) 
 {
-    int score = 0 ;
-    score = traite_cross(game,num)
-          + traite_best(game,num,state)
-          + 10*traite_scrab(game,num)
-          + traite_pc(game,num) ;
+    score w_score ;
+    w_score.cross = traite_cross(game,num) ;
+    w_score.best  = traite_best(game,num,state) ; 
+    w_score.scrab = traite_scrab(game,num) ;
+    w_score.pc    = traite_pc(game,num) ;
 
     if (verbeux >=1) {
         char mot[WORD_SIZE_MAX] ;
         char coord[COOR_SIZE_MAX];
         Game_getsearchedcoord(game,num,coord);
         Game_getsearchedword(game,num,mot) ;
-        printf("<verbeux>%s - %s (%d)</verbeux>\n",coord, mot,score );
+        //printf("<verbeux>%s - %s (%d)</verbeux>\n",coord, mot,score );
     }
-    return score ;
+    return w_score ;
 }
 
 int 
@@ -231,8 +248,9 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
     while(1) {
         int i,res;
         int joue;
-        int score=0;
-        int t_score ;
+        score w_score ;
+        memset(&w_score, 0, sizeof(score));
+        score t_score ;
         int change_tirage = 0 ;
         res = Game_setrack_random(game,state) ;
         if (res == -1) {
@@ -274,10 +292,10 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
             Game_play(game, 0) ;
         } else {
             joue = 0 ;
-            score = traite(game,0,state);
+            w_score = traite(game,0,state);
             for (i = 1; i<nbisotop; i++) {
-                if ( (t_score=traite(game,i,state)) > score ) {
-                    score = t_score ;
+                if ( cmp_score(t_score=traite(game,i,state), w_score) > 0 ) {
+                    w_score = t_score ;
                     joue = i;
                 }
             }

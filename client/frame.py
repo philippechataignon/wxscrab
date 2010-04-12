@@ -91,17 +91,21 @@ class frame(wx.Frame):
 
         # cadres boutons 
         bouton_box = wx.StaticBox(self.panel,-1, "Commandes")
-        bouton_alpha = wx.Button(self.panel, 30, "Tirage Alpha", style=wx.BU_EXACTFIT)
-        bouton_rand = wx.Button(self.panel, 31, "Tirage Random", style=wx.BU_EXACTFIT)
-        #wx.GridSizer(rows=3, cols=3, hgap=5, vgap=5)
         bouton_sizer = wx.StaticBoxSizer(bouton_box, wx.HORIZONTAL)
         bouton_sizer.Add((fill,0),0)
-        bouton_sizer.Add(bouton_alpha, 0, wx.EXPAND, 0)
-        bouton_sizer.Add((fill,0),0)
-        bouton_sizer.Add(bouton_rand, 0, wx.EXPAND, 0)
-        bouton_sizer.Add((fill,0),0)
-        self.Bind(wx.EVT_BUTTON, self.alpha_click, bouton_alpha)
-        self.Bind(wx.EVT_BUTTON, self.rand_click, bouton_rand)
+        ligne_sizer = wx.GridSizer(rows=1, cols=5, hgap=fill, vgap=fill)
+        boutons = ( ("Tirage Alpha", self.button_alpha),
+                    ("Tirage Random", self.button_random),
+                    ("Restart", self.button_restart),
+                    ("Chrono", self.button_chrono),
+                    ("Next", self.button_next),
+                )
+        for label, handler in boutons :
+            bouton = wx.Button(self.panel, label=label, )
+            ligne_sizer.Add(bouton, flag=wx.EXPAND)
+            self.Bind(wx.EVT_BUTTON, handler, bouton)
+            #bouton_sizer.Add((fill,0),0)
+        bouton_sizer.Add(ligne_sizer)
 
         #Barre de menu
         if  self.app.skin.get("menu") :
@@ -179,10 +183,22 @@ class frame(wx.Frame):
         sizer.Fit(self)
 
 # Gestionnaires evenement
-    def alpha_click(self, e) :
+    def button_restart(self, e) :
+        m = msg.msg("restart")
+        self.app.envoi(m)
+
+    def button_chrono(self, e) :
+        m = msg.msg("chrono")
+        self.app.envoi(m)
+
+    def button_next(self, e) :
+        m = msg.msg("next")
+        self.app.envoi(m)
+
+    def button_alpha(self, e) :
         self.tirage.alpha()
 
-    def rand_click(self, e) :
+    def button_random(self, e) :
         self.tirage.shuffle()
 
     def chat_click(self, e) :
