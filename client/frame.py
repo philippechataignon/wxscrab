@@ -14,7 +14,6 @@ import coord
 
 class frame(wx.Frame):
     def __init__(self, parent, app, tiny = False) :
-        # wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick, size=(app.skin.get("frame_h"), app.skin.get("frame_v")))
         wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick)
         self.SetIcon(wx.Icon(app.skin.get("icone"), wx.BITMAP_TYPE_ICO))
         self.panel = wx.Panel(self)
@@ -250,7 +249,7 @@ class frame(wx.Frame):
     def about(self, e):
         info = wx.AboutDialogInfo()
         info.Name = "wxScrab"
-        info.Copyright = "Build : %s\nDate : %s" % (347, "4 mai 2009")
+        info.Copyright = "Date : %s" % ("13 avril 2010")
         info.Description = '   Client Scrabble(r) Duplicate   '
         info.WebSite = ("http://wxscrab.ath.cx", "Site wxScrab")
         info.Developers = [ "Xouillet",
