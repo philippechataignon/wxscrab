@@ -74,14 +74,14 @@ void
 Results_addsorted(Results re, Round ro)
 {
     re->ntotal++ ;
-    /* Si liste vide ou points>max , on réinitialise la liste avec ce round */
+    /* Si liste vide ou points>max , on rÃ©initialise la liste avec ce round */
     if (re->nresults == 0 || Round_points(ro)>Round_points(re->list[0])) {
         Results_init_p(re) ;
         re->list[0]=Round_create() ;
         Round_copy(re->list[0],ro);
         re->nresults = 1 ;
     } else if (Round_points(ro) == Round_points(re->list[0])) {
-        /* Sinon points=max et on ajoute un isotop à la liste */    
+        /* Sinon points=max et on ajoute un isotop Ã  la liste */    
         re->list[re->nresults]=Round_create() ;
         Round_copy(re->list[re->nresults],ro);
         re->nresults++ ;

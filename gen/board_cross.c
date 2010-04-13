@@ -120,7 +120,7 @@ Board_check(Dictionary d,
     // on parcoure toutes les cases
     for(i = 1; i <= BOARD_DIM; i++) {
         for(j = 1; j <= BOARD_DIM; j++) {
-            // on initialise point à -1
+            // on initialise point Ã  -1
             point[j][i] = -1;
             // si la case est remplie, on ne peut poser aucune lettre (cross=0)
             if (tiles[i][j]) { 
@@ -128,7 +128,7 @@ Board_check(Dictionary d,
             // sinon, si il y a une lettre au-dessus ou au-dessous, on teste
             } else if (tiles[i][j - 1] || tiles[i][j + 1]) {
                 cross[j][i] = Board_checkout_tile(d, tiles[i] + j, joker[i] + j, point[j] + i);
-            // sinon, toutes lettres sont OK (cross par défaut)
+            // sinon, toutes lettres sont OK (cross par dÃ©faut)
             } else {
                 cross[j][i] = CROSS_MASK;
             }
@@ -143,7 +143,7 @@ Board_buildcross(Dictionary d, Board b)
   Board_check(d,b->tiles_c,b->joker_c,b->cross_r,b->point_r);
 }
 
-/** Fonctions ajoutées / eliot 1.4 */
+/** Fonctions ajoutÃ©es / eliot 1.4 */
 
 static unsigned int
 Board_checkout_tile_eval(Dictionary d, tile_t* tiles)
@@ -215,14 +215,14 @@ Board_calc_cross(Dictionary d, Board b, Bag g)
 int
 Board_calc_scrab_tiles(tile_t tiles[BOARD_REALDIM][BOARD_REALDIM])
 {
-    // compte le nombre de cases où il y a la place pour poser un scrabble
+    // compte le nombre de cases oÃ¹ il y a la place pour poser un scrabble
     int i,j ;
     int k,s ;
     int scrab = 0;
 
     for(i = 1; i <= BOARD_DIM; i++) {
         for(j = 1; j <= BOARD_DIM; j++) {
-            /* si case vide et case adjacente occupée = anchor */
+            /* si case vide et case adjacente occupÃ©e = anchor */
             if (!tiles[i][j] && 
                 (tiles[i][j-1] || tiles[i][j+1] || tiles[i-1][j] || tiles[i+1][j]) ) {
                 k = j ;

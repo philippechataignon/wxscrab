@@ -73,12 +73,12 @@ Boardsearch_evalmove(
                 // si joker, 0
                 l = 0;
             }
-            // on ajoute à pts
+            // on ajoute Ã  pts
             pts += l;
-            // on met à jour le wordmul utilisé à la fin du mot
+            // on met Ã  jour le wordmul utilisÃ© Ã  la fin du mot
             wordmul *= Board_word_multipliers[row][col+i];
 
-            // points déja stockés du mot constitué en vertical
+            // points dÃ©ja stockÃ©s du mot constituÃ© en vertical
             t = points[row][col+i];
             if (t >= 0) {
                 // t+l = points du mot complet
@@ -90,18 +90,18 @@ Boardsearch_evalmove(
         }
         // lettre suivante
     }
-    // on cumule tout ça et on gère les scrabbles
+    // on cumule tout Ã§a et on gÃ¨re les scrabbles
     pts = ptscross + pts * wordmul + 50 * (fromrack == 7);
     Round_setbonus(word,fromrack == 7);
     Round_setpoints(word,pts);
 
-    // inversion ligne/col si vertical pour résults
+    // inversion ligne/col si vertical pour rÃ©sults
     if (Round_dir(word) == VERTICAL) {
         Round_setrow(word,col);
         Round_setcolumn(word,row);
     }
     Results_addsorted(results,word);
-    // remise ligne/col état initial
+    // remise ligne/col Ã©tat initial
     if (Round_dir(word) == VERTICAL) {
         Round_setrow(word,row);
         Round_setcolumn(word,col);
@@ -118,38 +118,38 @@ ExtendRight(Dictionary dic,
       Results results, unsigned int n, int row, int column, int anchor)
 {
     // n : numero du noeud dans arbre dawg
-    // anchor reste constant dans les appels récursifs de ExtendRight
-    // column s'incrémente à chaque appel
-    // column=anchor quand l'appel provient de la récursivité de leftpart
+    // anchor reste constant dans les appels rÃ©cursifs de ExtendRight
+    // column s'incrÃ©mente Ã  chaque appel
+    // column=anchor quand l'appel provient de la rÃ©cursivitÃ© de leftpart
     tile_t l;
     unsigned int succ;
 
     // si case vide
     if (! tiles[row][column]) {
-        // si un mot est réalisé et qu'on a avancé strictement 
+        // si un mot est rÃ©alisÃ© et qu'on a avancÃ© strictement 
         // min 2 lettres pour un mot 
         if (Dic_word(dic,n) && column > anchor) {
-            // on évalue
+            // on Ã©value
             Boardsearch_evalmove(dic,tiles,points,joker,results,partialword);
         }
 
         // boucle parcourant l'ensemble des "sous-noeuds" d'un niveau de l'arbre
         for(succ = Dic_succ(dic,n); succ ; succ = Dic_next(dic,succ)) {
             l = Dic_chr(dic,succ);
-            // si la lettre est autoriése par le cross_mask de la case
+            // si la lettre est autoriÃ©se par le cross_mask de la case
             if (cross[row][column] & (1 << l)) {
                 // et si elle est dans le rack
                 if (Rack_in(rack,l)) {
                     //on la retire du rack
                     Rack_remove(rack,l);
-                    // on l'ajoute à droite du motpartiel
+                    // on l'ajoute Ã  droite du motpartiel
                     Round_addrightfromrack(partialword,l,0);
-                    // on fait la récursivité avec succ/col+1
+                    // on fait la rÃ©cursivitÃ© avec succ/col+1
                     ExtendRight(dic,tiles,cross,points,joker,
                             rack,partialword,results,
                             succ,row,column + 1,anchor);
-                    // retour à l'état initial
-                    // on enlève l'ajout à droite du motpartiel
+                    // retour Ã  l'Ã©tat initial
+                    // on enlÃ¨ve l'ajout Ã  droite du motpartiel
                     Round_removerighttorack(partialword,l,0);
                     // et on remet dans le rack
                     Rack_add(rack,l);
@@ -158,34 +158,34 @@ ExtendRight(Dictionary dic,
                 if (Rack_in(rack,(tile_t)JOKER_TILE)) {
                     //on le retire du rack
                     Rack_remove(rack,(tile_t)JOKER_TILE);
-                    // on ajoute la lettre correspondante à droite du motpartiel
+                    // on ajoute la lettre correspondante Ã  droite du motpartiel
                     Round_addrightfromrack(partialword,l,1);
-                    // on fait la récursivité avec succ/col+1
+                    // on fait la rÃ©cursivitÃ© avec succ/col+1
                     ExtendRight(dic,tiles,cross,points,joker,
                             rack,partialword,results,
                             succ,row,column + 1,anchor);
-                    // on enlève l'ajout à droite du motpartiel
+                    // on enlÃ¨ve l'ajout Ã  droite du motpartiel
                     Round_removerighttorack(partialword,l,1);
                     // et on remet le joker dans le rack
                     Rack_add(rack,JOKER_TILE);
                 }
             }
         }
-    // sinon, si la case est déjà occupée
+    // sinon, si la case est dÃ©jÃ  occupÃ©e
     } else {
-        // on récupère la lettre correspondante
+        // on rÃ©cupÃ¨re la lettre correspondante
         l = tiles[row][column];
         // boucle parcourant l'ensemble des "sous-noeuds" d'un niveau de l'arbre
         for(succ = Dic_succ(dic,n); succ ; succ = Dic_next(dic,succ)) {
-            // avec la contrainte d'égalité 
+            // avec la contrainte d'Ã©galitÃ© 
             if (Dic_chr(dic,succ) == l) {
-                // on ajoute la lettre correspondante à droite du motpartiel
+                // on ajoute la lettre correspondante Ã  droite du motpartiel
                 Round_addrightfromboard(partialword,l);
-                // on fait la récursivité avec succ/col+1
+                // on fait la rÃ©cursivitÃ© avec succ/col+1
                 ExtendRight(dic,tiles,cross,points,joker,
                         rack,partialword,
                         results,succ,row,column + 1,anchor);
-                // on enlève l'ajout à droite du motpartiel
+                // on enlÃ¨ve l'ajout Ã  droite du motpartiel
                 Round_removerighttoboard(partialword,l);
             }
         }
@@ -201,17 +201,17 @@ LeftPart(Dictionary dic,
     Rack rack, Round partialword,
     Results results, int n, int row, int anchor, int limit)
 {
-    // la récursivité se fait sur limit qui se decrémente à chaque appel
+    // la rÃ©cursivitÃ© se fait sur limit qui se decrÃ©mente Ã  chaque appel
     tile_t l;
     int succ;
 
-    // on étend à droite à partir de anchor
-    // c'est ici que se fait la vraie génération des mots
-    // les appels successifs de leftpart sont de plus en plus "à gauche"
+    // on Ã©tend Ã  droite Ã  partir de anchor
+    // c'est ici que se fait la vraie gÃ©nÃ©ration des mots
+    // les appels successifs de leftpart sont de plus en plus "Ã  gauche"
     ExtendRight(dic,tiles,cross,points,joker,rack,
         partialword,results,n,row,anchor,anchor);
 
-    // gestion de la récursivité de la fonction
+    // gestion de la rÃ©cursivitÃ© de la fonction
     // tant qu'on n'a pas atteint le bord gauche
     if (limit > 0) {
         // boucle parcourant l'ensemble des "sous-noeuds" d'un niveau de l'arbre
@@ -221,11 +221,11 @@ LeftPart(Dictionary dic,
             if (Rack_in(rack,l)) {
                 //on la retire du rack
                 Rack_remove(rack,l);
-                // on l'ajoute à droite du motpartiel
+                // on l'ajoute Ã  droite du motpartiel
                 Round_addrightfromrack(partialword,l,0);
-                // on décrémente la colonne du mot partiel
+                // on dÃ©crÃ©mente la colonne du mot partiel
                 Round_setcolumn(partialword,Round_column(partialword) - 1);
-                // on fait la récursivité avec succ/limit-1
+                // on fait la rÃ©cursivitÃ© avec succ/limit-1
                 LeftPart(dic,tiles,cross,points,joker,
                     rack,partialword,results,
                     succ,row,anchor,limit - 1);
@@ -236,11 +236,11 @@ LeftPart(Dictionary dic,
             }
             // si il y a un joker dans le rack
             if (Rack_in(rack,JOKER_TILE)) {
-                // même principe que précédemment avec dualité joker/lettre correspondante
+                // mÃªme principe que prÃ©cÃ©demment avec dualitÃ© joker/lettre correspondante
                 Rack_remove(rack,JOKER_TILE);
                 Round_addrightfromrack(partialword,l,1);
                 Round_setcolumn(partialword,Round_column(partialword) - 1);
-                // on fait la récursivité avec succ/limit-1
+                // on fait la rÃ©cursivitÃ© avec succ/limit-1
                 LeftPart(dic,tiles,cross,points,joker,
                     rack,partialword,results,
                     succ,row,anchor,limit - 1);
@@ -266,7 +266,7 @@ Board_search_aux(Dictionary dic,
     
 	// mot partiel vide
     partialword = Round_create();
-    // on parcoure les lignes (algo ramène à dimension 1)
+    // on parcoure les lignes (algo ramÃ¨ne Ã  dimension 1)
     for(row = 1; row <= BOARD_DIM; row++) {
         //initialisation du mot partiel
         Round_init(partialword);
@@ -275,7 +275,7 @@ Board_search_aux(Dictionary dic,
         lastanchor = 0;
         // on parcoure les colonnes
         for(column = 1; column <= BOARD_DIM; column++) {
-            // si la case est vide et une case adjacente est occupée = anchor
+            // si la case est vide et une case adjacente est occupÃ©e = anchor
             if (! tiles[row][column] &&
                 (tiles[row][column - 1] || tiles[row][column + 1] ||
                 tiles[row - 1][column] || tiles[row + 1][column])) {
@@ -294,17 +294,17 @@ Board_search_aux(Dictionary dic,
                     }
                 }
                 if (match) {
-                    // si la case précédente dans la ligne est occupée,
-                    // on étend à droite (ExtendRight) à partir de lastanchor+1
+                    // si la case prÃ©cÃ©dente dans la ligne est occupÃ©e,
+                    // on Ã©tend Ã  droite (ExtendRight) Ã  partir de lastanchor+1
                     // et anchor=colonne
                     if (tiles[row][column - 1]) {
-                        // si case précédente non vide
+                        // si case prÃ©cÃ©dente non vide
                         Round_setcolumn(partialword,lastanchor + 1);
                         ExtendRight(dic,tiles,cross,points,joker,
                             rack,partialword,results,
                             Dic_root(dic),row,lastanchor + 1,column);
                     } else {
-                        // case précédente dans la ligne est vide
+                        // case prÃ©cÃ©dente dans la ligne est vide
                         // on met le motpartiel
                         Round_setcolumn(partialword,column);
                         // on cherche une partie gauche 
@@ -314,12 +314,12 @@ Board_search_aux(Dictionary dic,
                             lastanchor - 1);
                     }
                 }
-                // stocke dernière case vide et adjacente occupée
+                // stocke derniÃ¨re case vide et adjacente occupÃ©e
                 lastanchor = column;
             }
         }
     }
-	// on détruit le round
+	// on dÃ©truit le round
     Round_destroy(partialword);
 }
 

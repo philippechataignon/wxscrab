@@ -361,16 +361,16 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
 void
 help()
 {
-    puts ("Génération de parties Scrabble - Philippe CHATAIGNON") ;
-    puts ("d'après Eliot - Antoine FRABOULET - sous license GPL") ;
+    puts ("GÃ©nÃ©ration de parties Scrabble - Philippe CHATAIGNON") ;
+    puts ("d'aprÃ¨s Eliot - Antoine FRABOULET - sous license GPL") ;
     puts ("");
-    puts ("Utilisation : gen_part [-d dictionnaire] [-n numéro] [-s seed] [-v] [-q] [-h]") ; 
-    puts ("        -d : fichier dawg contenant le dictionnaire (par défaut : ../dic/ods5.dawg)");
-    puts ("        -n : numéro de la partie à générer ; par défaut, utilise time(0)");
-    puts ("        -s : seed, valeur de la variante  ; par défaut, 47482");
+    puts ("Utilisation : gen_part [-d dictionnaire] [-n numÃ©ro] [-s seed] [-v] [-q] [-h]") ; 
+    puts ("        -d : fichier dawg contenant le dictionnaire (par dÃ©faut : ../dic/ods5.dawg)");
+    puts ("        -n : numÃ©ro de la partie Ã  gÃ©nÃ©rer ; par dÃ©faut, utilise time(0)");
+    puts ("        -s : seed, valeur de la variante  ; par dÃ©faut, 47482");
     puts ("        -q : n'imprime que les statistiques de la partie");
-    puts ("        -t : n'imprime pas un - devant les tirages rejetés");
-    puts ("        -e : nombre d'essais de tirages si absence de solution (par défaut : 1000) ; -e0 pour supprimer la fonctionnalité");    
+    puts ("        -t : n'imprime pas un - devant les tirages rejetÃ©s");
+    puts ("        -e : nombre d'essais de tirages si absence de solution (par dÃ©faut : 1000) ; -e0 pour supprimer la fonctionnalitÃ©");    
     puts ("        -h : affiche cette aide");
     puts ("");
 }
@@ -426,7 +426,7 @@ main(int argc, char *argv[])
                     fprintf (stderr, "Option inconnue `-%c'.\n", optopt);
                 } else {
                     help() ;
-                    fprintf (stderr, "Caractère non reconnu dans les options `\\x%x'.\n",optopt);
+                    fprintf (stderr, "CaractÃ¨re non reconnu dans les options `\\x%x'.\n",optopt);
                 }
                 return 1;
             default:
@@ -436,7 +436,7 @@ main(int argc, char *argv[])
 
     if (! nomdic) {
         help() ;
-        puts("Spécifier un dictionnaire avec l'option -d (ex : -d ods4.dawg)") ;
+        puts("SpÃ©cifier un dictionnaire avec l'option -d (ex : -d ods4.dawg)") ;
         exit(11);
     }
 
@@ -446,7 +446,7 @@ main(int argc, char *argv[])
             break;
         case 1:
             help();
-            printf("chargement: problème d'ouverture de %s\n",nomdic) ;
+            printf("chargement: problÃ¨me d'ouverture de %s\n",nomdic) ;
             exit(1);
             break;
         case 2:
@@ -456,22 +456,22 @@ main(int argc, char *argv[])
             break;
         case 3:
             help();
-            printf("chargement: problème 3 d'allocation mémoire\n");
+            printf("chargement: problÃ¨me 3 d'allocation mÃ©moire\n");
             exit(3);
             break;
         case 4:
             help();
-            printf("chargement: problème 4 d'allocation mémoire\n");
+            printf("chargement: problÃ¨me 4 d'allocation mÃ©moire\n");
             exit(4);
             break;
         case 5:
             help();
-            printf("chargement: problème de lecture des arcs du dictionnaire\n");
+            printf("chargement: problÃ¨me de lecture des arcs du dictionnaire\n");
             exit(5);
             break;
         default:
             help();
-            printf("chargement: problème non-repertorié\n");
+            printf("chargement: problÃ¨me non-repertoriÃ©\n");
             exit(6);
             break;
     }

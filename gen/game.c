@@ -366,7 +366,7 @@ Game_setrack_random_aux(Game game, Playedrack p, set_rack_mode mode, unsigned sh
             Playedrack_addold(p,l);
         }
     } else {
-        /* on complète un rack */
+        /* on complÃ¨te un rack */
         /* we flush the "new" part of the rack */
         Playedrack_resetnew(p);
             
