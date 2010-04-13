@@ -25,8 +25,7 @@ class frame(wx.Frame):
         fill = self.app.skin.get("fill")
 
         #Creation et dessin du timer
-        timer_box  = wx.StaticBox(self.panel,-1, "Temps")
-        timer_sizer = wx.StaticBoxSizer(timer_box)
+        timer_sizer  = self.cree_box_sizer("Temps")
         self.timer = wx.StaticText(self.panel, -1, str(utils.convert_time(0)))
         font = wx.Font(self.app.skin.get("size_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.timer.SetFont(font)
@@ -35,29 +34,25 @@ class frame(wx.Frame):
         timer_sizer.Add((fill,0),0)
 
         #Creation et dessin du tirage
-        tirage_box = wx.StaticBox(self.panel,-1, "Tirage")
-        tirage_sizer = wx.StaticBoxSizer(tirage_box)
+        tirage_sizer = self.cree_box_sizer("Tirage")
         tirage_sizer.Add((fill,0),0)
         self.tirage = tirage.tirage(self.panel, self.app)
         tirage_sizer.Add(self.tirage, 0, wx.ALL|wx.EXPAND, fill)
         tirage_sizer.Add((fill,0),0)
 
         #Creation et dessin de la grille
-        grille_box = wx.StaticBox(self.panel,-1, "Grille")
-        grille_sizer = wx.StaticBoxSizer(grille_box)
+        grille_sizer = self.cree_box_sizer("Grille")
         self.grille = grille.grille(self.panel, self.app)
         grille_sizer.Add(self.grille, 0, wx.ALL|wx.EXPAND, 0)
 
         #Creation des items dans la box messages
-        msgs_box   = wx.StaticBox(self.panel,-1, "Messages")
-        msgs_sizer = wx.StaticBoxSizer(msgs_box, wx.VERTICAL)
+        msgs_sizer = self.cree_box_sizer("Messages")
         self.msgs = wx.TextCtrl(self.panel, -1, "", size=(app.skin.get("chat_size"), -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
         self.msgs.SetDefaultStyle(wx.TextAttr(font=wx.Font(self.app.skin.get("size_def"), wx.SWISS, wx.NORMAL, wx.NORMAL)))
         msgs_sizer.Add(self.msgs, 1, wx.ALL|wx.EXPAND, fill)
 
         #Creation box proposition
-        props_box  = wx.StaticBox(self.panel,-1, "Propositions")
-        props_sizer = wx.StaticBoxSizer(props_box, wx.HORIZONTAL)
+        props_sizer = self.cree_box_sizer("Propositions", flag = wx.HORIZONTAL)
         self.props = wx.ComboBox(self.panel, -1, style=wx.CB_READONLY) 
         props_sizer.Add(self.props, 1, wx.ALL, fill) 
         self.buttonpose = wx.Button(self.panel, 11,"Poser le mot")
@@ -68,8 +63,7 @@ class frame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
 
         #Creation box score
-        score_box  = wx.StaticBox(self.panel,-1, "Score")
-        score_sizer = wx.StaticBoxSizer(score_box, wx.HORIZONTAL)
+        score_sizer = self.cree_box_sizer("Score", flag = wx.HORIZONTAL)
         self.score = wx.StaticText(self.panel, -1, "")
         font = wx.Font(self.app.skin.get("size_score"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.score.SetFont(font)
@@ -79,8 +73,7 @@ class frame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.show_score, buttscore)
 
         #Creation du chat
-        chat_box = wx.StaticBox(self.panel, -1, "Chat")
-        chat_sizer = wx.StaticBoxSizer(chat_box, wx.HORIZONTAL)
+        chat_sizer = self.cree_box_sizer("Chat", flag = wx.HORIZONTAL)
         self.txtchatin = wx.TextCtrl(self.panel, -1, "")
         chat_sizer.Add(self.txtchatin,1, wx.ALL, fill)
         self.buttonchat = wx.Button(self.panel, fill, "Envoi msg")
@@ -88,13 +81,11 @@ class frame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.chat_click, self.buttonchat)
 
         # cadres boutons 
-        bouton_box = wx.StaticBox(self.panel,-1, "Commandes")
-        bouton_sizer = wx.StaticBoxSizer(bouton_box, wx.HORIZONTAL)
+        bouton_sizer = self.cree_box_sizer("Commandes")
         ligne_sizer = wx.GridSizer(cols=5, hgap=fill, vgap=fill)
         boutons = ( ("Tirage Alpha", self.button_alpha),
                     ("Tirage Random", self.button_random),
                     ("Restart", self.button_restart),
-                #    ("Chrono", self.button_chrono),
                     ("Next", self.button_next),
                     ("Pose précédent", self.button_pose_last),
                 )
@@ -102,7 +93,6 @@ class frame(wx.Frame):
             bouton = wx.Button(self.panel, label=label)
             ligne_sizer.Add(bouton, wx.EXPAND)
             self.Bind(wx.EVT_BUTTON, handler, bouton)
-            #bouton_sizer.Add((fill,0),0)
         bouton_sizer.Add(ligne_sizer, wx.EXPAND)
 
         #Barre de menu
@@ -180,16 +170,22 @@ class frame(wx.Frame):
         self.panel.SetSizer(sizer) 
         sizer.Fit(self)
 
+# Utilitaires
+    def cree_box_sizer(self, titre, flag = wx.VERTICAL) :
+        box = wx.StaticBox(self.panel, label = titre)
+        sizer = wx.StaticBoxSizer(box, flag)
+        return sizer
+
 # Gestionnaires evenement
     def button_restart(self, e) :
+        m = msg.msg("chat", "Demande une nouvelle partie")
+        self.app.envoi(m)
         m = msg.msg("restart")
         self.app.envoi(m)
 
-    def button_chrono(self, e) :
-        m = msg.msg("chrono")
-        self.app.envoi(m)
-
     def button_next(self, e) :
+        m = msg.msg("chat", "Demande à passer au tour suivant")
+        self.app.envoi(m)
         m = msg.msg("next")
         self.app.envoi(m)
 
