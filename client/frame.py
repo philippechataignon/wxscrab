@@ -80,8 +80,8 @@ class frame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.chat_click, self.buttonchat)
 
         # cadres boutons 
-        bouton_sizer = self.cree_box_sizer("Commandes")
-        ligne_sizer = wx.GridSizer(cols=5, hgap=fill, vgap=fill)
+        bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
+        #ligne_sizer = wx.GridSizer(cols=5, hgap=fill, vgap=fill)
         boutons = ( ("Tirage Alpha", self.button_alpha),
                     ("Tirage Random", self.button_random),
                     ("Restart", self.button_restart),
@@ -89,10 +89,10 @@ class frame(wx.Frame):
                     ("Pose précédent", self.button_pose_last),
                 )
         for label, handler in boutons :
-            bouton = wx.Button(self.panel, label=label)
-            ligne_sizer.Add(bouton, wx.EXPAND)
+            bouton = wx.Button(self.panel, label=label, size=(30,-1))
+            bouton_sizer.Add(bouton, wx.EXPAND)
             self.Bind(wx.EVT_BUTTON, handler, bouton)
-        bouton_sizer.Add(ligne_sizer, wx.EXPAND)
+        #bouton_sizer.Add(ligne_sizer, wx.EXPAND)
 
         #Barre de menu
         if  self.app.skin.get("menu") :
@@ -115,9 +115,6 @@ class frame(wx.Frame):
             for i, t in enumerate(self.app.settings.liste_skin):
                 menuskin.Append(400+i, t, "Taille de la grille", wx.ITEM_RADIO)
                 self.Bind(wx.EVT_MENU, self.menu_skin, id=400+i)
-            #pset = int(self.app.settings.get("skin"))
-            # menupol.Check(400+pset, True)
-            #self.set_police_msgs(pset)
 
             menu2 = wx.Menu()
             menu2.AppendMenu(299,"Taille police", menupol)
