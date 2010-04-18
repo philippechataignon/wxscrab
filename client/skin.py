@@ -31,18 +31,25 @@ class skin :
         dir_images='images'
         dir = os.path.join(dir_images, self.param['rep_images'])
         size = self.param['size']
-        self.img = {
-            'null':wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_null.png") ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'ld'  :wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_DL.png")   ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'lt'  :wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_TL.png")   ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'md'  :wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_DW.png")   ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'mt'  :wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_TW.png")   ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'temp':wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_blanc.png"),wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'norm':wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile.png")      ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'vide':wx.BitmapFromImage(wx.Image(os.path.join(dir,"tile_vide.png") ,wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'fl_b':wx.BitmapFromImage(wx.Image(os.path.join(dir,"fleche_bas.png"),wx.BITMAP_TYPE_PNG).Scale(size,size)),
-            'fl_r':wx.BitmapFromImage(wx.Image(os.path.join(dir,"fleche_bas.png"),wx.BITMAP_TYPE_PNG).Scale(size,size).Rotate90(False))
+        nom_img = {
+            'null':"tile_null.png", 
+            'ld'  :"tile_DL.png",   
+            'lt'  :"tile_TL.png",   
+            'md'  :"tile_DW.png",   
+            'mt'  :"tile_TW.png",   
+            'temp':"tile_blanc.png",
+            'norm':"tile.png",      
+            'vide':"tile_vide.png", 
+            'fl_b':"fleche_bas.png",
+            'fl_r':"fleche_bas.png",
         }
+        self.img = {}
+        for key, nom in nom_img.items() :
+            img = wx.Image(os.path.join(dir,nom) ,wx.BITMAP_TYPE_PNG).Scale(size,size)
+            if key == 'fl_r' :
+                self.img[key] = wx.BitmapFromImage(img.Rotate90(False))
+            else :
+                self.img[key] = wx.BitmapFromImage(img)
         self.font_norm = wx.Font(self.get('fontsize'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
         self.font_point = wx.Font(self.get('pointfontsize'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
 

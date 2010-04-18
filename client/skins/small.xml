@@ -5,16 +5,14 @@
     <size>30</size>
     <fontsize>16</fontsize>
     <pointfontsize>7</pointfontsize>
-    <size_chrono>16</size_chrono>
-    <size_def>12</size_def>
-    <size_score>18</size_score>
-    <offset_coord>27</offset_coord>
-    <frame_h>900</frame_h>
-    <frame_v>700</frame_v>
-    <chat_size>350</chat_size>
-    <fill>6</fill>
+    <size_chrono>20</size_chrono>
+    <size_def>10</size_def>
+    <size_score>16</size_score>
+    <offset_coord>22</offset_coord>
+    <chat_size>300</chat_size>
+    <fill>10</fill>
     <status>0</status>
-    <menu>1</menu>
+    <menu>0</menu>
     <layout>alt</layout>
     <fontcol name="tempjoker">WHITE</fontcol>
     <fontcol name="tempnorm">BLUE</fontcol>
