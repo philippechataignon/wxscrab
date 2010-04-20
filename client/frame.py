@@ -81,7 +81,6 @@ class frame(wx.Frame):
 
         # cadres boutons 
         bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
-        #ligne_sizer = wx.GridSizer(cols=5, hgap=fill, vgap=fill)
         boutons = ( ("Tirage Alpha", self.button_alpha),
                     ("Tirage Random", self.button_random),
                     ("Restart", self.button_restart),
@@ -92,7 +91,6 @@ class frame(wx.Frame):
             bouton = wx.Button(self.panel, label=label, size=(30,-1))
             bouton_sizer.Add(bouton, wx.EXPAND)
             self.Bind(wx.EVT_BUTTON, handler, bouton)
-        #bouton_sizer.Add(ligne_sizer, wx.EXPAND)
 
         #Barre de menu
         if  self.app.skin.get("menu") :

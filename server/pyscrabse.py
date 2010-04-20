@@ -189,7 +189,6 @@ class main(threading.Thread):
                 self.votants[categ].append(channel)
             self.lock_vote.release()
             self.attention.set()
-            print categ
         else :
             print "Erreur categ vote"
 
