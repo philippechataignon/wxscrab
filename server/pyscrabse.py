@@ -16,10 +16,14 @@ import logger
 import msg
 import grille
 import net
+import time
 
 #Reglage encoding
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+class stop(BaseException) :
+    pass
 
 class main(threading.Thread):
     def __init__(self, options) :
@@ -36,6 +40,7 @@ class main(threading.Thread):
         self.votants = {}
         self.lock_vote = threading.Lock()
         self.init_vote()
+        self.stop = False
 
     def run(self, f_attente=True) :
         loop = True
@@ -59,12 +64,18 @@ class main(threading.Thread):
                     break
             self.info("Fin de la partie")
             self.log.fin_partie()
+            if self.stop :
+                break
             loop = (self.options.game is None)
 
     def attente(self, tps) :
         self.attention.wait(tps)
         if self.attention.is_set() :
             self.attention.clear()
+            if self.stop :
+                print "Thread stop"
+                raise stop
+                return True
             if self.votes['restart'] == len(self.jo) :
                 self.lock_vote.acquire()
                 self.votes['restart'] = 0
@@ -220,10 +231,13 @@ if __name__ == '__main__' :
     print options
     g = main(options)
     g.start()
-    try :
-        # asyncore.loop(timeout=1,count=1)
-        asyncore.loop()
-    except KeyboardInterrupt:
-        g.attention.set()
-        g.stop.set()
-        print "KeyboardInterrupt"
+    while not g.stop :
+        try :
+            g.net.lock.acquire()
+            asyncore.poll()
+            g.net.lock.release()
+            time.sleep(0.2)
+        except KeyboardInterrupt:
+            g.attention.set()
+            g.stop = True
+            print "KeyboardInterrupt"

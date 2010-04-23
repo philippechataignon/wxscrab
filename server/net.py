@@ -15,6 +15,7 @@ class net (asyncore.dispatcher):
         self.bind(('', port))
         self.listen(5)
         self.actifs = []
+        self.lock = threading.RLock()
 
     def handle_accept(self) :
         sock, addr = self.accept()
@@ -33,26 +34,21 @@ class channel(asynchat.async_chat) :
         self.server = server
         self.buffer = []
         self.set_terminator(channel.term)
-        self.lock = threading.Lock()
         self.envoi_actif = True
         
     def collect_incoming_data(self, data):
-        self.lock.acquire()
         self.buffer.append(data)
-        self.lock.release()
 
     def found_terminator(self) :
-        self.lock.acquire()
         txt = "".join(self.buffer)
         self.buffer = []
-        self.lock.release()
         mm = pickle.loads(txt)
         if self.server.parent.options.verbose == True :
             print "<- %s" % mm.cmd
         self.server.parent.traite(self, mm)
         
-#    def handle_error(self) :
-#        print "handle_error"
+    def handle_error(self) :
+        print "handle_error"
 
     def handle_close(self) :
         self.server.actifs.remove(self)
@@ -61,8 +57,8 @@ class channel(asynchat.async_chat) :
         self.close()
 
     def envoi(self, mm):
-        self.lock.acquire()
+        self.server.lock.acquire()
         if self.server.parent.options.verbose == True :
             print "-> %s" % mm.cmd
         self.push(pickle.dumps(mm) + channel.term)
-        self.lock.release()
+        self.server.lock.release()
