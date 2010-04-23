@@ -22,7 +22,13 @@ import time
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-class stop(BaseException) :
+class Stop(Exception) :
+    pass
+
+class Restart(Exception) :
+    pass
+
+class Next(Exception) :
     pass
 
 class main(threading.Thread):
@@ -43,51 +49,50 @@ class main(threading.Thread):
         self.stop = False
 
     def run(self, f_attente=True) :
+        self.boucle_game()
+
+    def boucle_game(self, f_attente=True) :
         loop = True
         while loop :
-            self.pa = partie.partie(self.options)
-            self.log = logger.logger(self.pa.get_nom_partie())
-            self.gr = grille.grille()
-            self.jo.score_raz()
-            if f_attente :
-                self.info("Prochaine partie dans %d secondes" % self.options.attente)
-                if self.attente(self.options.attente) :
-                    continue
-            f_attente = True
-            self.net.envoi_all(msg.msg("new"))
-            for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
-                if self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour) :
-                    f_attente = False
-                    break
-                if self.attente(self.options.inter) :
-                    f_attente = False
-                    break
-            self.info("Fin de la partie")
-            self.log.fin_partie()
-            if self.stop :
-                break
-            loop = (self.options.game is None)
+            try :
+                self.pa = partie.partie(self.options)
+                self.log = logger.logger(self.pa.get_nom_partie())
+                self.gr = grille.grille()
+                self.jo.score_raz()
+                if f_attente :
+                    self.info("Prochaine partie dans %d secondes" % self.options.attente)
+                    self.attente(self.options.attente)
+                self.net.envoi_all(msg.msg("new"))
+                for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
+                    self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour)
+                    self.attente(self.options.inter)
+                self.info("Fin de la partie")
+                self.log.fin_partie()
+            except Restart :
+                f_attente = False
+                loop = True
+            except Next :
+                pass
+            else :
+                f_attente = True
+                loop = (self.options.game is None)
 
     def attente(self, tps) :
         self.attention.wait(tps)
         if self.attention.is_set() :
             self.attention.clear()
             if self.stop :
-                print "Thread stop"
-                raise stop
-                return True
+                raise Stop
             if self.votes['restart'] == len(self.jo) :
                 self.lock_vote.acquire()
                 self.votes['restart'] = 0
                 self.lock_vote.release()
-                return True
+                raise Restart
             if self.votes['next'] == len(self.jo) and self.tour_on :
                 self.lock_vote.acquire()
                 self.votes['next'] = 0
-                self.chrono = 1
                 self.lock_vote.release()
-                return False
-        return False
+                raise Next
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour) :
         self.jo.score_tour_zero()
@@ -101,8 +106,10 @@ class main(threading.Thread):
         self.init_vote()
         while self.chrono >= 0 :
             self.net.envoi_all(msg.msg("chrono", self.chrono))
-            if self.attente(1) :
-                return True
+            try :
+                self.attente(1)
+            except Next :
+                self.chrono = 1
             self.chrono -= 1
         self.tour_on = False
         self.net.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))

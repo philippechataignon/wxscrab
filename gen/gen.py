@@ -20,7 +20,6 @@ class Partie(threading.Thread) :
         self.score = int(m.group(1))
         sem.release()
 
-#nb_partie = int(sys.argv[1]) if len(sys.argv) <= 1 else 100
 n_arg = len(sys.argv)
 if n_arg <= 1 :
     nb_part = 100
