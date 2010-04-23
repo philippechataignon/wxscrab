@@ -11,7 +11,7 @@
     <offset_coord>22</offset_coord>
     <chat_size>300</chat_size>
     <fill>10</fill>
-    <status>0</status>
+    <status>1</status>
     <menu>0</menu>
     <layout>alt</layout>
     <fontcol name="tempjoker">WHITE</fontcol>

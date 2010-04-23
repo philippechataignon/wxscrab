@@ -40,10 +40,7 @@ class App(wx.App):
         """
         self.skin = skin.skin(self.settings.get("skin"))
         self.nick = nick
-        if self.settings.get("skin") == "tiny" :
-            self.frame = frame.frame(None, self, tiny = True)
-        else :
-            self.frame = frame.frame(None, self, tiny = False)
+        self.frame = frame.frame(None, self)
         self.frame.Show()
         self.net  = net.net(sock, self)
         self.son = son.son()

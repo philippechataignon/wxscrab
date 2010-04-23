@@ -34,7 +34,6 @@ class channel(asynchat.async_chat) :
         self.server = server
         self.buffer = []
         self.set_terminator(channel.term)
-        self.envoi_actif = True
         
     def collect_incoming_data(self, data):
         self.buffer.append(data)

@@ -13,12 +13,11 @@ import msg
 import coord
 
 class frame(wx.Frame):
-    def __init__(self, parent, app, tiny = False) :
+    def __init__(self, parent, app) :
         wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick)
         self.SetIcon(wx.Icon(app.skin.get("icone"), wx.BITMAP_TYPE_ICO))
         self.panel = wx.Panel(self)
         self.app = app
-        self.tiny = tiny
         self.max_props = 8
         self.tour = 0
         fill = self.app.skin.get("fill")
@@ -274,11 +273,11 @@ class frame(wx.Frame):
         self.msgs.SetValue('')
 
     def set_status_text(self, text) :
-        if not self.tiny :
+        if self.app.skin.get("status") :
             self.SetStatusText(text)
 
     def upd_status(self) :
-        if not self.tiny :
+        if self.app.skin.get("status") :
             self.st.SetStatusText(str(self.app.reliquat), 1)
 
     def home_props(self) :
