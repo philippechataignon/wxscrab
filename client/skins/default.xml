@@ -2,7 +2,7 @@
 <skin>
     <rep_images>default</rep_images>
     <icone>images/wxscrab.ico</icone>
-    <size>36</size>
+    <size>34</size>
     <fontsize>20</fontsize>
     <pointfontsize>7</pointfontsize>
     <size_chrono>24</size_chrono>

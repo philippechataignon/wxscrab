@@ -79,7 +79,7 @@ class main(threading.Thread):
 
     def attente(self, tps) :
         self.attention.wait(tps)
-        if self.attention.is_set() :
+        if self.attention.isSet() :
             self.attention.clear()
             if self.stop :
                 raise Stop
