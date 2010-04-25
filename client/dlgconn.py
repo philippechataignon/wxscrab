@@ -12,6 +12,9 @@ import socket
 import msg
 import cPickle as pickle
 
+class TooMuchTry(Exception) :
+    pass
+
 class dlgconnframe(wx.Frame):
     def __init__(self, parent, app, complet=False) :
         wx.Frame.__init__(self, parent, -1, "wxScrab Connexion", pos=(350,250))
@@ -108,26 +111,36 @@ class dlgconnframe(wx.Frame):
             try :
                 sock.connect((host,port))
                 # numéro de protocole = 1
-                m = msg.msg("joueur", (1, email), nick)
+                proto = 1
+                m = msg.msg("joueur", (proto, email), nick)
                 sock.send(pickle.dumps(m) + net.net.term)
-                recv  = sock.recv(1024)
-                ret = pickle.loads(recv)
-                # print "Ret %s %s %s" % (ret.cmd, ret.param, ret.id)
-                if ret.cmd == "connect" :
-                    if ret.param[0] == 0 :
-                        sock.close()
-                        utils.errordlg(ret.param[1],"Erreur")
+                ok = False
+                essai = 0
+                while not ok  :
+                    recv  = sock.recv(4096)
+                    ret = pickle.loads(recv)
+                    # print "Ret %s %s %s" % (ret.cmd, ret.param, ret.id)
+                    if ret.cmd == "connect" :
+                        if ret.param[0] == 0 :
+                            ok = True
+                            sock.close()
+                            utils.errordlg(ret.param[1],"Erreur : nom existant")
+                        else :
+                            self.settings.write()
+                            sock.setblocking(0)
+                            self.Close()
+                            self.app.cree_all(nick, sock, ret.param[0])
+                            ok = True
                     else :
-                        self.settings.write()
-                        sock.setblocking(0)
-                        self.Close()
-                        self.app.cree_all(nick, sock, ret.param[0])
-                else :
-                    sock.close()
-                    utils.errordlg("Erreur retour connexion","Pickle error")
+                        essai += 1
+                        if essai > 10 :
+                            raise TooMuchTry
             except socket.error, (errno, errmsg) :
                 sock.close()
                 utils.errordlg(errmsg, "Erreur de connexion")
+            except TooMuchTry :
+                sock.close()
+                utils.errordlg("Limite essais atteinte", "Erreur : connect non reçu")
  
     def skin_click(self, e) :
         p = self.box_skin.GetSelection()
