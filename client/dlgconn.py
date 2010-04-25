@@ -72,18 +72,17 @@ class dlgconnframe(wx.Frame):
         conn.Add(space)
         bok = wx.Button(panel,-1, "OK")
         bok.SetDefault()
-        self.Bind(wx.EVT_BUTTON, self.conn, bok)
+        self.Bind(wx.EVT_BUTTON, self.click_button_ok, bok)
         conn.Add(bok,0,b|wx.ALIGN_RIGHT)
 
         border = wx.BoxSizer(wx.VERTICAL)
         border.Add(conn,0,wx.ALL,10)
         panel.SetSizerAndFit(border)
         self.SetSize(self.GetBestSize())
-
         self.Show()
 
-    def conn(self, evt) :
-        nick = str(self.txtnom.GetValue()).strip()
+    def click_button_ok(self, evt) :
+        self.nick = str(self.txtnom.GetValue()).strip()
         host = str(self.txtaddr.GetValue()).strip()
         if self.check_complet.GetValue() :
             email = str(self.txtemail.GetValue()).strip()
@@ -98,39 +97,40 @@ class dlgconnframe(wx.Frame):
 
         if porterror :
             pass
-        elif nick == "" :
+        elif self.nick == "" :
             utils.errordlg("Vous n'avez pas reglé de pseudo", "Erreur")
-        elif len(nick) > 20 :
+        elif len(self.nick) > 20 :
             utils.errordlg("Pas plus de 20 caractères pour le pseudo", "Erreur")
         else :
             self.settings.set("port",str(port))
-            self.settings.set("pseudo",nick)
+            self.settings.set("pseudo",self.nick)
             self.settings.set("email",email)
             self.settings.insert_list("servers", host)
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try :
-                sock.connect((host,port))
+                self.sock.connect((host,port))
                 # numéro de protocole = 1
                 proto = 1
-                m = msg.msg("joueur", (proto, email), nick)
-                sock.send(pickle.dumps(m) + net.net.term)
+                m = msg.msg("joueur", (proto, email), self.nick)
+                self.sock.send(pickle.dumps(m) + net.net.term)
                 ok = False
                 essai = 0
                 while not ok  :
-                    recv  = sock.recv(4096)
+                    recv  = self.sock.recv(4096)
                     ret = pickle.loads(recv)
                     # print "Ret %s %s %s" % (ret.cmd, ret.param, ret.id)
                     if ret.cmd == "connect" :
                         if ret.param[0] == 0 :
                             ok = True
-                            sock.close()
+                            self.sock.close()
                             utils.errordlg(ret.param[1],"Erreur : nom existant")
                         else :
                             self.settings.write()
-                            sock.setblocking(0)
+                            self.sock.setblocking(0)
+                            self.ret =  ret.param[0]
+                            self.app.cree_all(self.nick, self.sock, self.ret)
                             self.Close()
-                            self.app.cree_all(nick, sock, ret.param[0])
-                            ok = True
+                            return
                     else :
                         essai += 1
                         if essai > 10 :
