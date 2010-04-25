@@ -14,7 +14,7 @@ import coord
 
 class frame(wx.Frame):
     def __init__(self, parent, app) :
-        wx.Frame.__init__(self, parent, -1, "wxScrab - " + app.nick)
+        wx.Frame.__init__(self, parent, title = "wxScrab - " + app.nick)
         self.SetIcon(wx.Icon(app.skin.get("icone"), wx.BITMAP_TYPE_ICO))
         self.panel = wx.Panel(self)
         self.app = app
@@ -125,11 +125,13 @@ class frame(wx.Frame):
 
             self.SetMenuBar(menubar)
 
+        #Barre de status
         if  self.app.skin.get("status") :
-            #Barre de status
             self.st = self.CreateStatusBar()
-            self.st.SetFieldsCount(2)
-            self.st.SetStatusWidths([-1, -5])
+            self.st.SetFieldsCount(4)
+            self.st.SetStatusWidths([30, -1, 80, 80])
+            self.set_status_next(0)
+            self.set_status_restart(0)
 
         #Sizers
         sizer1 = wx.BoxSizer(wx.HORIZONTAL)
@@ -171,14 +173,10 @@ class frame(wx.Frame):
 
 # Gestionnaires evenement
     def button_restart(self, e) :
-        m = msg.msg("chat", "Demande une nouvelle partie")
-        self.app.envoi(m)
         m = msg.msg("restart")
         self.app.envoi(m)
 
     def button_next(self, e) :
-        m = msg.msg("chat", "Demande à passer au tour suivant")
-        self.app.envoi(m)
         m = msg.msg("next")
         self.app.envoi(m)
 
@@ -275,6 +273,14 @@ class frame(wx.Frame):
     def set_status_text(self, text) :
         if self.app.skin.get("status") :
             self.SetStatusText(text)
+
+    def set_status_next(self, num) :
+        if self.app.skin.get("status") :
+            self.SetStatusText("Next : %d" % num, 3)
+
+    def set_status_restart(self, num) :
+        if self.app.skin.get("status") :
+            self.SetStatusText("Restart : %d" % num, 2)
 
     def upd_status(self) :
         if self.app.skin.get("status") :

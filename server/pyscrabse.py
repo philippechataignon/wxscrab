@@ -82,14 +82,10 @@ class main(threading.Thread):
             if self.stop :
                 raise Stop
             if self.votes['restart'] == len(self.jo) :
-                self.lock_vote.acquire()
-                self.votes['restart'] = 0
-                self.lock_vote.release()
+                self.raz_vote('restart')
                 raise Restart
             if self.votes['next'] == len(self.jo) and self.tour_on :
-                self.lock_vote.acquire()
-                self.votes['next'] = 0
-                self.lock_vote.release()
+                self.raz_vote('next')
                 raise Next
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour) :
@@ -203,17 +199,27 @@ class main(threading.Thread):
             if channel not in self.votants[categ] :
                 self.votes[categ] += 1
                 self.votants[categ].append(channel)
+                m = msg.msg("ok%s" % categ, self.votes[categ])
+                self.net.envoi_all(m)
             self.lock_vote.release()
             self.attention.set()
         else :
             print "Erreur categ vote"
 
     def init_vote(self) :
-        self.lock_vote.acquire()
         for categ in self.categ_vote :
+            self.raz_vote(categ)
+
+    def raz_vote(self, categ) :
+        if categ in self.categ_vote :
+            self.lock_vote.acquire()
             self.votes[categ] = 0
             self.votants[categ] = []
-        self.lock_vote.release()
+            m = msg.msg("ok%s" % categ, self.votes[categ])
+            self.lock_vote.release()
+            self.net.envoi_all(m)
+        else :
+            print "Erreur categ vote"
 
 if __name__ == '__main__' :
     usage = "usage: %prog [options] [fichier_partie]"

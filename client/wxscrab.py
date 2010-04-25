@@ -159,6 +159,10 @@ class App(wx.App):
            self.frame.score.SetLabel("%s/%s - %5.1f%%" % (total, top, prc))
            for m in  mess :
                self.info_serv("Mot non existant : %s" % m, wx.RED)
+        elif m.cmd == "oknext" :
+            self.frame.set_status_next(int(m.param))
+        elif m.cmd == "okrestart" :
+            self.frame.set_status_restart(int(m.param))
 
 ## Gestionnaires événements
 
@@ -176,16 +180,16 @@ class App(wx.App):
             case.coord.set_hor()
             g.entry = 0 
             g.coord_ini = case.coord
-            f.set_status_text( "Case selectionnée : %s" % case.coord ) 
+            f.set_status_text( "%s" % case.coord ) 
         elif case.fleche == coord.HOR :
             case.fleche = coord.VER
             case.coord.set_ver()
             g.coord_ini = case.coord
-            f.set_status_text( "Case selectionnée : %s" % case.coord ) 
+            f.set_status_text( "%s" % case.coord ) 
         else  :
             case.fleche = coord.NUL
             g.coord_ini = coord.coord()
-            f.set_status_text( "wxScrab build 329" )
+            f.set_status_text( "" )
         case.redraw()
         g.SetFocus()
 
