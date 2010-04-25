@@ -52,10 +52,10 @@ class main(threading.Thread):
         self.boucle_game()
 
     def boucle_game(self, f_attente=True) :
-        loop = True
-        while loop :
+        while True :
             try :
                 self.pa = partie.partie(self.options)
+                self.options.game = None
                 self.log = logger.logger(self.pa.get_nom_partie())
                 self.gr = grille.grille()
                 self.jo.score_raz()
@@ -70,12 +70,10 @@ class main(threading.Thread):
                 self.log.fin_partie()
             except Restart :
                 f_attente = False
-                loop = True
             except Next :
                 pass
             else :
                 f_attente = True
-                loop = (self.options.game is None)
 
     def attente(self, tps) :
         self.attention.wait(tps)

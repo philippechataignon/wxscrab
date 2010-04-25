@@ -117,10 +117,10 @@ class ScoreGrid(wx.grid.Grid):
         self.Refresh()
             
 
-class frame_score(wx.MiniFrame):
+class frame_score(wx.Frame):
     def __init__(self, parent, data) :
         #wx.MiniFrame.__init__(self, parent, -1, "wxScrab scores", style=wx.CLOSE_BOX|wx.SYSTEM_MENU|wx.CAPTION|wx.FRAME_FLOAT_ON_PARENT, pos=parent.GetPosition())
-        wx.MiniFrame.__init__(self, parent, -1, "wxScrab scores", style=wx.CLOSE_BOX|wx.SYSTEM_MENU|wx.CAPTION)
+        wx.Frame.__init__(self, parent, -1, "wxScrab scores", style=wx.CLOSE_BOX|wx.SYSTEM_MENU|wx.CAPTION)
         panel = wx.Panel(self, -1)
         border = wx.BoxSizer(wx.VERTICAL)
         grid = ScoreGrid(panel, data)
