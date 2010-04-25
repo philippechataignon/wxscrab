@@ -238,12 +238,13 @@ if __name__ == '__main__' :
     print options
     g = main(options)
     g.start()
+    delai = 0.1
     while not g.stop :
         try :
             g.net.lock.acquire()
             asyncore.poll()
             g.net.lock.release()
-            time.sleep(0.2)
+            time.sleep(delai)
         except KeyboardInterrupt:
             g.attention.set()
             g.stop = True
