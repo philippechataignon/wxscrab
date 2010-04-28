@@ -136,10 +136,10 @@ class dlgconnframe(wx.Frame):
                         if essai > 10 :
                             raise TooMuchTry
             except socket.error, (errno, errmsg) :
-                sock.close()
+                self.sock.close()
                 utils.errordlg(errmsg, "Erreur de connexion")
             except TooMuchTry :
-                sock.close()
+                self.sock.close()
                 utils.errordlg("Limite essais atteinte", "Erreur : connect non reçu")
  
     def skin_click(self, e) :

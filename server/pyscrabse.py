@@ -40,7 +40,6 @@ class main(threading.Thread):
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
         self.tour_on = False
-        self.attention = threading.Event()
         self.categ_vote = ('restart', 'next')
         self.votes = {}
         self.votants = {}
@@ -76,17 +75,16 @@ class main(threading.Thread):
                 f_attente = True
 
     def attente(self, tps) :
-        self.attention.wait(tps)
-        if self.attention.isSet() :
-            self.attention.clear()
-            if self.stop :
-                raise Stop
+        if self.stop :
+            raise Stop
+        if len(self.jo)>= 1 :
             if self.votes['restart'] == len(self.jo) :
                 self.raz_vote('restart')
                 raise Restart
-            if self.votes['next'] == len(self.jo) and self.tour_on :
+            elif self.votes['next'] == len(self.jo) and self.tour_on :
                 self.raz_vote('next')
                 raise Next
+        time.sleep(tps)
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour) :
         self.jo.score_tour_zero()
@@ -250,6 +248,5 @@ if __name__ == '__main__' :
             g.net.lock.release()
             time.sleep(delai)
         except KeyboardInterrupt:
-            g.attention.set()
             g.stop = True
             print "KeyboardInterrupt"

@@ -56,8 +56,8 @@ class channel(asynchat.async_chat) :
         self.close()
 
     def envoi(self, mm):
-        self.server.lock.acquire()
         if self.server.parent.options.verbose == True :
             print "-> %s" % mm.cmd
+        self.server.lock.acquire()
         self.push(pickle.dumps(mm) + channel.term)
         self.server.lock.release()
