@@ -46,9 +46,6 @@ class channel(asynchat.async_chat) :
             print "<- %s" % mm.cmd
         self.server.parent.traite(self, mm)
         
-    def handle_error(self) :
-        print "handle_error"
-
     def handle_close(self) :
         self.server.actifs.remove(self)
         print "Deconnect %s" % repr(self)

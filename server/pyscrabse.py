@@ -200,9 +200,6 @@ class main(threading.Thread):
                 m = msg.msg("ok%s" % categ, self.votes[categ])
                 self.net.envoi_all(m)
             self.lock_vote.release()
-            self.attention.set()
-        else :
-            print "Erreur categ vote"
 
     def init_vote(self) :
         for categ in self.categ_vote :
@@ -216,8 +213,6 @@ class main(threading.Thread):
             m = msg.msg("ok%s" % categ, self.votes[categ])
             self.lock_vote.release()
             self.net.envoi_all(m)
-        else :
-            print "Erreur categ vote"
 
 if __name__ == '__main__' :
     usage = "usage: %prog [options] [fichier_partie]"
