@@ -62,9 +62,14 @@ class main(threading.Thread):
                     self.info("Prochaine partie dans %d secondes" % self.options.attente)
                     self.attente(self.options.attente)
                 self.net.envoi_all(msg.msg("new"))
+                tour = 0
                 for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
-                    self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour)
-                    self.attente(self.options.inter)
+                    tour +=1
+                    if self.options.tour is not None and tour < self.options.tour :
+                        self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour, 1)
+                    else :
+                        self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour, self.options.chrono)
+                        self.attente(self.options.inter)
                 self.info("Fin de la partie")
                 self.log.fin_partie()
             except Restart :
@@ -86,7 +91,7 @@ class main(threading.Thread):
                 raise Next
         time.sleep(tps)
 
-    def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour) :
+    def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour, chrono_total) :
         self.jo.score_tour_zero()
         self.info("------------------------")
         self.info("Tour n°%d" % num_tour)
@@ -94,7 +99,7 @@ class main(threading.Thread):
         m = msg.msg("tirage", self.tirage.get_mot())
         self.net.envoi_all(m)
         self.tour_on = True
-        self.chrono = self.options.chrono
+        self.chrono = chrono_total
         self.init_vote()
         while self.chrono >= 0 :
             self.net.envoi_all(msg.msg("chrono", self.chrono))
@@ -217,18 +222,20 @@ class main(threading.Thread):
 if __name__ == '__main__' :
     usage = "usage: %prog [options] [fichier_partie]"
     parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-g", "--game", dest="game",default=None,
+    parser.add_option("-g", "--game", dest="game", default=None,
                       help="indique le fichier partie (defaut partie generee)")
-    parser.add_option("-d", "--dico", dest="dico",default="../dic/ods5.dawg",
+    parser.add_option("-t", "--tour", dest="tour", type="int", default=None,
+                      help="indique tour de debut si -g actif")
+    parser.add_option("-d", "--dico", dest="dico", default="../dic/ods5.dawg",
                       help="indique le fichier dictionnaire (defaut ../dic/ods5.dawg)")
     parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
-                      help="indique le temps par tour en secondes (defaut 2mn)")
-    parser.add_option("-i", "--inter", dest="inter",type="int",default=15,
+                      help="indique le temps par tour en secondes (defaut 120, soit 2mn)")
+    parser.add_option("-i", "--inter", dest="inter", type="int", default=15,
                       help="indique le temps entre chaque tour en secondes (defaut 15s)")
-    parser.add_option("-p", "--port", dest="port",type="int",default=1989,
+    parser.add_option("-p", "--port", dest="port", type="int", default=1989,
                       help="indique le port du serveur (defaut 1989)")
-    parser.add_option("-a", "--attente", dest="attente",type="int",default=15,
-                      help="temps attente pour debut de partie (defaut 15s)")
+    parser.add_option("-a", "--attente", dest="attente", type="int", default=30,
+                      help="temps attente pour debut de partie (defaut 30s)")
     parser.add_option("-v", "--verbose", dest="verbose",  \
             action="store_true", help="sortie des echanges reseau")
     (options, args) = parser.parse_args()
