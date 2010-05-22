@@ -76,6 +76,9 @@ class main(threading.Thread):
                 f_attente = False
             except Next :
                 pass
+            except Stop :
+                print "Sortie thread partie"
+                break
             else :
                 f_attente = True
 
@@ -251,4 +254,4 @@ if __name__ == '__main__' :
             time.sleep(delai)
         except KeyboardInterrupt:
             g.stop = True
-            print "KeyboardInterrupt"
+            print "Sortie main asyncore.loop"
