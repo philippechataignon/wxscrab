@@ -98,6 +98,8 @@ class main(threading.Thread):
         self.jo.score_tour_zero()
         self.info("------------------------")
         self.info("Tour n°%d" % num_tour)
+        if self.options.topping :
+            self.info("Le top fait %d points" % pts_mot_top)
         self.log.debut_tour(num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.net.envoi_all(m)
@@ -239,6 +241,8 @@ if __name__ == '__main__' :
                       help="indique le port du serveur (defaut 1989)")
     parser.add_option("-a", "--attente", dest="attente", type="int", default=30,
                       help="temps attente pour debut de partie (defaut 30s)")
+    parser.add_option("-o", "--topping", dest="topping", action="store_true",
+                      help="indique le score du top au debut du tour")
     parser.add_option("-v", "--verbose", dest="verbose",  \
             action="store_true", help="sortie des echanges reseau")
     (options, args) = parser.parse_args()
