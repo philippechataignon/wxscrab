@@ -142,6 +142,7 @@ class frame(wx.Frame):
         sizer2.Add(score_sizer,  0, wx.EXPAND)
         sizer2.Add(bouton_sizer, 0, wx.EXPAND)
         sizer2.Add(chat_sizer,   0, wx.EXPAND)
+        sizer2.Add( (fill,fill), 0)
 
         sizer = wx.GridBagSizer(hgap=fill, vgap=fill) 
 

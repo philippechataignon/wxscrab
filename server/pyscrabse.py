@@ -35,7 +35,7 @@ class main(threading.Thread):
     def __init__(self, options) :
         threading.Thread.__init__(self)
         self.options = options
-        self.net = net.net(self.options.port, self)
+        self.net = net.net(self)
         self.dic = dico.dico(self.options.dico)
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
@@ -61,7 +61,7 @@ class main(threading.Thread):
                 if f_attente :
                     self.info("Prochaine partie dans %d secondes" % self.options.attente)
                     self.attente(self.options.attente)
-                self.net.envoi_all(msg.msg("new"))
+                self.jo.envoi_all(msg.msg("new"))
                 tour = 0
                 for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
                     tour +=1
@@ -102,19 +102,19 @@ class main(threading.Thread):
             self.info("Le top fait %d points" % pts_mot_top)
         self.log.debut_tour(num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
-        self.net.envoi_all(m)
+        self.jo.envoi_all(m)
         self.tour_on = True
         self.chrono = chrono_total
         self.init_vote()
         while self.chrono >= 0 :
-            self.net.envoi_all(msg.msg("chrono", self.chrono))
+            self.jo.envoi_all(msg.msg("chrono", self.chrono))
             try :
                 self.attente(1)
             except Next :
                 self.chrono = 1
             self.chrono -= 1
         self.tour_on = False
-        self.net.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
+        self.jo.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (coord_mot_top, mot_top, pts_mot_top))
         self.log.fin_tour(coord_mot_top, mot_top, pts_mot_top)
         print("%s - %s" % (coord_mot_top, mot_top))
@@ -122,7 +122,7 @@ class main(threading.Thread):
         message = self.jo.score_fin_tour(pts_mot_top)
         if message != "" :
             self.info(message)
-        self.net.envoi_all(msg.msg("score", self.jo.tableau_score()))
+        self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
         return False
 
     def traite(self, channel, mm) :
@@ -185,8 +185,8 @@ class main(threading.Thread):
         elif c == 'asktour' :
             channel.envoi(msg.msg("tour", self.tour_on))
         elif c == 'chat' :
-            m = msg.msg("info", mm.param, mm.id)
-            self.net.envoi_all(m)
+            m = msg.msg("info", mm.param, nick)
+            self.jo.envoi_all(m)
         elif c == "restart" :
             self.vote("restart", channel)
         elif c == "next" :
@@ -199,7 +199,7 @@ class main(threading.Thread):
 
     def info(self, txt) :
         m = msg.msg("info", txt)
-        self.net.envoi_all(m)
+        self.jo.envoi_all(m)
 
     def vote(self, categ, channel) :
         if categ in self.categ_vote :
@@ -208,7 +208,7 @@ class main(threading.Thread):
                 self.votes[categ] += 1
                 self.votants[categ].append(channel)
                 m = msg.msg("ok%s" % categ, self.votes[categ])
-                self.net.envoi_all(m)
+                self.jo.envoi_all(m)
             self.lock_vote.release()
 
     def init_vote(self) :
@@ -222,7 +222,7 @@ class main(threading.Thread):
             self.votants[categ] = []
             m = msg.msg("ok%s" % categ, self.votes[categ])
             self.lock_vote.release()
-            self.net.envoi_all(m)
+            self.jo.envoi_all(m)
 
 if __name__ == '__main__' :
     usage = "usage: %prog [options] [fichier_partie]"

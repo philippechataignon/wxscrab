@@ -7,26 +7,21 @@ import cPickle as pickle
 import threading
 
 class net (asyncore.dispatcher):
-    def __init__(self, port, parent) :
+    def __init__(self, parent) :
         asyncore.dispatcher.__init__(self)
         self.parent = parent
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr()
-        self.bind(('', port))
+        self.bind(('', self.parent.options.port))
         self.listen(5)
-        self.actifs = []
         self.lock = threading.RLock()
 
     def handle_accept(self) :
         sock, addr = self.accept()
         if sock is not None :
-            self.actifs.append(channel(sock, self))
+            channel(sock, self)
             print "Connexion de %s" % repr(addr)
          
-    def envoi_all(self, mm) :
-        for c in self.actifs :
-            c.envoi(mm) 
-
 class channel(asynchat.async_chat) :
     term = "\r\n\r\n"
     def __init__(self, sock, server) :
@@ -47,7 +42,6 @@ class channel(asynchat.async_chat) :
         self.server.parent.traite(self, mm)
         
     def handle_close(self) :
-        self.server.actifs.remove(self)
         print "Deconnect %s" % repr(self)
         self.server.parent.deconnect(self)
         self.close()

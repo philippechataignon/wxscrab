@@ -38,6 +38,10 @@ class joueurs :
     def liste_actif(self) :
         return [j for j in self.liste.itervalues() if j.connect]
 
+    def envoi_all(self, mm) :
+        for j in self.liste_actif() :
+            j.channel.envoi(mm)
+
     def add_joueur(self, nick, proto, channel) :
         if nick in self.liste :
             j = self.liste[nick] 
