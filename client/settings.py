@@ -23,7 +23,9 @@ class settings :
                     'email' : '',
                     'skin' : 'default',
                     'tirage_nbpos' : '8',
-                    'policeserv' : '12'}
+                    'policeserv' : '12',
+                    'admin':False
+                    }
 
         if os.path.isfile(self.file) :
             dom = xml.dom.minidom.parse(self.file)

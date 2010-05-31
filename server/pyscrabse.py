@@ -40,12 +40,13 @@ class main(threading.Thread):
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
         self.tour_on = False
-        self.categ_vote = ('restart', 'next')
+        self.categ_vote = ('restart', 'next', 'stopchrono')
         self.votes = {}
         self.votants = {}
         self.lock_vote = threading.Lock()
         self.init_vote()
         self.stop = False
+        self.decr_chrono = 1
 
     def run(self, f_attente=True) :
         self.boucle_game()
@@ -93,6 +94,13 @@ class main(threading.Thread):
                 self.raz_vote('next')
                 raise Next
         time.sleep(tps)
+        if self.votes['stopchrono'] > 0 :
+            self.decr_chrono = 1 - self.decr_chrono
+            if self.decr_chrono == 0 :
+                self.info("Le chrono est stoppé")
+            else :
+                self.info("Le chrono est reparti")
+            self.raz_vote('stopchrono')
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour, chrono_total) :
         self.jo.score_tour_zero()
@@ -112,7 +120,7 @@ class main(threading.Thread):
                 self.attente(1)
             except Next :
                 self.chrono = 1
-            self.chrono -= 1
+            self.chrono -= self.decr_chrono
         self.tour_on = False
         self.jo.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (coord_mot_top, mot_top, pts_mot_top))
@@ -191,6 +199,8 @@ class main(threading.Thread):
             self.vote("restart", channel)
         elif c == "next" :
             self.vote("next", channel)
+        elif c == "stopchrono" :
+            self.vote("stopchrono", channel)
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)

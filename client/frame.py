@@ -80,12 +80,14 @@ class frame(wx.Frame):
 
         # cadres boutons 
         bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
-        boutons = ( ("Tirage Alpha", self.button_alpha),
+        boutons = [ ("Tirage Alpha", self.button_alpha),
                     ("Tirage Random", self.button_random),
                     ("Restart", self.button_restart),
                     ("Next", self.button_next),
                     ("Pose précédent", self.button_pose_last),
-                )
+                ]
+        if self.app.settings.get("admin") == "True" :
+            boutons.insert(2, ("Chrono", self.button_chrono))
         for label, handler in boutons :
             bouton = wx.Button(self.panel, label=label, size=(30,-1))
             bouton_sizer.Add(bouton, wx.EXPAND)
@@ -179,6 +181,10 @@ class frame(wx.Frame):
 
     def button_next(self, e) :
         m = msg.msg("next")
+        self.app.envoi(m)
+
+    def button_chrono(self, e) :
+        m = msg.msg("stopchrono")
         self.app.envoi(m)
 
     def button_alpha(self, e) :

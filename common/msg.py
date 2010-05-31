@@ -6,7 +6,7 @@ class msg :
         "askgrille", "asktour", "askscore", "asktirage", "askinfo",
     	"connect", "error", "grille", "chrono", "mot_top", 
         "new", "tour", "score", "tirage", "valid", "info", "infojoueur",
-        "next", "restart", "oknext", "okrestart",
+        "next", "restart", "oknext", "okrestart", "stopchrono", "okstopchrono"
         )
 
     def __init__(self, cmd, param=None, id=None) :

@@ -295,7 +295,7 @@ if __name__ == '__main__' :
     import dico
     import tirage
 
-    d = dico.dico("dic/ods5.dawg")
+    d = dico.dico("../dic/ods5.dawg")
     g = grille()
     t = tirage.tirage("TETESAU")
     c = coord.coord()
