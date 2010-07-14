@@ -24,7 +24,7 @@ class settings :
                     'skin' : 'default',
                     'tirage_nbpos' : '8',
                     'policeserv' : '12',
-                    'admin':False
+                    'admin':'False'
                     }
 
         if os.path.isfile(self.file) :
