@@ -10,13 +10,13 @@ cdicobj = compdic.o hashtable.o
 all : $(exe)
 
 gen_part :  $(obj)
-	$(CC) -o $(.TARGET) $(.ALLSRC)
+	$(CC) -o $@ $(obj)
 
 listdic: $(ldicobj)
-	$(CC) -o $(.TARGET) $(.ALLSRC)
+	$(CC) -o $@ $(ldicobj)
 
 compdic: $(cdicobj)
-	$(CC) -o $(.TARGET) $(.ALLSRC)
+	$(CC) -o $@ $(cdicobj)
 
 bag.o: bag.c tiles.h bag.h
 board.o: board.c dic.h dic_internals.h tiles.h round.h bag.h rack.h \
