@@ -45,4 +45,4 @@ class net(asynchat.async_chat) :
     def envoi_net(self, m):
         if self.debug == True :
             print m.cmd, m.param, m.id
-        self.push(pickle.dumps(m)+net.term)
+        self.push(pickle.dumps(m, 2)+net.term)

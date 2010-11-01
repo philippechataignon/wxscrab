@@ -198,8 +198,3 @@ class App(wx.App):
             self.t1.Stop()
         except :
             pass
-
-## MAIN
-
-app = App()
-app.MainLoop()
