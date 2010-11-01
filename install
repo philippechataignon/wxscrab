@@ -1,5 +1,5 @@
 #!/bin/sh
 cd gen
 make
-python setup.py build
-sudo python setup.py install
+python2 setup.py build
+sudo python2 setup.py install

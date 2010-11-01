@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
 sys.path.append('../common')
@@ -17,10 +16,6 @@ import msg
 import grille
 import net
 import time
-
-#Reglage encoding
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 class Stop(Exception) :
     pass

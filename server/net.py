@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 import asyncore, asynchat
@@ -50,5 +50,5 @@ class channel(asynchat.async_chat) :
         if self.server.parent.options.verbose == True :
             print "-> %s" % mm.cmd
         self.server.lock.acquire()
-        self.push(pickle.dumps(mm) + channel.term)
+        self.push(pickle.dumps(mm,2) + channel.term)
         self.server.lock.release()

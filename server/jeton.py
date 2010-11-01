@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 class jeton :
     """
@@ -19,6 +19,7 @@ class jeton :
             self.point = jeton.points[self.lettre]
         else :
             self.point = 0
+
     def __str__(self) :
         return self.lettre
 
