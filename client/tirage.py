@@ -102,17 +102,16 @@ class tirage(wx.Window) :
 ## Fonctions de manipulation : tri, swap...
 
     def alpha(self) :
-        self.permute('A')
+        lj = [case.jeton for case in self.cases if not case.is_vide()]
+        lj.sort(key=lambda x: x.lettre.lower())
+        self.permute(lj)
 
     def shuffle(self) :
-        self.permute('R')
-
-    def permute(self, code) :
         lj = [case.jeton for case in self.cases if not case.is_vide()]
-        if code == 'A' :
-            lj.sort(key=lambda x: x.lettre.lower())
-        elif code == 'R' :
-            random.shuffle(lj)
+        random.shuffle(lj)
+        self.permute(lj)
+
+    def permute(self, lj) :
         for pos in xrange(self.nbpos) :
             if pos < len(lj) :
                 self.cases[pos].met(lj[pos])
@@ -146,4 +145,3 @@ class tirage(wx.Window) :
         self.cases[pos_old].jeton, self.cases[pos_new].jeton = self.cases[pos_new].jeton, self.cases[pos_old].jeton  
         self.cases[pos_old].redraw()
         self.cases[pos_new].redraw()
-

@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+
+#Reglage encoding
+import sys
+sys.path.append('../common')
 import wx
 import settings
 import frame
@@ -11,16 +15,10 @@ import skin
 import reliquat
 import asyncore
 import jeton
-import coord
 import son
 import time
 import msg
-
-#Reglage encoding
-import sys
-reload(sys)
-sys.setdefaultencoding("utf8")
-wx.SetDefaultPyEncoding("utf8")
+import coord
 
 class App(wx.App):
     def OnInit(self) :
