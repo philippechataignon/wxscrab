@@ -58,6 +58,8 @@ class main(threading.Thread):
                     self.info("Prochaine partie dans %d secondes" % self.options.attente)
                     self.attente(self.options.attente)
                 self.jo.envoi_all(msg.msg("new"))
+                print "------------------------------------------------------------------"
+                print self.options
                 tour = 0
                 for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
                     tour +=1
