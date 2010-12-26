@@ -23,6 +23,7 @@ import coord
 class App(wx.App):
     def OnInit(self) :
         wx.InitAllImageHandlers()
+        self.t1 = wx.Timer(self)
         self.settings = settings.settings()
         # Appelle la frame de connexion au début
         dlgconn.dlgconnframe(None, self)
@@ -42,7 +43,6 @@ class App(wx.App):
         self.frame.Show()
         self.net  = net.net(sock, self)
         self.son = son.son()
-        self.t1 = wx.Timer(self)
         self.t1.Start(100)
         self.Bind(wx.EVT_TIMER, self.watchnet)
         self.score = frame_score.frame_score(self.frame, "")

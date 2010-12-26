@@ -100,7 +100,7 @@ class grille(wx.Window) :
         "Les jetons préposés (reçus du serveur) sont mis en fixe"
         for case in self.cases.itervalues() :
             if case.get_status() == jeton.PREPOSE : #si jeton prepose
-                case.jeton.status = jeton.POSE #met status pose
+                case.jeton.set_status(jeton.POSE) #met status pose
                 case.redraw()
 
     def get_mot_temp(self) :
@@ -151,7 +151,7 @@ class grille(wx.Window) :
             if self.case_coord_vide(coo) :
                 j = self.app.frame.tirage.retire_jeton(l)
                 if j is not None :
-                    j.status = status
+                    j.set_status(status)
                     self.case_coord(coo).pose(j)
             coo = coo.next()
 
@@ -201,7 +201,7 @@ class grille(wx.Window) :
             return
         j = self.app.frame.tirage.retire_jeton(l)   # prend le jeton dans le tirage
         if j is not None :                          # si c'est possible
-            j.status = jeton.TEMP
+            j.set_status(jeton.TEMP)
             ca = self.case_coord(self.coord_cur)
             ca.pose(j)  # pose le jeton en temp
             ca.fleche = coord.NUL   # efface la fleche
