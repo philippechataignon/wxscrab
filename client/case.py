@@ -42,7 +42,7 @@ class case(wx.StaticBitmap) :
         return self.jeton is None
 
     def get_status(self) :
-        if self.jeton is None :
+        if self.is_vide() :
             return jeton.NUL
         else :
             return self.jeton.status

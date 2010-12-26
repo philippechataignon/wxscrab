@@ -164,35 +164,5 @@ class App(wx.App):
 
 ## Gestionnaires événements
 
-    def OnClickCase(self, case) :
-        f = self.frame
-        g = f.grille
-        if g.saisie_ok == False :
-            return
-        t = f.tirage
-
-        if case.fleche == coord.NUL :
-            g.reinit_saisie()
-            f.home_props()
-            case.fleche = coord.HOR
-            case.coord.set_hor()
-            g.entry = 0 
-            g.coord_ini = case.coord
-            f.set_status_text( "%s" % case.coord ) 
-        elif case.fleche == coord.HOR :
-            case.fleche = coord.VER
-            case.coord.set_ver()
-            g.coord_ini = case.coord
-            f.set_status_text( "%s" % case.coord ) 
-        else  :
-            case.fleche = coord.NUL
-            g.coord_ini = coord.coord()
-            f.set_status_text( "" )
-        case.redraw()
-        g.SetFocus()
-
     def OnExit(self) :
-        try :
-            self.t1.Stop()
-        except :
-            pass
+        self.t1.Stop()
