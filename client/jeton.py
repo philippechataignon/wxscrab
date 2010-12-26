@@ -35,8 +35,9 @@ class jeton :
         return self.status
 
     def set_status(self, status) :
-        self.status = status
-        self.bmp = self.calc_bmp()
+        if status != self.status :
+            self.status = status
+            self.bmp = self.calc_bmp()
 
     def calc_bmp(self) :
         memory = wx.MemoryDC()
@@ -83,6 +84,6 @@ class jeton :
                 dep.redraw()
                 arr.redraw()
             elif arr.is_vide() :
+                dep.jeton.set_status(TEMP)
                 arr.pose(dep.jeton)
-                arr.jeton.status = TEMP
                 dep.vide()

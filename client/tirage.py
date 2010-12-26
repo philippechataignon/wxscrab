@@ -33,7 +33,7 @@ class tirage(wx.Window) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                self.cases[pos].pose(jeton.jeton(lettre, self.app.skin, jeton.TEMP))
+                self.cases[pos].pose(jeton.jeton(lettre, self.app.skin, jeton.POSE))
                 self.app.reliquat.retire(lettre)
                 pos += 1
             elif lettre in ("+",'-') :
@@ -90,6 +90,7 @@ class tirage(wx.Window) :
         pos = self.pos_retire_jeton(lettre) 
         if pos is not None :
             j = self.retire_jeton_case(self.cases[pos])
+            j.set_status(jeton.TEMP)
             return j
         return None
 
@@ -101,7 +102,7 @@ class tirage(wx.Window) :
             if self.cases[pos].is_vide() :
                 if j.is_joker() :
                     j.lettre = '?'
-                j.status = jeton.TEMP
+                j.set_status(jeton.POSE)
                 self.cases[pos].pose(j)
                 break
 
