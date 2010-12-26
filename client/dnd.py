@@ -12,7 +12,7 @@ class casedroptarget(wx.PyDropTarget) :
         self.data = wx.TextDataObject()
         self.SetDataObject(self.data) 
 
-    def OnData(self,x,y,d) :
+    def OnData(self, x, y, d) :
         if self.GetData() :
             pos = int(self.data.GetText())
             t = self.app.frame.tirage
@@ -37,7 +37,7 @@ class tiragedroptarget(wx.PyDropTarget) :
         self.data = wx.TextDataObject()
         self.SetDataObject(self.data) 
 
-    def OnData(self,x,y,d) :
+    def OnData(self, x, y, d) :
         if self.GetData() :
             old = int(self.data.GetText())
             self.app.frame.tirage.swap(old, self.pos)

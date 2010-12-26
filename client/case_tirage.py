@@ -57,9 +57,7 @@ class case_tirage(wx.StaticBitmap) :
         """
         if self.allowdrag:
             data = wx.TextDataObject()
-            bitmap = evt.GetEventObject()
             data.SetText(str(self.pos))
-            dropSource = wx.DropSource(bitmap)
+            dropSource = wx.DropSource(self)
             dropSource.SetData(data)
-            result = dropSource.DoDragDrop(True)
-
+            dropSource.DoDragDrop(True)
