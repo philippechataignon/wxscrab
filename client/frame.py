@@ -32,15 +32,15 @@ class frame(wx.Frame):
         timer_sizer.Add((fill,0),0)
 
         #Creation et dessin du tirage
+        self.tirage = tirage.tirage(self.panel, self.app)
         tirage_sizer = self.cree_box_sizer("Tirage")
         tirage_sizer.Add((fill,0),0)
-        self.tirage = tirage.tirage(self.panel, self.app)
         tirage_sizer.Add(self.tirage, 0, wx.ALL|wx.EXPAND, fill)
         tirage_sizer.Add((fill,0),0)
 
         #Creation et dessin de la grille
-        grille_sizer = self.cree_box_sizer("Grille")
         self.grille = grille.grille(self.panel, self.app)
+        grille_sizer = self.cree_box_sizer("Grille")
         grille_sizer.Add(self.grille, 0, wx.ALL|wx.EXPAND, 0)
 
         #Creation des items dans la box messages
