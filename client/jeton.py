@@ -3,11 +3,10 @@
 import wx
 import utils
 
-TIRAGE = -1
-NUL    = 0
-TEMP   = 1
+NUL = 0
+TEMP = 1
 PREPOSE = 2
-POSE   = 3
+POSE = 3
 
 #Fichier définition class
 class jeton :
@@ -65,3 +64,18 @@ class jeton :
         memory.DrawText(p, size-1-l, size- 1-h)
         memory.SelectObject(wx.NullBitmap)
         return bmp
+
+    def deplace(self, dep, arr) :
+        """ Déplace un jeton de la case dep vers la case arr
+            Avec le statut d'arrivée status
+        """
+        if dep.tirage :
+            if arr.tirage :
+                " Départ et arrivée dans tirage : on swap"
+                dep.jeton, arr.jeton = arr.jeton, dep.jeton 
+                dep.redraw()
+                arr.redraw()
+            elif arr.is_vide() :
+                arr.pose(dep.jeton)
+                arr.jeton.status = TEMP
+                dep.vide()

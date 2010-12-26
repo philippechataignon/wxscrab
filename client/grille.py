@@ -5,7 +5,7 @@ import sys
 sys.path.append('../common')
 
 import wx
-import case
+import case_grille
 import coord
 import jeton
 import msg
@@ -55,10 +55,9 @@ class grille(wx.Window) :
             wx.StaticText(self, -1, t, pos=(0,y), size=(20,size))
         for y in range(15) :
             for x in range(15) :
-                self.cases[(x,y)] = case.case(x, y, mult[x][y], self.app, \
+                self.cases[(x,y)] = case_grille.case_grille(x, y, mult[x][y], self.app, \
                     self, -1, wx.NullBitmap, (15+size*x, 15+size*y))
         self.Bind(wx.EVT_CHAR, self.OnKey)
-
 
 ## Fonctions basiques
 
@@ -82,14 +81,6 @@ class grille(wx.Window) :
             return not self.cases[(coord.x(),coord.y())].is_vide()
         else:
             return False
-
-    def pose_jeton(self, ca, j) :
-        " Pose un jeton j sur la case ca"
-        if ca.is_vide() :
-            ca.pose(j) 
-        elif ca.get_status() != jeton.POSE :
-            self.app.frame.tirage.remet(j)
-            ca.pose(j) 
 
     def raz_fleche(self) :
         "Déselectionne toutes les cases de la grille"
@@ -158,9 +149,10 @@ class grille(wx.Window) :
         # co.fromstr(coo)
         for l in mot :
             if self.case_coord_vide(coo) :
-                j = self.app.frame.tirage.retire_jeton(l, status)
+                j = self.app.frame.tirage.retire_jeton(l)
                 if j is not None :
-                    self.pose_jeton(self.case_coord(coo), j)
+                    j.status = status
+                    self.case_coord(coo).pose(j)
             coo = coo.next()
 
     def envoi_mot(self) :
@@ -207,10 +199,11 @@ class grille(wx.Window) :
             return
         if self.case_coord_occ(self.coord_cur) : # si case occupée, on sort
             return
-        j = self.app.frame.tirage.retire_jeton(l, jeton.TEMP)   # prend le jeton dans le tirage
+        j = self.app.frame.tirage.retire_jeton(l)   # prend le jeton dans le tirage
         if j is not None :                          # si c'est possible
+            j.status = jeton.TEMP
             ca = self.case_coord(self.coord_cur)
-            self.pose_jeton(ca, j)  # pose le jeton en temp
+            ca.pose(j)  # pose le jeton en temp
             ca.fleche = coord.NUL   # efface la fleche
             ca.redraw()             # redessine
             self.entry = True                      # passe le flag saisie en cours à 1
@@ -271,5 +264,5 @@ class grille(wx.Window) :
             for x, char in enumerate(ligne) :
                 if char != "." :
                     case = self.case_coord(coord.coord(x,y))
-                    self.pose_jeton(case, jeton.jeton(char, self.app.skin, jeton.POSE))
+                    case.pose(jeton.jeton(char, self.app.skin, jeton.POSE))
                     self.app.reliquat.retire(char)

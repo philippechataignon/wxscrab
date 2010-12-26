@@ -7,44 +7,16 @@ sys.path.append('../common')
 import wx
 import coord
 import dnd
+import case
 
-class case_tirage(wx.StaticBitmap) :
+class case_tirage(case.case) :
     def __init__(self, pos, app, *bitarg) :
-        wx.StaticBitmap.__init__(self, *bitarg)
+        case.case.__init__(self, app, *bitarg)
+        self.tirage = True
         self.pos = pos
-        self.app = app
-        self.jeton = None
         self.allowdrag = False
-        self.SetDropTarget(dnd.tiragedroptarget(self.pos, self.app))
         self.Bind(wx.EVT_LEFT_DOWN, self.drag)
         self.Bind(wx.EVT_RIGHT_DOWN, self.shift)
-        self.redraw()
-
-    def redraw(self) :
-        """Redessine une case"""
-        j = self.jeton
-        if j is None :
-            self.SetBitmap(self.app.skin.get_img("vide"))
-        else:
-            self.SetBitmap(j.get_bmp())
-
-    def is_vide(self) :
-        return self.jeton is None
-
-    def get_status(self) :
-        if self.jeton is None :
-            return jeton.NUL
-        else :
-            return self.jeton.status
-
-    def met(self, j) :
-        """Appelé par pose_jeton dans grille"""
-        self.jeton = j
-        self.redraw()
-
-    def enleve(self) :
-        """Appelé quand on enlève un jeton d'une case"""
-        self.jeton = None
         self.redraw()
 
     def shift(self, e) :

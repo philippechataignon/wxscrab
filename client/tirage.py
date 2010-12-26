@@ -33,7 +33,7 @@ class tirage(wx.Window) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                self.cases[pos].met(jeton.jeton(lettre, self.app.skin, status=jeton.TIRAGE))
+                self.cases[pos].pose(jeton.jeton(lettre, self.app.skin, jeton.TEMP))
                 self.app.reliquat.retire(lettre)
                 pos += 1
             elif lettre in ("+",'-') :
@@ -48,7 +48,7 @@ class tirage(wx.Window) :
             j = self.cases[pos].jeton
             if j is not None :
                 l = j.lettre
-                self.cases[pos].enleve()
+                self.cases[pos].vide()
                 self.app.reliquat.remet(l)
 
     def allowdrags(self, allow) :
@@ -56,35 +56,41 @@ class tirage(wx.Window) :
             c.allowdrag = allow
 
 ## Principales fonctions publiques 
-
-    def retire_jeton(self, lettre, status) :
-        """Retire et renvoie le jeton du tirage
-        Renvoit le jeton qui correspond à la lettre transmise.
+    def pos_retire_jeton(self, lettre) :
+        """Retire et renvoie la position dans le tirage
+        qui correspond à la lettre transmise.
         On choisit le premier jeton ayant la lettre, sinon le joker s'il y en a un.
         Pour forcer le joker, on passe la lettre en minuscule
         """
         if not( 'A' <= lettre <= 'Z' or 'a' <= lettre <= 'z') :
             return None
-
         # Liste des cases non vides
         lc = [case for case in self.cases if not case.is_vide()]
-
         if 'A' <= lettre <= 'Z' :
             for case in lc :
                 j = case.jeton
                 if j.lettre == lettre :
-                    case.enleve()
-                    j.status = status
-                    return j
-
+                    return case.pos
         for case in lc :
             j = case.jeton
             if j.lettre == "?" :
                 j.lettre = lettre.lower()
-                case.enleve()
-                j.status = status
-                return j
+                return case.pos
+        return None
 
+    def retire_jeton_case(self, case) :
+        if case.is_vide() :
+            return None
+        else :
+            j = case.jeton
+            case.vide()
+            return j
+
+    def retire_jeton(self, lettre) :
+        pos = self.pos_retire_jeton(lettre) 
+        if pos is not None :
+            j = self.retire_jeton_case(self.cases[pos])
+            return j
         return None
 
     def remet(self, j) :
@@ -95,8 +101,8 @@ class tirage(wx.Window) :
             if self.cases[pos].is_vide() :
                 if j.is_joker() :
                     j.lettre = '?'
-                j.status = jeton.TIRAGE 
-                self.cases[pos].met(j)
+                j.status = jeton.TEMP
+                self.cases[pos].pose(j)
                 break
 
 ## Fonctions de manipulation : tri, swap...
@@ -114,9 +120,9 @@ class tirage(wx.Window) :
     def permute(self, lj) :
         for pos in xrange(self.nbpos) :
             if pos < len(lj) :
-                self.cases[pos].met(lj[pos])
+                self.cases[pos].pose(lj[pos])
             else :
-                self.cases[pos].enleve()
+                self.cases[pos].vide()
 
     def shift(self, pos) :
         end = -1
@@ -128,7 +134,7 @@ class tirage(wx.Window) :
             for i in xrange(end, pos, -1) :
                 self.cases[i].jeton = self.cases[i-1].jeton
                 self.cases[i].redraw()
-            self.cases[pos].enleve()
+            self.cases[pos].vide()
         else :
             end2 = -1
             for i in xrange(0, pos) :
@@ -139,7 +145,7 @@ class tirage(wx.Window) :
                 for i in xrange(end2, pos) :
                     self.cases[i].jeton = self.cases[i+1].jeton
                     self.cases[i].redraw()
-                self.cases[pos].enleve()
+                self.cases[pos].vide()
 
     def swap(self, pos_old, pos_new) :
         self.cases[pos_old].jeton, self.cases[pos_new].jeton = self.cases[pos_new].jeton, self.cases[pos_old].jeton  
