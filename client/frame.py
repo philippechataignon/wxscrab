@@ -106,7 +106,7 @@ class frame(wx.Frame):
             for i in range(8,14) :
                 menupol.Append(200+i,str(i),"Changer la police des messages serveur", wx.ITEM_RADIO)
                 self.Bind(wx.EVT_MENU, self.menu_police, id=200+i)
-            pset = int(self.app.settings.get("size", "policeserv"))
+            pset = self.app.settings.get("size", "policeserv")
             menupol.Check(200+pset, True)
             self.set_police_msgs(pset)
 
@@ -235,7 +235,8 @@ class frame(wx.Frame):
 
     def menu_police(self, e) :
         i = e.GetId()-200
-        self.app.settings.set("size", "policeserv", str(i))
+        self.app.settings.set("size", "policeserv", i)
+        self.app.settings.write()
         self.set_police_msgs(i)
 
     #def menu_skin(self, e) :

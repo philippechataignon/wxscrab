@@ -24,8 +24,10 @@ class settings :
                 buff += f.read()
         self.dic = yaml.load(buff)
         self.img = {}
-        dir = self.get('files','rep_images')
         size = self.get('size', 'size')
+        self.dic['size']['offset_coord'] = size * .65
+        self.dic['size']['fontsize'] = size * 0.5
+        dir = self.get('files','rep_images')
         for key, nom in self.dic['images'].items() :
             img = wx.Image(os.path.join(dir, nom) ,wx.BITMAP_TYPE_PNG).Scale(size,size)
             if key == 'fl_r' :

@@ -91,6 +91,7 @@ class dlgconnframe(wx.Frame):
             self.app.email = email
             self.MakeModal(False)
             self.app.cree()
+            self.Close()
 
     def OnClose(self,evt) :
         self.app.frame.Close()

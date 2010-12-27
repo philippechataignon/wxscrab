@@ -23,36 +23,35 @@ class App(wx.App):
     def OnInit(self) :
         wx.InitAllImageHandlers()
         self.connected = False
-        self.t1 = wx.Timer(self)
         self.settings = settings.settings()
-        #self.skin = skin.skin(self.settings.get("skin"))
-        # Appelle la frame de connexion au début
+        # Crée la frame principale
         self.frame = frame.frame(None, self)
-        self.d = dlgconn.dlgconnframe(None, self)
+        self.frame.Show()
+        # Appelle la frame de connexion au début
+        self.d = dlgconn.dlgconnframe(self.frame, self)
         self.d.Show()
         self.d.MakeModal(True)
         return True
 
-## Fonctions basiques
     def cree(self) :
-        self.frame.Show()
-        self.d.Close()
+        # Appelé en sortie de la dlgconn
         self.net  = net.net(self, self.host, self.port)
         self.son = son.son()
+        self.t1 = wx.Timer(self)
         self.t1.Start(100)
         self.Bind(wx.EVT_TIMER, self.watchnet)
         self.score = frame_score.frame_score(self.frame, "")
         self.score.Show(False)
         self.tour_on = False
 
+    def watchnet(self, e) :
+        asyncore.poll()
 
+## Fonctions basiques
     def envoi(self, txt) :
         txt.set_id(self.nick)
         self.net.envoi_net(txt)
         
-    def watchnet(self, e) :
-        asyncore.poll()
-
     def bascule_score(self) :
         if self.score.IsShown() :
             self.score.Show(False)
@@ -167,8 +166,3 @@ class App(wx.App):
             self.frame.set_status_next(int(m.param))
         elif m.cmd == "okrestart" :
             self.frame.set_status_restart(int(m.param))
-
-## Gestionnaires événements
-
-    def OnExit(self) :
-        self.t1.Stop()
