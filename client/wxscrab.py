@@ -34,7 +34,6 @@ class App(wx.App):
         self.d.MakeModal(True)
         return True
 
-
 ## Fonctions basiques
     def cree(self) :
         self.d.Destroy()
@@ -79,7 +78,6 @@ class App(wx.App):
         g = self.frame.grille
         t = self.frame.tirage
         if m.cmd == 'connect' :
-            print m.param[0]
             if m.param[0] == 0 :
                 utils.errordlg(m.param[1],"Erreur : nom existant")
                 self.frame.Close()
