@@ -1,0 +1,50 @@
+user:
+    pseudo: ''
+    admin: False
+    email: ''
+
+server:
+    port: 1989
+    servers: [wxscrab.ath.cx]
+
+files:
+    rep_images: images/default
+    icone: images/wxscrab.ico
+
+view:
+    layout: normal
+    menu: True
+    status: True
+    tirage_nbpos: 8
+
+size:
+    size: 34
+    size_chrono: 24
+    size_def: 12
+    size_score: 18
+    policeserv: 12
+    offset_coord: 27
+    pointfontsize: 7
+    chat_size: 400
+    fill: 10
+    fontsize: 20
+
+fontcol:
+    fixejoker: GREY
+    fixenorm: BLACK
+    points: GREY
+    signes: BLUE
+    tempjoker: WHITE
+    tempnorm: BLUE
+
+images:
+    base: tile_null.png 
+    ld  : tile_DL.png   
+    lt  : tile_TL.png   
+    md  : tile_DW.png   
+    mt  : tile_TW.png   
+    temp: tile_blanc.png
+    norm: tile.png      
+    vide: tile_vide.png 
+    fl_b: fleche_bas.png
+    fl_r: fleche_bas.png

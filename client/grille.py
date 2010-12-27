@@ -41,17 +41,17 @@ class grille(wx.Window) :
         self.coord_cur = coord.coord()   # coordonnée courante 
         self.saisie_ok = False           # flag indiquant si on peut saisir (depend chrono)
         self.entry = False          # flag saisie en cours
-        size = self.app.skin.get("size")
+        size = self.app.settings.get("size", "size")
         # memory = wx.MemoryDC()
         for i in xrange(15) :
             t = str(i+1)
             # l,h = memory.GetTextExtent(t)
-            x = self.app.skin.get("offset_coord")+i*size
+            x = self.app.settings.get("size", "offset_coord")+i*size
             wx.StaticText(self, -1, str(i+1), pos=(x,0), size=(size,20))
         for j in xrange(15) :
             t = chr(65+j)
             # l,h = memory.GetTextExtent(t)
-            y = self.app.skin.get("offset_coord")+j*size
+            y = self.app.settings.get("size", "offset_coord")+j*size
             wx.StaticText(self, -1, t, pos=(0,y), size=(20,size))
         for y in range(15) :
             for x in range(15) :
@@ -264,5 +264,5 @@ class grille(wx.Window) :
             for x, char in enumerate(ligne) :
                 if char != "." :
                     case = self.case_coord(coord.coord(x,y))
-                    case.pose(jeton.jeton(char, self.app.skin, jeton.POSE))
+                    case.pose(jeton.jeton(char, jeton.POSE, self.app.settings))
                     self.app.reliquat.retire(char)

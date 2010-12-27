@@ -40,6 +40,9 @@ class net(asynchat.async_chat) :
             print m.cmd, m.param, m.id
         self.app.traite(m)
 
+    def handle_error(self) :
+        pass
+
     def handle_close(self) :
         self.close()
         self.app.frame.grille.saisie_ok = False

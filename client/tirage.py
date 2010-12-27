@@ -16,9 +16,9 @@ class tirage(wx.Window) :
         self.app = app
         self.cases=[]
         self.allowdrag = False
-        self.nbpos = int(self.app.settings.get("tirage_nbpos"))
-        size = self.app.skin.get("size")
-        fill = self.app.skin.get("fill")
+        self.nbpos = self.app.settings.get("view", "tirage_nbpos")
+        size = self.app.settings.get("size", "size")
+        fill = self.app.settings.get("size", "fill")
         for pos in xrange(self.nbpos)  :
             case = case_tirage.case_tirage(pos, self.app, self, -1,  wx.NullBitmap, \
                 ((size+fill)*pos, 0))
@@ -33,7 +33,7 @@ class tirage(wx.Window) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                self.cases[pos].pose(jeton.jeton(lettre, self.app.skin, jeton.POSE))
+                self.cases[pos].pose(jeton.jeton(lettre, jeton.POSE, self.app.settings))
                 self.app.reliquat.retire(lettre)
                 pos += 1
             elif lettre in ("+",'-') :

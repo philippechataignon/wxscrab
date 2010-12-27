@@ -22,21 +22,21 @@ class case(wx.StaticBitmap) :
         if self.jeton is not None :
             self.SetBitmap(self.jeton.get_bmp())
         elif self.tirage :
-            self.SetBitmap(self.app.skin.get_img("vide"))
+            self.SetBitmap(self.app.settings.get_img("vide"))
         elif self.fleche == coord.HOR :
-            self.SetBitmap(self.app.skin.get_img('fl_r'))
+            self.SetBitmap(self.app.settings.get_img('fl_r'))
         elif self.fleche == coord.VER :
-            self.SetBitmap(self.app.skin.get_img('fl_b'))
+            self.SetBitmap(self.app.settings.get_img('fl_b'))
         elif self.mult == grille.OO :
-            self.SetBitmap(self.app.skin.get_img('null'))
+            self.SetBitmap(self.app.settings.get_img('base'))
         elif self.mult == grille.LD :
-            self.SetBitmap(self.app.skin.get_img('ld'))
+            self.SetBitmap(self.app.settings.get_img('ld'))
         elif self.mult == grille.LT :
-            self.SetBitmap(self.app.skin.get_img('lt'))
+            self.SetBitmap(self.app.settings.get_img('lt'))
         elif self.mult == grille.MD :
-            self.SetBitmap(self.app.skin.get_img('md'))
+            self.SetBitmap(self.app.settings.get_img('md'))
         elif self.mult == grille.MT : 
-            self.SetBitmap(self.app.skin.get_img('mt'))
+            self.SetBitmap(self.app.settings.get_img('mt'))
 
     def is_vide(self) :
         return self.jeton is None

@@ -14,8 +14,8 @@ pts={'A':1,'B':3,'C':3,'D':2,'E':1,'F':4,'G':2,'H':4,'I':1,
 
 #Fichier définition class
 class jeton :
-    def __init__(self, lettre, skin, status) :
-        self.skin = skin
+    def __init__(self, lettre, status, settings) :
+        self.settings = settings
         self.lettre = lettre
         self.status = status
         self.point = str(pts[utils.lettre_joker(self.lettre)])
@@ -45,28 +45,28 @@ class jeton :
 
     def calc_bmp(self, status) :
         memory = wx.MemoryDC()
-        memory.SetFont(self.skin.get_font())
+        memory.SetFont(self.settings.get_font())
         l,h = memory.GetTextExtent(self.lettre.upper())
         if status in (TEMP, PREPOSE) :
             #Sur la grille en temporaire
-            bmp = self.skin.get_img_copy("temp")
+            bmp = self.settings.get_img_copy("temp")
             memory.SelectObject(bmp)
             if self.is_joker() :
-                memory.SetTextForeground(self.skin.get_fontcol("tempjoker"))
-            elif 'A' <= self.lettre <='Z' :
-                memory.SetTextForeground(self.skin.get_fontcol("tempnorm"))
+                memory.SetTextForeground(self.settings.get("fontcol","tempjoker"))
+            else :
+                memory.SetTextForeground(self.settings.get("fontcol","tempnorm"))
         else :
             #Sur le tirage ou sur la grille en fixe
-            bmp = self.skin.get_img_copy("norm")
+            bmp = self.settings.get_img_copy("norm")
             memory.SelectObject(bmp)
             if self.is_joker() :
-                memory.SetTextForeground(self.skin.get_fontcol("fixejoker"))
+                memory.SetTextForeground(self.settings.get("fontcol","fixejoker"))
             else :
-                memory.SetTextForeground(self.skin.get_fontcol("fixenorm"))
-        size = self.skin.get("size")
+                memory.SetTextForeground(self.settings.get("fontcol","fixenorm"))
+        size = self.settings.get("size", "size")
         memory.DrawText(self.lettre.upper(),(size-l)/2,(size-h)/2)
-        memory.SetFont(self.skin.get_pointfont())
-        memory.SetTextForeground(self.skin.get_fontcol("points"))
+        memory.SetFont(self.settings.get_pointfont())
+        memory.SetTextForeground(self.settings.get("fontcol","points"))
         l,h = memory.GetTextExtent(self.point)
         memory.DrawText(self.point, size-1-l, size- 1-h)
         return bmp

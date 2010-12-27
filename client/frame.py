@@ -15,17 +15,17 @@ import coord
 class frame(wx.Frame):
     def __init__(self, parent, app) :
         wx.Frame.__init__(self, parent, title = "wxScrab")
-        self.SetIcon(wx.Icon(app.skin.get("icone"), wx.BITMAP_TYPE_ICO))
+        self.SetIcon(wx.Icon(app.settings.get("files", "icone"), wx.BITMAP_TYPE_ICO))
         self.panel = wx.Panel(self)
         self.app = app
         self.max_props = 8
         self.tour = 0
-        fill = self.app.skin.get("fill")
+        fill = self.app.settings.get("size", "fill")
 
         #Creation et dessin du timer
         timer_sizer  = self.cree_box_sizer("Temps")
         self.timer = wx.StaticText(self.panel, -1, str(utils.convert_time(0)))
-        font = wx.Font(self.app.skin.get("size_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(self.app.settings.get("size", "size_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.timer.SetFont(font)
         timer_sizer.Add((fill,0),0)
         timer_sizer.Add(self.timer, 0, wx.ALL|wx.EXPAND, fill) 
@@ -45,8 +45,8 @@ class frame(wx.Frame):
 
         #Creation des items dans la box messages
         msgs_sizer = self.cree_box_sizer("Messages")
-        self.msgs = wx.TextCtrl(self.panel, -1, "", size=(app.skin.get("chat_size"), -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
-        self.msgs.SetDefaultStyle(wx.TextAttr(font=wx.Font(self.app.skin.get("size_def"), wx.SWISS, wx.NORMAL, wx.NORMAL)))
+        self.msgs = wx.TextCtrl(self.panel, -1, "", size=(app.settings.get("size", "chat_size"), -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
+        self.msgs.SetDefaultStyle(wx.TextAttr(font=wx.Font(self.app.settings.get("size","size_def"), wx.SWISS, wx.NORMAL, wx.NORMAL)))
         msgs_sizer.Add(self.msgs, 1, wx.ALL|wx.EXPAND, fill)
 
         #Creation box proposition
@@ -63,7 +63,7 @@ class frame(wx.Frame):
         #Creation box score
         score_sizer = self.cree_box_sizer("Score", flag = wx.HORIZONTAL)
         self.score = wx.StaticText(self.panel, -1, "")
-        font = wx.Font(self.app.skin.get("size_score"), wx.SWISS, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(self.app.settings.get("size","size_score"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.score.SetFont(font)
         score_sizer.Add(self.score, 1, wx.ALL, fill) 
         buttscore = wx.Button(self.panel, 12, "Scores")
@@ -86,7 +86,7 @@ class frame(wx.Frame):
                     ("Next", self.button_next),
                     ("Pose précédent", self.button_pose_last),
                 ]
-        if self.app.settings.get("admin") == "True" :
+        if self.app.settings.get("user", "admin") :
             boutons.insert(2, ("Chrono", self.button_chrono))
         for label, handler in boutons :
             bouton = wx.Button(self.panel, label=label, size=(30,-1))
@@ -94,7 +94,7 @@ class frame(wx.Frame):
             self.Bind(wx.EVT_BUTTON, handler, bouton)
 
         #Barre de menu
-        if  self.app.skin.get("menu") :
+        if  self.app.settings.get("view", "menu") :
             menubar = wx.MenuBar()
 
             menu1 = wx.Menu()
@@ -106,18 +106,18 @@ class frame(wx.Frame):
             for i in range(8,14) :
                 menupol.Append(200+i,str(i),"Changer la police des messages serveur", wx.ITEM_RADIO)
                 self.Bind(wx.EVT_MENU, self.menu_police, id=200+i)
-            pset = int(self.app.settings.get("policeserv"))
+            pset = int(self.app.settings.get("size", "policeserv"))
             menupol.Check(200+pset, True)
             self.set_police_msgs(pset)
 
-            menuskin = wx.Menu()
-            for i, t in enumerate(self.app.settings.liste_skin):
-                menuskin.Append(400+i, t, "Taille de la grille", wx.ITEM_RADIO)
-                self.Bind(wx.EVT_MENU, self.menu_skin, id=400+i)
+            #menusettings = wx.Menu()
+            #for i, t in enumerate(self.app.settings.liste_settings):
+            #    menusettings.Append(400+i, t, "Taille de la grille", wx.ITEM_RADIO)
+            #    self.Bind(wx.EVT_MENU, self.menu_settings, id=400+i)
 
             menu2 = wx.Menu()
             menu2.AppendMenu(299,"Taille police", menupol)
-            menu2.AppendMenu(499,"Skin", menuskin)
+            # menu2.AppendMenu(499,"Skin", menuskin)
             menubar.Append(menu2,"Options")
 
             menu3 = wx.Menu()
@@ -128,7 +128,7 @@ class frame(wx.Frame):
             self.SetMenuBar(menubar)
 
         #Barre de status
-        if  self.app.skin.get("status") :
+        if  self.app.settings.get("view", "status") :
             self.st = self.CreateStatusBar()
             self.st.SetFieldsCount(4)
             self.st.SetStatusWidths([30, -1, 80, 80])
@@ -148,7 +148,7 @@ class frame(wx.Frame):
 
         sizer = wx.GridBagSizer(hgap=fill, vgap=fill) 
 
-        if  self.app.skin.get("layout") == "alt" :
+        if  self.app.settings.get("view", "layout") == "alt" :
             sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
             sizer1.Add( (fill,fill), 0)
             sizer1.Add(timer_sizer, 0, wx.EXPAND)
@@ -235,15 +235,15 @@ class frame(wx.Frame):
 
     def menu_police(self, e) :
         i = e.GetId()-200
-        self.app.settings.set("policeserv", str(i))
+        self.app.settings.set("size", "policeserv", str(i))
         self.set_police_msgs(i)
 
-    def menu_skin(self, e) :
-        i = e.GetId()-400
-        skin = self.app.settings.liste_skin[i]
-        self.app.settings.set("skin", skin)
-        self.app.settings.write()
-        utils.errordlg("Relancer le programme pour prendre en compte le nouveau skin","Attention")
+    #def menu_skin(self, e) :
+    #    i = e.GetId()-400
+    #    skin = self.app.settings.liste_skin[i]
+    #    self.app.settings.set("skin", skin)
+    #    self.app.settings.write()
+    #    utils.errordlg("Relancer le programme pour prendre en compte le nouveau skin","Attention")
 
     def about(self, e):
         info = wx.AboutDialogInfo()
@@ -278,19 +278,19 @@ class frame(wx.Frame):
         self.msgs.SetValue('')
 
     def set_status_text(self, text) :
-        if self.app.skin.get("status") :
+        if self.app.settings.get("view", "status") :
             self.SetStatusText(text)
 
     def set_status_next(self, num) :
-        if self.app.skin.get("status") :
+        if self.app.settings.get("view", "status") :
             self.SetStatusText("Next : %d" % num, 3)
 
     def set_status_restart(self, num) :
-        if self.app.skin.get("status") :
+        if self.app.settings.get("view", "status") :
             self.SetStatusText("Restart : %d" % num, 2)
 
     def upd_status(self) :
-        if self.app.skin.get("status") :
+        if self.app.settings.get("view", "status") :
             self.st.SetStatusText(str(self.app.reliquat), 1)
 
     def home_props(self) :

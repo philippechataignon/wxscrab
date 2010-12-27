@@ -33,16 +33,16 @@ class dlgconnframe(wx.Frame):
 
         b = wx.ALIGN_RIGHT
         conn.Add(wx.StaticText(panel, -1, "Serveur : "),-1, b)
-        self.txtaddr = wx.ComboBox(panel, -1, self.settings.get("servers")[0], size=(200, -1), choices=self.settings.get("servers"))
+        self.txtaddr = wx.ComboBox(panel, -1, self.settings.get("server","servers")[0], size=(200, -1), choices=self.settings.get("server", "servers"))
         self.txtaddr.SetFocus()
         conn.Add(self.txtaddr)
 
         conn.Add(wx.StaticText(panel, -1, "Port : "), -1, b)
-        self.txtport = wx.TextCtrl(panel, -1, self.settings.get("port"), size=(50,-1))
+        self.txtport = wx.TextCtrl(panel, -1, str(self.settings.get("server","port")), size=(50,-1))
         conn.Add(self.txtport)
 
         conn.Add(wx.StaticText(panel, -1, "Pseudo  : "), -1, b)
-        self.txtnom  = wx.TextCtrl(panel, -1, self.settings.get("pseudo"), size=(200,-1))
+        self.txtnom  = wx.TextCtrl(panel, -1, self.settings.get("user","pseudo"), size=(200,-1))
         conn.Add(self.txtnom)
         conn.Add(space)
         conn.Add(space)
@@ -81,10 +81,10 @@ class dlgconnframe(wx.Frame):
             utils.errordlg("Pas plus de 20 caractères pour le pseudo", "Erreur")
         else :
             self.Unbind(wx.EVT_CLOSE)
-            self.settings.set("port",str(port))
-            self.settings.set("pseudo",nick)
-            self.settings.set("email",email)
-            self.settings.insert_list("servers", host)
+            self.settings.set("server", "port", port)
+            self.settings.set("user", "pseudo", nick)
+            self.settings.set("user", "email", email)
+            self.settings.insert_list("server", "servers", host)
             self.app.nick = nick
             self.app.host = host
             self.app.port = port

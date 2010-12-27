@@ -11,7 +11,6 @@ import net
 import dlgconn
 import frame_score
 import utils
-import skin
 import reliquat
 import asyncore
 import jeton
@@ -26,10 +25,10 @@ class App(wx.App):
         self.connected = False
         self.t1 = wx.Timer(self)
         self.settings = settings.settings()
-        self.skin = skin.skin(self.settings.get("skin"))
+        #self.skin = skin.skin(self.settings.get("skin"))
         # Appelle la frame de connexion au début
         self.frame = frame.frame(None, self)
-        self.d = dlgconn.dlgconnframe(self.frame, self)
+        self.d = dlgconn.dlgconnframe(None, self)
         self.d.Show()
         self.d.MakeModal(True)
         return True
