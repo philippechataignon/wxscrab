@@ -36,7 +36,8 @@ class App(wx.App):
 
 ## Fonctions basiques
     def cree(self) :
-        self.d.Destroy()
+        self.frame.Show()
+        self.d.Close()
         self.net  = net.net(self, self.host, self.port)
         self.son = son.son()
         self.t1.Start(100)
@@ -44,7 +45,7 @@ class App(wx.App):
         self.score = frame_score.frame_score(self.frame, "")
         self.score.Show(False)
         self.tour_on = False
-        self.frame.Show()
+
 
     def envoi(self, txt) :
         txt.set_id(self.nick)

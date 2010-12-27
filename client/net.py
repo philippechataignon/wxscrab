@@ -19,7 +19,11 @@ class net(asynchat.async_chat) :
         self.set_terminator(net.term)
         self.debug = False
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect((host, port))
+        try :
+            self.connect((host, port))
+        except socket.error, (errno, errmsg) :
+            utils.errordlg(errmsg, "Erreur de connexion")
+            self.app.frame.Close()
 
     def handle_connect(self):
         m = msg.msg("joueur", (1, self.app.email), self.app.nick)
@@ -37,7 +41,7 @@ class net(asynchat.async_chat) :
         self.app.traite(m)
 
     def handle_error(self) :
-        pass
+        utils.errordlg("Erreur Socket","Erreur Socket")
 
     def handle_close(self) :
         self.close()

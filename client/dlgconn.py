@@ -44,30 +44,9 @@ class dlgconnframe(wx.Frame):
         conn.Add(wx.StaticText(panel, -1, "Pseudo  : "), -1, b)
         self.txtnom  = wx.TextCtrl(panel, -1, self.settings.get("pseudo"), size=(200,-1))
         conn.Add(self.txtnom)
-        conn.Add(wx.StaticText(panel, -1, "Complet : "), -1, b, )
-        self.check_complet = wx.CheckBox(panel, -1, )
-        self.check_complet.SetValue(complet)
-        self.Bind(wx.EVT_CHECKBOX, self.complet_click, self.check_complet)
-        conn.Add(self.check_complet)
-
-        if complet :
-            conn.Add(wx.StaticText(panel, -1, "Email  : "), -1, b)
-            self.txtemail  = wx.TextCtrl(panel, -1, self.settings.get("email"), size=(200,-1))
-            conn.Add(self.txtemail)
-            conn.Add(space)
-            conn.Add(space)
-
-            conn.Add(wx.StaticText(panel, -1, "Skin  :"), -1, b)
-            self.box_skin = wx.ComboBox(panel, -1, style=wx.CB_READONLY, choices=self.settings.liste_skin, size=(200,-1))
-            self.box_skin.SetStringSelection(self.settings.get("skin"))
-            self.Bind(wx.EVT_COMBOBOX, self.skin_click, self.box_skin)
-            conn.Add(self.box_skin)
-            conn.Add(wx.StaticText(panel, -1, "Tirage  :"), -1, b)
-            self.box_case = wx.ComboBox(panel, -1, style=wx.CB_READONLY, choices=self.settings.liste_case, size=(50,-1))
-            self.box_case.SetStringSelection(self.settings.get("tirage_nbpos"))
-            self.Bind(wx.EVT_COMBOBOX, self.case_click, self.box_case)
-            conn.Add(self.box_case)
-
+        conn.Add(space)
+        conn.Add(space)
+        conn.Add(space)
         conn.Add(space)
         conn.Add(space)
         bok = wx.Button(panel,-1, "OK")
@@ -79,15 +58,14 @@ class dlgconnframe(wx.Frame):
         border.Add(conn,0,wx.ALL,10)
         panel.SetSizerAndFit(border)
         self.SetSize(self.GetBestSize())
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Centre()
         self.Show()
 
     def click_button_ok(self, evt) :
         nick = str(self.txtnom.GetValue()).strip()
         host = str(self.txtaddr.GetValue()).strip()
-        if self.check_complet.GetValue() :
-            email = str(self.txtemail.GetValue()).strip()
-        else :
-            email = self.settings.get("email")
+        email = ""
         porterror = False
         try:
             port = int (self.txtport.GetValue())
@@ -102,6 +80,7 @@ class dlgconnframe(wx.Frame):
         elif len(nick) > 20 :
             utils.errordlg("Pas plus de 20 caractères pour le pseudo", "Erreur")
         else :
+            self.Unbind(wx.EVT_CLOSE)
             self.settings.set("port",str(port))
             self.settings.set("pseudo",nick)
             self.settings.set("email",email)
@@ -113,22 +92,8 @@ class dlgconnframe(wx.Frame):
             self.MakeModal(False)
             self.app.cree()
 
-    def skin_click(self, e) :
-        p = self.box_skin.GetSelection()
-        skin = self.settings.liste_skin[p]
-        self.app.settings.set("skin", skin)
-
-    def case_click(self, e) :
-        p = self.box_case.GetSelection()
-        case = self.settings.liste_case[p]
-        self.app.settings.set("tirage_nbpos", case)
-
-    def complet_click(self, e) :
-        self.Close()
-        dlgconnframe(None, self.app, complet=self.check_complet.GetValue())
-
-    def quit(self,evt) :
-        self.Close()
+    def OnClose(self,evt) :
+        self.app.frame.Close()
 
 if __name__ == '__main__' :
     class App(wx.App):
