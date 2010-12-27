@@ -14,7 +14,7 @@ import coord
 
 class frame(wx.Frame):
     def __init__(self, parent, app) :
-        wx.Frame.__init__(self, parent, title = "wxScrab - " + app.nick)
+        wx.Frame.__init__(self, parent, title = "wxScrab")
         self.SetIcon(wx.Icon(app.skin.get("icone"), wx.BITMAP_TYPE_ICO))
         self.panel = wx.Panel(self)
         self.app = app

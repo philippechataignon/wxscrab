@@ -82,7 +82,7 @@ class dlgconnframe(wx.Frame):
         self.Show()
 
     def click_button_ok(self, evt) :
-        self.nick = str(self.txtnom.GetValue()).strip()
+        nick = str(self.txtnom.GetValue()).strip()
         host = str(self.txtaddr.GetValue()).strip()
         if self.check_complet.GetValue() :
             email = str(self.txtemail.GetValue()).strip()
@@ -97,51 +97,22 @@ class dlgconnframe(wx.Frame):
 
         if porterror :
             pass
-        elif self.nick == "" :
+        elif nick == "" :
             utils.errordlg("Vous n'avez pas reglé de pseudo", "Erreur")
-        elif len(self.nick) > 20 :
+        elif len(nick) > 20 :
             utils.errordlg("Pas plus de 20 caractères pour le pseudo", "Erreur")
         else :
             self.settings.set("port",str(port))
-            self.settings.set("pseudo",self.nick)
+            self.settings.set("pseudo",nick)
             self.settings.set("email",email)
             self.settings.insert_list("servers", host)
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            try :
-                self.sock.connect((host,port))
-                # numéro de protocole = 1
-                proto = 1
-                m = msg.msg("joueur", (proto, email), self.nick)
-                self.sock.send(pickle.dumps(m) + net.net.term)
-                ok = False
-                essai = 0
-                while not ok  :
-                    recv  = self.sock.recv(4096)
-                    ret = pickle.loads(recv)
-                    # print "Ret %s %s %s" % (ret.cmd, ret.param, ret.id)
-                    if ret.cmd == "connect" :
-                        if ret.param[0] == 0 :
-                            ok = True
-                            self.sock.close()
-                            utils.errordlg(ret.param[1],"Erreur : nom existant")
-                        else :
-                            self.settings.write()
-                            self.sock.setblocking(0)
-                            self.ret =  ret.param[0]
-                            self.app.cree_all(self.nick, self.sock, self.ret)
-                            self.Close()
-                            return
-                    else :
-                        essai += 1
-                        if essai > 10 :
-                            raise TooMuchTry
-            except socket.error, (errno, errmsg) :
-                self.sock.close()
-                utils.errordlg(errmsg, "Erreur de connexion")
-            except TooMuchTry :
-                self.sock.close()
-                utils.errordlg("Limite essais atteinte", "Erreur : connect non reçu")
- 
+            self.app.nick = nick
+            self.app.host = host
+            self.app.port = port
+            self.app.email = email
+            self.MakeModal(False)
+            self.app.cree()
+
     def skin_click(self, e) :
         p = self.box_skin.GetSelection()
         skin = self.settings.liste_skin[p]

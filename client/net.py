@@ -6,17 +6,24 @@ sys.path.append('../common')
 
 import utils
 import asyncore, asynchat
+import socket
 import msg
 import cPickle as pickle
 
 class net(asynchat.async_chat) :
     term = "\r\n\r\n"
-    def __init__(self, sock, app) :
-        asynchat.async_chat.__init__(self, sock)
+    def __init__(self, app, host, port) :
+        asynchat.async_chat.__init__(self)
         self.app = app
         self.buffer = []
         self.set_terminator(net.term)
         self.debug = False
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connect((host, port))
+
+    def handle_connect(self):
+        m = msg.msg("joueur", (1, self.app.email), self.app.nick)
+        self.envoi_net(m)
 
     def collect_incoming_data(self, data):
         self.buffer.append(data)

@@ -23,38 +23,29 @@ import coord
 class App(wx.App):
     def OnInit(self) :
         wx.InitAllImageHandlers()
+        self.connected = False
         self.t1 = wx.Timer(self)
         self.settings = settings.settings()
+        self.skin = skin.skin(self.settings.get("skin"))
         # Appelle la frame de connexion au début
-        dlgconn.dlgconnframe(None, self)
+        self.frame = frame.frame(None, self)
+        self.d = dlgconn.dlgconnframe(self.frame, self)
+        self.d.Show()
+        self.d.MakeModal(True)
         return True
 
-## Création
 
-    def cree_all(self, nick, sock, status) :
-        """
-        Crée les objets de base du client
-
-        Fonction appelée en sorte de dlgconn
-        """
-        self.skin = skin.skin(self.settings.get("skin"))
-        self.nick = nick
-        self.frame = frame.frame(None, self)
-        self.frame.Show()
-        self.net  = net.net(sock, self)
+## Fonctions basiques
+    def cree(self) :
+        self.d.Destroy()
+        self.net  = net.net(self, self.host, self.port)
         self.son = son.son()
         self.t1.Start(100)
         self.Bind(wx.EVT_TIMER, self.watchnet)
         self.score = frame_score.frame_score(self.frame, "")
         self.score.Show(False)
-        if status == '1' :
-            self.info_serv("Connexion établie", wx.NamedColor("DARK GREEN"))
-        elif status == '2' :
-            self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
         self.tour_on = False
-        self.debut_partie()
-
-## Fonctions basiques
+        self.frame.Show()
 
     def envoi(self, txt) :
         txt.set_id(self.nick)
@@ -87,6 +78,23 @@ class App(wx.App):
         # print "Traite %s %s %s" % (m.cmd, m.param, m.id)
         g = self.frame.grille
         t = self.frame.tirage
+        if m.cmd == 'connect' :
+            print m.param[0]
+            if m.param[0] == 0 :
+                utils.errordlg(m.param[1],"Erreur : nom existant")
+                self.frame.Close()
+            elif m.param[0] == 1 :
+                self.info_serv("Connexion établie", wx.NamedColor("DARK GREEN"))
+            elif m.param[0] == 2 :
+                self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
+            self.settings.write()
+            self.connected = True
+            self.debut_partie()
+
+        # analyse pas les commandes si non connecté
+        if not self.connected :
+            return
+
         if m.cmd == 'info' :
             txt = m.param
             id  = m.id
