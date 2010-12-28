@@ -129,7 +129,7 @@ class joueurs :
                 liste_top.append(j)
             if j.connect :
                 m = msg.msg("info", \
-                        "Score : %d (%d) - Rang : %d/%d" \
+                        "Score : %d - Ecart : %d - Rang : %d/%d" \
                         % (j.points_tour, j.points_tour-score_top, j.rang, len(l)), "")
                 j.channel.envoi(m)
 
