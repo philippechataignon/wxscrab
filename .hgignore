@@ -8,4 +8,7 @@ win/dist
 settings.xml
 gen_part
 Makefile.dep
-win/setup*
+setup*.exe
+*.pyw
+gen/listdic
+gen/compdic

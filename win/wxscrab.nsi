@@ -59,7 +59,7 @@ SectionEnd
 Section "Raccourcis menu Démarrer" menu
   CreateDirectory "$SMPROGRAMS\wxScrab"
   CreateShortCut "$SMPROGRAMS\wxScrab\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\wxScrab\wxScrab.lnk" "$INSTDIR\wxscrab.exe" "" "$INSTDIR\wxScrab.exe" 0
+  CreateShortCut "$SMPROGRAMS\wxScrab\wxScrab.lnk" "$INSTDIR\go.exe" "" "$INSTDIR\go.exe" 0
 SectionEnd
 
 
