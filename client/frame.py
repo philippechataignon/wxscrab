@@ -251,16 +251,16 @@ class frame(wx.Frame):
 
     def about(self, e):
         info = wx.AboutDialogInfo()
+        with open("tag.file") as f :
+            ll = f.readline()
+            l = ll[:-1].split("\t")
         info.Name = "wxScrab"
-        info.Copyright = "Date : %s" % ("13 avril 2010")
-        info.Description = '   Client Scrabble(r) Duplicate   '
+        info.Copyright = l[2]
+        info.Description = "Client Scrabble(r) Duplicate\nRevision: %s\nTag: %s" % (l[0], l[1])
         info.WebSite = ("http://wxscrab.ath.cx", "Site wxScrab")
-        info.Developers = [ "Xouillet",
-                            "PhC"
-                          ]
-        f=open('GPL.txt')
-        license = f.read()
-        f.close()
+        info.Developers = l[3]
+        with open('GPL.txt') as f :
+            license = f.read()
         info.License = license
         wx.AboutBox(info)
 

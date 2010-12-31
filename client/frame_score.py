@@ -8,7 +8,6 @@ from xml.parsers.expat import ExpatError
 class CustomDataTable(wx.grid.PyGridTableBase):
     def __init__(self, data):
         wx.grid.PyGridTableBase.__init__(self)
-        #self.identifiers = ['score','percent','nbtop','nbsolo']
         self.colLabels = []
         self.rowLabels = []
         self.data = []
