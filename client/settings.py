@@ -19,38 +19,49 @@ class settings :
 
         with open("def.yaml") as f :
             buff = f.read()
+        self.dic = yaml.load(buff)
         if os.path.isfile(self.file) :
             with open(self.file) as f :
-                buff += f.read()
-        self.dic = yaml.load(buff)
+                buff = f.read()
+        dic_perso = yaml.load(buff)
+        for key, item in dic_perso.iteritems() :
+            self.dic[key] = item
         self.img = {}
-        size = self.get('size', 'size')
-        self.dic['size']['offset_coord'] = size * .65
-        self.dic['size']['fontsize'] = size * 0.5
-        dir = self.get('files','rep_images')
+        size = self.get('size_jeton')
+        self.calc_auto()
+        dir = self.get('files_rep_images')
         for key, nom in self.dic['images'].items() :
             img = wx.Image(os.path.join(dir, nom) ,wx.BITMAP_TYPE_PNG).Scale(size,size)
             if key == 'fl_r' :
                 self.img[key] = wx.BitmapFromImage(img.Rotate90(False))
             else :
                 self.img[key] = wx.BitmapFromImage(img)
-        self.font_norm = wx.Font(self.get('size', 'fontsize'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
-        self.font_point = wx.Font(self.get('size', 'pointfontsize'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
+        self.font_norm = wx.Font(self.get('size_font_jeton'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
+        self.font_point = wx.Font(self.get('size_font_point'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
+
+    def calc_auto(self) :
+        size = self.get('size_jeton')
+        self.dic['size_offset_coord'] = (size * 2) / 3
+        self.dic['size_font_jeton'] = size / 2
+        self.dic['size_font_point'] = (size * 15) / 100
+        self.dic['size_font_chrono'] = size / 2
+        self.dic['size_font_score'] = (4*size)/10
+        self.dic['size_fill'] = size/2
 
     def write(self) :
         with open(self.file,"w") as f :
             f.write(yaml.dump(self.dic, default_flow_style=False))
 
-    def set(self, chap, key, val) :
-        self.dic[chap][key] = val
+    def set(self, key, val) :
+        self.dic[key] = val
 
-    def get(self, chap, key) :
-        return self.dic.get(chap).get(key)
+    def get(self, key) :
+        return self.dic.get(key)
 
-    def insert_list(self, chap, key, val) :
-        if val in self.dic[chap][key] :
-            self.dic[chap][key].remove(val)
-        self.dic[chap][key].insert(0,val)
+    def insert_list(self, key, val) :
+        if val in self.dic[key] :
+            self.dic[key].remove(val)
+        self.dic[key].insert(0,val)
  
     def get_img(self, nom) :
         return self.img[nom]
@@ -65,9 +76,3 @@ class settings :
 
     def get_pointfont(self) :
         return self.font_point
-
-if __name__ == '__main__' :
-    import yaml
-    print yaml.dump(s.param, default_flow_style=False)
-    print yaml.dump(s.fontcol,default_flow_style=False)
-

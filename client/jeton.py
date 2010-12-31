@@ -52,21 +52,21 @@ class jeton :
             bmp = self.settings.get_img_copy("temp")
             memory.SelectObject(bmp)
             if self.is_joker() :
-                memory.SetTextForeground(self.settings.get("fontcol","tempjoker"))
+                memory.SetTextForeground(self.settings.get("fontcol_tempjoker"))
             else :
-                memory.SetTextForeground(self.settings.get("fontcol","tempnorm"))
+                memory.SetTextForeground(self.settings.get("fontcol_tempnorm"))
         else :
             #Sur le tirage ou sur la grille en fixe
             bmp = self.settings.get_img_copy("norm")
             memory.SelectObject(bmp)
             if self.is_joker() :
-                memory.SetTextForeground(self.settings.get("fontcol","fixejoker"))
+                memory.SetTextForeground(self.settings.get("fontcol_fixejoker"))
             else :
-                memory.SetTextForeground(self.settings.get("fontcol","fixenorm"))
-        size = self.settings.get("size", "size")
+                memory.SetTextForeground(self.settings.get("fontcol_fixenorm"))
+        size = self.settings.get("size_jeton")
         memory.DrawText(self.lettre.upper(),(size-l)/2,(size-h)/2)
         memory.SetFont(self.settings.get_pointfont())
-        memory.SetTextForeground(self.settings.get("fontcol","points"))
+        memory.SetTextForeground(self.settings.get("fontcol_points"))
         l,h = memory.GetTextExtent(self.point)
         memory.DrawText(self.point, size-1-l, size- 1-h)
         return bmp

@@ -16,9 +16,9 @@ class tirage(wx.Window) :
         self.app = app
         self.cases=[]
         self.allowdrag = False
-        self.nbpos = self.app.settings.get("view", "tirage_nbpos")
-        size = self.app.settings.get("size", "size")
-        fill = self.app.settings.get("size", "fill")
+        self.nbpos = self.app.settings.get("view_tirage_nbpos")
+        size = self.app.settings.get("size_jeton")
+        fill = self.app.settings.get("size_fill")
         for pos in xrange(self.nbpos)  :
             case = case_tirage.case_tirage(pos, self.app, self, -1,  wx.NullBitmap, \
                 ((size+fill)*pos, 0))

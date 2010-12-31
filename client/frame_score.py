@@ -130,6 +130,7 @@ class frame_score(wx.Frame):
         border.Add(butt,0, wx.ALL|wx.ALIGN_RIGHT, 10)
         panel.SetSizerAndFit(border)
         self.SetSize(self.GetBestSize())
+        self.Centre()
         self.Bind(wx.EVT_CLOSE, self.quit)
  
     def quit(self,evt) :
