@@ -20,6 +20,8 @@ class settings :
         with open("def.yaml") as f :
             buff = f.read()
         self.dic = yaml.load(buff)
+        self.def_keys = self.dic.keys()
+        self.def_keys.remove('images')
         if os.path.isfile(self.file) :
             with open(self.file) as f :
                 buff = f.read()
@@ -50,7 +52,10 @@ class settings :
 
     def write(self) :
         with open(self.file,"w") as f :
-            f.write(yaml.dump(self.dic, default_flow_style=False))
+            dic = {}
+            for key in self.def_keys :
+                dic[key] = self.dic[key]
+            f.write(yaml.dump(dic, default_flow_style=False))
 
     def set(self, key, val) :
         self.dic[key] = val
