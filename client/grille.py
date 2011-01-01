@@ -55,7 +55,7 @@ class grille(wx.Panel) :
             for x in range(15) :
                 self.cases[(x,y)] = case_grille.case_grille(self, self.app, x, y, mult[x][y])
                 sizer.Add(self.cases[(x,y)], pos=(y+1, x+1))
-        self.Bind(wx.EVT_CHAR, self.OnKey)
+        self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
         self.SetSizer(sizer)
         self.Fit()
 
@@ -175,22 +175,12 @@ class grille(wx.Panel) :
             self.recule_case()
         elif l == 27 :
             self.reinit_saisie()
-        else:
-            self.traite_keycode(l)
+        elif (ord('A') <= l <= ord('Z') or ord('a') <= l <= ord('z')):
+            if e.ShiftDown() :
+                l += 32
+            self.traite_keycode(chr(l))
         
     def traite_keycode(self, l) :
-        try:
-            l = chr(l)
-        except:
-            return
-
-        if 'a' <= l <= 'z' :
-            l = l.upper()
-        elif 'A' <= l <= 'Z' :
-            l = l.lower()
-        else :
-            return
-
         if not self.coord_ini.isOK() :  #pas de fleche en cours (ex : apres envoi d'un mot)
             return
         if (self.entry == False) :          # si pas de saisie en cours
