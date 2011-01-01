@@ -30,7 +30,6 @@ class settings :
             self.dic[key] = item
         self.img = {}
         size = self.get('size_jeton')
-        self.calc_auto()
         dir = self.get('files_rep_images')
         for key, nom in self.dic['images'].items() :
             img = wx.Image(os.path.join(dir, nom) ,wx.BITMAP_TYPE_PNG).Scale(size,size)
@@ -40,14 +39,6 @@ class settings :
                 self.img[key] = wx.BitmapFromImage(img)
         self.font_norm = wx.Font(self.get('size_font_jeton'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
         self.font_point = wx.Font(self.get('size_font_point'),wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,"")
-
-    def calc_auto(self) :
-        size = self.get('size_jeton')
-        self.dic['size_offset_coord'] = (size * 2) / 3
-        self.dic['size_font_jeton'] = size / 2
-        self.dic['size_font_point'] = (size * 15) / 100
-        self.dic['size_font_chrono'] = size / 2
-        self.dic['size_font_score'] = (4*size)/10
 
     def write(self) :
         with open(self.file,"w") as f :
