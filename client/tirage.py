@@ -19,11 +19,11 @@ class tirage(wx.Panel) :
         self.nbpos = self.app.settings.get("view_tirage_nbpos")
         size = self.app.settings.get("size_jeton")
         fill = self.app.settings.get("size_fill")
-        sizer = wx.GridSizer(rows = 1, cols = self.nbpos, hgap= 2*fill)
+        sizer = wx.GridSizer(rows = 1, cols = self.nbpos, hgap=fill, vgap=fill)
         for pos in xrange(self.nbpos)  :
             case = case_tirage.case_tirage(self, self.app, pos)
             self.cases.append(case)
-            sizer.Add(case, 0, 0)
+            sizer.Add(case, flag=wx.ALIGN_CENTER)
         self.SetSizer(sizer)
         self.Fit()
 

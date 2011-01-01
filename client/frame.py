@@ -27,9 +27,7 @@ class frame(wx.Frame):
         self.timer = wx.StaticText(self.panel, -1, str(utils.convert_time(0)))
         font = wx.Font(self.app.settings.get("size_font_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.timer.SetFont(font)
-        timer_sizer.Add((fill,0),0)
         timer_sizer.Add(self.timer, 0, wx.ALL|wx.EXPAND, fill)
-        timer_sizer.Add((fill,0),0)
 
         #Creation et dessin du tirage
         self.tirage = tirage.tirage(self.panel, self.app)
@@ -81,11 +79,11 @@ class frame(wx.Frame):
         # cadres boutons 
         bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
         #box = wx.StaticBox(self.panel, label = "Commandes")
-        boutons = [ ("Tirage Alpha", self.button_alpha),
-                    ("Tirage Random", self.button_random),
+        boutons = [ ("Alpha", self.button_alpha),
+                    ("Random", self.button_random),
                     ("Restart", self.button_restart),
                     ("Next", self.button_next),
-                    ("Pose précédent", self.button_pose_last),
+                    ("Précédent", self.button_pose_last),
                 ]
         if self.app.settings.get("user_admin") :
             boutons.insert(2, ("Chrono", self.button_chrono))
@@ -152,21 +150,21 @@ class frame(wx.Frame):
         sizer = wx.GridBagSizer(hgap=fill, vgap=fill) 
 
         if  self.app.settings.get("view_layout") == "alt" :
-            sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
-            sizer1.Add( (fill,fill), 0)
-            sizer1.Add(timer_sizer, 0, wx.EXPAND)
+            sizer1.Add(tirage_sizer, 1, flag = wx.EXPAND)
+            sizer1.Add( (fill,fill))
+            sizer1.Add(timer_sizer, flag = wx.EXPAND)
             sizer.Add(grille_sizer, pos=(0,0))
-            sizer2.Add(sizer1)
-            sizer.Add(sizer2, pos=(0,1),  flag = wx.EXPAND|wx.ALIGN_RIGHT)
+            sizer2.Add(sizer1, flag = wx.EXPAND)
+            sizer.Add(sizer2, pos=(0,1),  flag = wx.EXPAND)
             sizer.AddGrowableCol(1) 
         else :
-            sizer1.Add(timer_sizer, 0, wx.EXPAND)
-            sizer1.Add( (fill,fill), 0)
-            sizer1.Add(tirage_sizer,0, wx.EXPAND|wx.ALIGN_RIGHT)
-            sizer.Add(sizer1, pos=(0,0))
+            sizer1.Add(timer_sizer, flag = wx.EXPAND)
+            sizer1.Add((fill,fill))
+            sizer1.Add(tirage_sizer, 1, flag = wx.EXPAND)
+            sizer.Add(sizer1, pos=(0,0), flag = wx.EXPAND)
             sizer.Add(grille_sizer, pos=(1,0))
-            sizer.Add(sizer2, pos=(0,1), span=(2,1), flag = wx.EXPAND|wx.ALIGN_RIGHT)
-            sizer.AddGrowableCol(1) 
+            sizer.Add(sizer2, pos=(0,1), span=(2,1), flag = wx.EXPAND)
+            sizer.AddGrowableCol(1)
 
         self.panel.SetSizer(sizer) 
         sizer.Fit(self)

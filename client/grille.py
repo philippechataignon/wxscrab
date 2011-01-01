@@ -35,7 +35,6 @@ mult =   ((MT,OO,OO,LD,OO,OO,OO,MT,OO,OO,OO,LD,OO,OO,MT),
 class grille(wx.Panel) :
     def __init__(self, parent, app) :
         wx.Panel.__init__(self, parent, -1)
-        self.sizer = wx.GridBagSizer(hgap=0, vgap=0)
         self.app = app
         self.cases = {}
         self.coord_ini = coord.coord()   # coord_ini est récupéré depuis case (OnClickCase)
@@ -43,17 +42,21 @@ class grille(wx.Panel) :
         self.saisie_ok = False           # flag indiquant si on peut saisir (depend chrono)
         self.entry = False          # flag saisie en cours
         size = self.app.settings.get("size_jeton")
+        fill = self.app.settings.get("size_fill")
+        sizer = wx.GridBagSizer(hgap=0, vgap=0)
+        sizer.Add( (2*fill,2*fill), pos=(0,0))
+        sizer.Add( (fill,fill), pos=(16,16))
         for i in xrange(15) :
             t = str(i+1)
-            self.sizer.Add(wx.StaticText(self, -1, t), pos=(0,i+1), flag=wx.ALIGN_CENTER)
+            sizer.Add(wx.StaticText(self, -1, t), pos=(0,i+1), flag=wx.ALIGN_CENTER)
             t = chr(65+i)
-            self.sizer.Add(wx.StaticText(self, -1, t), pos=(i+1,0), flag=wx.ALIGN_CENTER)
+            sizer.Add(wx.StaticText(self, -1, t), pos=(i+1,0), flag=wx.ALIGN_CENTER)
         for y in range(15) :
             for x in range(15) :
                 self.cases[(x,y)] = case_grille.case_grille(self, self.app, x, y, mult[x][y])
-                self.sizer.Add(self.cases[(x,y)], pos=(y+1, x+1))
+                sizer.Add(self.cases[(x,y)], pos=(y+1, x+1))
         self.Bind(wx.EVT_CHAR, self.OnKey)
-        self.SetSizer(self.sizer)
+        self.SetSizer(sizer)
         self.Fit()
 
 ## Fonctions basiques

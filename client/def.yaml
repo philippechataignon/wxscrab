@@ -15,7 +15,7 @@ view_tirage_nbpos: 8
 
 size_font_msgs: 11
 size_jeton: 34
-size_button: [120,30]
+size_button: [100,24]
 size_chat_size: 300
 size_fill: 10
 
