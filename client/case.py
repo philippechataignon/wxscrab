@@ -11,8 +11,9 @@ import jeton
 import grille
 
 class case(wx.StaticBitmap) :
-    def __init__(self, app, *bitarg) :
-        wx.StaticBitmap.__init__(self, *bitarg)
+    def __init__(self, parent, app) :
+        #size = app.settings.get("size_jeton")
+        wx.StaticBitmap.__init__(self, parent)
         self.app = app
         self.jeton = None
         self.tirage = False

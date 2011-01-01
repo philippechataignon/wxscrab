@@ -28,14 +28,14 @@ class frame(wx.Frame):
         font = wx.Font(self.app.settings.get("size_font_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.timer.SetFont(font)
         timer_sizer.Add((fill,0),0)
-        timer_sizer.Add(self.timer, 0, wx.ALL|wx.EXPAND, fill) 
+        timer_sizer.Add(self.timer, 0, wx.ALL|wx.EXPAND, fill)
         timer_sizer.Add((fill,0),0)
 
         #Creation et dessin du tirage
         self.tirage = tirage.tirage(self.panel, self.app)
         tirage_sizer = self.cree_box_sizer("Tirage")
         tirage_sizer.Add((fill,0),0)
-        tirage_sizer.Add(self.tirage, 0, wx.ALL|wx.EXPAND, fill)
+        tirage_sizer.Add(self.tirage, 1, wx.ALL|wx.EXPAND, fill)
         tirage_sizer.Add((fill,0),0)
 
         #Creation et dessin de la grille

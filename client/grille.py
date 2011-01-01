@@ -32,9 +32,10 @@ mult =   ((MT,OO,OO,LD,OO,OO,OO,MT,OO,OO,OO,LD,OO,OO,MT),
           (OO,MD,OO,OO,OO,LT,OO,OO,OO,LT,OO,OO,OO,MD,OO),
           (MT,OO,OO,LD,OO,OO,OO,MT,OO,OO,OO,LD,OO,OO,MT))
 
-class grille(wx.Window) :
+class grille(wx.Panel) :
     def __init__(self, parent, app) :
-        wx.Window.__init__(self, parent, -1)
+        wx.Panel.__init__(self, parent, -1)
+        self.sizer = wx.GridBagSizer(hgap=0, vgap=0)
         self.app = app
         self.cases = {}
         self.coord_ini = coord.coord()   # coord_ini est récupéré depuis case (OnClickCase)
@@ -44,17 +45,16 @@ class grille(wx.Window) :
         size = self.app.settings.get("size_jeton")
         for i in xrange(15) :
             t = str(i+1)
-            x = self.app.settings.get("size_offset_coord")+i*size
-            wx.StaticText(self, -1, str(i+1), pos=(x,0), size=(size,20))
-        for j in xrange(15) :
-            t = chr(65+j)
-            y = self.app.settings.get("size_offset_coord")+j*size
-            wx.StaticText(self, -1, t, pos=(0,y), size=(20,size))
+            self.sizer.Add(wx.StaticText(self, -1, t), pos=(0,i+1), flag=wx.ALIGN_CENTER)
+            t = chr(65+i)
+            self.sizer.Add(wx.StaticText(self, -1, t), pos=(i+1,0), flag=wx.ALIGN_CENTER)
         for y in range(15) :
             for x in range(15) :
-                self.cases[(x,y)] = case_grille.case_grille(x, y, mult[x][y], self.app, \
-                    self, -1, wx.NullBitmap, (15+size*x, 15+size*y))
+                self.cases[(x,y)] = case_grille.case_grille(self, self.app, x, y, mult[x][y])
+                self.sizer.Add(self.cases[(x,y)], pos=(y+1, x+1))
         self.Bind(wx.EVT_CHAR, self.OnKey)
+        self.SetSizer(self.sizer)
+        self.Fit()
 
 ## Fonctions basiques
 
@@ -263,3 +263,11 @@ class grille(wx.Window) :
                     case = self.case_coord(coord.coord(x,y))
                     case.pose(jeton.jeton(char, jeton.POSE, self.app.settings))
                     self.app.reliquat.retire(char)
+
+if __name__ == '__main__' :
+    app = wx.PySimpleApp()
+    frame = wx.Frame(None, -1)
+    panel = wx.Panel(frame)
+    g = grille(panel, app)
+    frame.Show()
+    app.MainLoop()

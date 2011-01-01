@@ -6,23 +6,26 @@ import dnd
 import case_tirage
 import random
 
-class tirage(wx.Window) :
+class tirage(wx.Panel) :
     """
     Représente le tirage
     """
 
     def __init__(self, parent, app) :
-        wx.Window.__init__(self, parent, -1)
+        wx.Panel.__init__(self, parent, -1)
         self.app = app
         self.cases=[]
         self.allowdrag = False
         self.nbpos = self.app.settings.get("view_tirage_nbpos")
         size = self.app.settings.get("size_jeton")
         fill = self.app.settings.get("size_fill")
+        sizer = wx.GridSizer(rows = 1, cols = self.nbpos, hgap= 2*fill)
         for pos in xrange(self.nbpos)  :
-            case = case_tirage.case_tirage(pos, self.app, self, -1,  wx.NullBitmap, \
-                ((size+fill)*pos, 0))
+            case = case_tirage.case_tirage(self, self.app, pos)
             self.cases.append(case)
+            sizer.Add(case, 0, 0)
+        self.SetSizer(sizer)
+        self.Fit()
 
 ## Fonctions basiques
 
@@ -152,3 +155,4 @@ class tirage(wx.Window) :
         self.cases[pos_old].jeton, self.cases[pos_new].jeton = self.cases[pos_new].jeton, self.cases[pos_old].jeton  
         self.cases[pos_old].redraw()
         self.cases[pos_new].redraw()
+

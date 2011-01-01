@@ -10,8 +10,9 @@ import dnd
 import case
 
 class case_tirage(case.case) :
-    def __init__(self, pos, app, *bitarg) :
-        case.case.__init__(self, app, *bitarg)
+    def __init__(self, parent, app, pos)  :
+        case.case.__init__(self, parent, app)
+        size = app.settings.get("size_jeton")
         self.tirage = True
         self.pos = pos
         self.allowdrag = False
