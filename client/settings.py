@@ -48,7 +48,6 @@ class settings :
         self.dic['size_font_point'] = (size * 15) / 100
         self.dic['size_font_chrono'] = size / 2
         self.dic['size_font_score'] = (4*size)/10
-        self.dic['size_fill'] = size/2
 
     def write(self) :
         with open(self.file,"w") as f :
