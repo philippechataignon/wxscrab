@@ -17,43 +17,44 @@ class TooMuchTry(Exception) :
 
 class dlgconnframe(wx.Frame):
     def __init__(self, parent, app, complet=False) :
-        wx.Frame.__init__(self, parent, -1, "wxScrab Connexion", pos=(350,250))
-        self.app = app
-        panel = wx.Panel(self, -1)
-        self.settings = app.settings
+        wx.Frame.__init__(self, parent, title="wxScrab Connexion")
+        panel = wx.Panel(self)
         icon = wx.Icon('images/wxscrab.ico', wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
+        self.app = app
+        self.settings = app.settings
+        fill = self.settings.get("size_fill")
 
-        conn = wx.FlexGridSizer(rows=3, cols=4, hgap=15, vgap=15)
-        space = (10,10)
+        conn = wx.FlexGridSizer(rows=3, cols=4, hgap=fill, vgap=fill)
+        # conn = wx.GridBagSizer(hgap=fill, vgap=fill)
+        space = (fill,fill)
         conn.Add(space)
         conn.Add(space)
         conn.Add(space)
         conn.Add(space)
 
-        b = wx.ALIGN_RIGHT
-        conn.Add(wx.StaticText(panel, -1, "Serveur : "),-1, b)
-        self.txtaddr = wx.ComboBox(panel, -1, self.settings.get("server_servers")[0], size=(200, -1), choices=self.settings.get("server_servers"))
+        b = wx.ALIGN_RIGHT | wx.ALIGN_CENTER
+        conn.Add(wx.StaticText(panel, label="Serveur : "), flag=b, border = fill)
+        self.txtaddr = wx.ComboBox(panel, value=self.settings.get("server_servers")[0], size=(200, -1), choices=self.settings.get("server_servers"))
         self.txtaddr.SetFocus()
-        conn.Add(self.txtaddr)
+        conn.Add(self.txtaddr, flag=wx.EXPAND)
 
-        conn.Add(wx.StaticText(panel, -1, "Port : "), -1, b)
-        self.txtport = wx.TextCtrl(panel, -1, str(self.settings.get("server_port")), size=(50,-1))
-        conn.Add(self.txtport)
+        conn.Add(wx.StaticText(panel, label="Port : "), flag=b)
+        self.txtport = wx.TextCtrl(panel, value=str(self.settings.get("server_port")))
+        conn.Add(self.txtport, flag=wx.EXPAND)
 
-        conn.Add(wx.StaticText(panel, -1, "Pseudo  : "), -1, b)
-        self.txtnom  = wx.TextCtrl(panel, -1, self.settings.get("user_pseudo"), size=(200,-1))
-        conn.Add(self.txtnom)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
-        bok = wx.Button(panel,-1, "OK")
+        conn.Add(wx.StaticText(panel, label="Pseudo  : "), flag=b)
+        self.txtnom  = wx.TextCtrl(panel, value=self.settings.get("user_pseudo"))
+        conn.Add(self.txtnom, flag=wx.EXPAND)
+        bok = wx.Button(panel, label="OK")
         bok.SetDefault()
+        conn.Add(bok, flag=b)
         self.Bind(wx.EVT_BUTTON, self.click_button_ok, bok)
-        conn.Add(bok,0,b|wx.ALIGN_RIGHT)
-
+        conn.Add(bok)
+        conn.Add(space)
+        conn.Add(space)
+        conn.Add(space)
+        conn.Add(space)
         border = wx.BoxSizer(wx.VERTICAL)
         border.Add(conn,0,wx.ALL,10)
         panel.SetSizerAndFit(border)

@@ -169,12 +169,17 @@ class grille(wx.Panel) :
         l = e.GetKeyCode()
         if l is None or self.saisie_ok == False :
             return
-        if l == 13 :
+        if l == 13 or l == wx.WXK_NUMPAD_ENTER :
             self.envoi_mot()
         elif l == 8 :
             self.recule_case()
         elif l == 27 :
             self.reinit_saisie()
+        elif e.ControlDown() :
+            if l == 88 : # ctrl-x
+                self.app.frame.button_pose_last(e)
+            elif l == 78 : #ctrl-n
+                self.app.frame.button_next(e)
         elif (ord('A') <= l <= ord('Z') or ord('a') <= l <= ord('z')):
             if e.ShiftDown() :
                 l += 32
