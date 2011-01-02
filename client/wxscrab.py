@@ -7,17 +7,14 @@ sys.path.append('../common')
 import wx
 import settings
 import frame
-import net
-import dlgconn
 import frame_score
+import dlgconn
+import son
+import net
 import utils
 import reliquat
-import asyncore
 import jeton
-import son
-import time
 import msg
-import coord
 
 class App(wx.App):
     def OnInit(self) :
@@ -27,25 +24,22 @@ class App(wx.App):
         # Crée la frame principale
         self.frame = frame.frame(None, self)
         self.frame.Show()
+        self.score = frame_score.frame_score(self.frame, "")
+        self.score.Show(False)
+        self.son = son.son()
+        self.tour_on = False
         # Appelle la frame de connexion au début
         self.d = dlgconn.dlgconnframe(self.frame, self)
         self.d.Show()
         self.d.MakeModal(True)
         return True
 
-    def cree(self) :
+    def lance_net(self) :
         # Appelé en sortie de la dlgconn
         self.net  = net.net(self, self.host, self.port)
-        self.son = son.son()
         self.t1 = wx.Timer(self)
         self.t1.Start(100)
-        self.Bind(wx.EVT_TIMER, self.watchnet)
-        self.score = frame_score.frame_score(self.frame, "")
-        self.score.Show(False)
-        self.tour_on = False
-
-    def watchnet(self, e) :
-        asyncore.poll()
+        self.Bind(wx.EVT_TIMER, self.net.watchnet)
 
 ## Fonctions basiques
     def envoi(self, txt) :

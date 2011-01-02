@@ -91,7 +91,7 @@ class dlgconnframe(wx.Frame):
             self.app.port = port
             self.app.email = email
             self.MakeModal(False)
-            self.app.cree()
+            self.app.lance_net()
             self.Close()
 
     def OnClose(self,evt) :

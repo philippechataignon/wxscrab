@@ -53,3 +53,6 @@ class net(asynchat.async_chat) :
         if self.debug == True :
             print m.cmd, m.param, m.id
         self.push(pickle.dumps(m, 2)+net.term)
+
+    def watchnet(self, e) :
+        asyncore.poll()
