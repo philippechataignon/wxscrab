@@ -26,7 +26,6 @@ size_font_score: 18
 fontcol_fixejoker: GREY
 fontcol_fixenorm: BLACK
 fontcol_points: GREY
-fontcol_signes: BLUE
 fontcol_tempjoker: WHITE
 fontcol_tempnorm: BLUE
 

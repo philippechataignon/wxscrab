@@ -45,8 +45,6 @@ class jeton :
 
     def calc_bmp(self, status) :
         memory = wx.MemoryDC()
-        memory.SetFont(self.settings.get_font())
-        l,h = memory.GetTextExtent(self.lettre.upper())
         if status in (TEMP, PREPOSE) :
             #Sur la grille en temporaire
             bmp = self.settings.get_img_copy("temp")
@@ -64,11 +62,16 @@ class jeton :
             else :
                 memory.SetTextForeground(self.settings.get("fontcol_fixenorm"))
         size = self.settings.get("size_jeton")
+
+        memory.SetFont(self.settings.get_font())
+        l,h = memory.GetTextExtent(self.lettre.upper())
         memory.DrawText(self.lettre.upper(),(size-l)/2,(size-h)/2)
+
         memory.SetFont(self.settings.get_pointfont())
         memory.SetTextForeground(self.settings.get("fontcol_points"))
         l,h = memory.GetTextExtent(self.point)
         memory.DrawText(self.point, size-1-l, size- 1-h)
+        del memory
         return bmp
 
     def deplace(self, dep, arr) :
