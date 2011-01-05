@@ -77,11 +77,13 @@ class jeton :
         """
         if dep.tirage :
             if arr.tirage :
-                " Départ et arrivée dans tirage : on swap"
+                "Départ et arrivée dans tirage : on swap"
                 dep.jeton, arr.jeton = arr.jeton, dep.jeton 
                 dep.redraw()
                 arr.redraw()
             elif arr.is_vide() :
-                dep.jeton.set_status(TEMP)
-                arr.pose(dep.jeton)
-                dep.vide()
+                "Arrivée sur la grille"
+                if not self.is_joker() : #ne pas poser le joker
+                    dep.jeton.set_status(TEMP)
+                    arr.pose(dep.jeton)
+                    dep.vide()
