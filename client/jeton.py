@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import wx
 import utils
 
 NUL = 0
@@ -18,9 +17,10 @@ class jeton :
         self.settings = settings
         self.lettre = lettre
         self.status = status
-        self.point = str(pts[utils.lettre_joker(self.lettre)])
-        self.bmp_temp = self.calc_bmp(TEMP)
-        self.bmp_pose = self.calc_bmp(POSE)
+        if self.is_joker() :
+            self.point = str(pts['?'])
+        else :
+            self.point = str(pts[self.lettre])
 
     def __str__(self) :
         return self.lettre
@@ -28,51 +28,11 @@ class jeton :
     def is_joker(self) :
         return 'a' <= self.lettre <='z' or self.lettre == '?'
 
-    def get_bmp(self) :
-        if self.is_joker() :
-            return self.calc_bmp(self.status)
-        else :
-            if self.status in (TEMP, PREPOSE) :
-                return self.bmp_temp
-            else :
-                return self.bmp_pose
-
     def get_status(self) :
         return self.status
 
     def set_status(self, status) :
         self.status = status
-
-    def calc_bmp(self, status) :
-        memory = wx.MemoryDC()
-        if status in (TEMP, PREPOSE) :
-            #Sur la grille en temporaire
-            bmp = self.settings.get_img_copy("temp")
-            memory.SelectObject(bmp)
-            if self.is_joker() :
-                memory.SetTextForeground(self.settings.get("fontcol_tempjoker"))
-            else :
-                memory.SetTextForeground(self.settings.get("fontcol_tempnorm"))
-        else :
-            #Sur le tirage ou sur la grille en fixe
-            bmp = self.settings.get_img_copy("norm")
-            memory.SelectObject(bmp)
-            if self.is_joker() :
-                memory.SetTextForeground(self.settings.get("fontcol_fixejoker"))
-            else :
-                memory.SetTextForeground(self.settings.get("fontcol_fixenorm"))
-        size = self.settings.get("size_jeton")
-
-        memory.SetFont(self.settings.get_font())
-        l,h = memory.GetTextExtent(self.lettre.upper())
-        memory.DrawText(self.lettre.upper(),(size-l)/2,(size-h)/2)
-
-        memory.SetFont(self.settings.get_pointfont())
-        memory.SetTextForeground(self.settings.get("fontcol_points"))
-        l,h = memory.GetTextExtent(self.point)
-        memory.DrawText(self.point, size-1-l, size- 1-h)
-        del memory
-        return bmp
 
     def deplace(self, dep, arr) :
         """ Déplace un jeton de la case dep vers la case arr
