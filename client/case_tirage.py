@@ -18,7 +18,6 @@ class case_tirage(case.case) :
         self.allowdrag = False
         self.Bind(wx.EVT_LEFT_DOWN, self.drag)
         self.Bind(wx.EVT_RIGHT_DOWN, self.shift)
-        self.redraw()
 
     def shift(self, e) :
         """ Appelée par l'évenement RIGHT_CLICK """

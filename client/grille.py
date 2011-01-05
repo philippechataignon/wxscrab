@@ -55,7 +55,6 @@ class grille(wx.Panel) :
             for x in range(15) :
                 self.cases[(x,y)] = case_grille.case_grille(self, x, y, mult[x][y])
                 sizer.Add(self.cases[(x,y)], pos=(y+1, x+1))
-        self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
         self.SetSizer(sizer)
         self.Fit()
 
@@ -112,7 +111,7 @@ class grille(wx.Panel) :
         Remonte les lettres situées à gauche pour le début ; idem à droite
         Renvoit None en cas de saisie incorrecte : mot vide ou début partie
         """
-        mot = ""
+        mot = [] 
         if not self.coord_ini.isOK() :
             return (None, None)
         else :
@@ -123,13 +122,12 @@ class grille(wx.Panel) :
             debut = cur
             # Lettres à droite
             while self.case_coord_occ(cur) :
-                j = self.case_coord(cur).jeton
-                mot += j.lettre 
+                mot.append(self.case_coord(cur).jeton.lettre)
                 cur = cur.next()
-            if mot == "" :
+            if mot == [] :
                 return (None, None)
             else :
-                return (debut, mot)
+                return (debut, "".join(mot))
 
 ## Principales fonctions publiques
 
@@ -164,8 +162,8 @@ class grille(wx.Panel) :
         self.reinit_saisie()
 
 ## Gestion des évenements clavier
-
     def OnKey(self, e) :
+        # en provenance de la case
         l = e.GetKeyCode()
         if l is None or self.saisie_ok == False :
             return

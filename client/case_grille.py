@@ -19,7 +19,6 @@ class case_grille(case.case) :
         self.fleche = coord.NUL
         self.Bind(wx.EVT_LEFT_DOWN, self.OnClickCase)
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnClickCase)
-        self.redraw()
      
     def OnClickCase(self, evt) :
         f = self.app.frame

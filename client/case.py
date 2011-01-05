@@ -10,33 +10,47 @@ import dnd
 import jeton
 import grille
 
-class case(wx.StaticBitmap) :
+class case(wx.Window) :
     def __init__(self, parent) :
-        wx.StaticBitmap.__init__(self, parent)
         self.app = parent.app
+        size = self.app.settings.get("size_jeton")
+        wx.Window.__init__(self, parent, size=(size,size))
         self.jeton = None
         self.tirage = False
         self.SetDropTarget(dnd.casedroptarget(self))
+        # self.Bind(wx.EVT_SIZE, self.OnSize)
+        self.Bind(wx.EVT_PAINT, self.OnPaint)
+        self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
+
+    def OnKey(self, e) :
+        self.app.frame.grille.OnKey(e)
+
+    def OnSize(self, evt):
+        pass
+
+    def OnPaint(self, evt):
+        self.redraw()
 
     def redraw(self) :
         if self.jeton is not None :
-            self.SetBitmap(self.jeton.get_bmp())
+            self.buffer=self.jeton.get_bmp()
         elif self.tirage :
-            self.SetBitmap(self.app.settings.get_img("vide"))
+            self.buffer=self.app.settings.get_img("vide")
         elif self.fleche == coord.HOR :
-            self.SetBitmap(self.app.settings.get_img('fl_r'))
+            self.buffer=self.app.settings.get_img('fl_r')
         elif self.fleche == coord.VER :
-            self.SetBitmap(self.app.settings.get_img('fl_b'))
+            self.buffer=self.app.settings.get_img('fl_b')
         elif self.mult == grille.OO :
-            self.SetBitmap(self.app.settings.get_img('base'))
+            self.buffer=self.app.settings.get_img('base')
         elif self.mult == grille.LD :
-            self.SetBitmap(self.app.settings.get_img('ld'))
+            self.buffer=self.app.settings.get_img('ld')
         elif self.mult == grille.LT :
-            self.SetBitmap(self.app.settings.get_img('lt'))
+            self.buffer=self.app.settings.get_img('lt')
         elif self.mult == grille.MD :
-            self.SetBitmap(self.app.settings.get_img('md'))
+            self.buffer=self.app.settings.get_img('md')
         elif self.mult == grille.MT : 
-            self.SetBitmap(self.app.settings.get_img('mt'))
+            self.buffer=self.app.settings.get_img('mt')
+        dc = wx.BufferedPaintDC(self, self.buffer)
 
     def is_vide(self) :
         return self.jeton is None
