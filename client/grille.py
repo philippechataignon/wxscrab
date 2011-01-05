@@ -53,7 +53,7 @@ class grille(wx.Panel) :
             sizer.Add(wx.StaticText(self, -1, t), pos=(i+1,0), flag=wx.ALIGN_CENTER)
         for y in range(15) :
             for x in range(15) :
-                self.cases[(x,y)] = case_grille.case_grille(self, self.app, x, y, mult[x][y])
+                self.cases[(x,y)] = case_grille.case_grille(self, x, y, mult[x][y])
                 sizer.Add(self.cases[(x,y)], pos=(y+1, x+1))
         self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
         self.SetSizer(sizer)

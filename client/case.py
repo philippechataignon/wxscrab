@@ -11,10 +11,9 @@ import jeton
 import grille
 
 class case(wx.StaticBitmap) :
-    def __init__(self, parent, app) :
-        #size = app.settings.get("size_jeton")
+    def __init__(self, parent) :
         wx.StaticBitmap.__init__(self, parent)
-        self.app = app
+        self.app = parent.app
         self.jeton = None
         self.tirage = False
         self.SetDropTarget(dnd.casedroptarget(self))

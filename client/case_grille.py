@@ -12,8 +12,8 @@ import grille
 import case
 
 class case_grille(case.case) :
-    def __init__(self, parent, app, x, y, mult) :
-        case.case.__init__(self, parent, app)
+    def __init__(self, parent, x, y, mult) :
+        case.case.__init__(self, parent)
         self.coord = coord.coord(x,y)
         self.mult = mult
         self.fleche = coord.NUL

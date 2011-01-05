@@ -21,7 +21,7 @@ class tirage(wx.Panel) :
         fill = self.app.settings.get("size_fill")
         sizer = wx.GridSizer(rows = 1, cols = self.nbpos, hgap=fill, vgap=fill)
         for pos in xrange(self.nbpos)  :
-            case = case_tirage.case_tirage(self, self.app, pos)
+            case = case_tirage.case_tirage(self, pos)
             self.cases.append(case)
             sizer.Add(case, flag=wx.ALIGN_CENTER)
         self.SetSizer(sizer)
