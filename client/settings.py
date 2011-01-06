@@ -27,6 +27,18 @@ class settings :
         for key, item in dic_perso.iteritems() :
             self.dic[key] = item
 
+    def __getitem__(self, key):
+        if key in self.dic:
+            return self.dic[key]
+        else :
+            return None
+
+    def __setitem__(self, key, item): 
+        self.dic[key] = item
+
+    def __delitem__(self, key): 
+        del self.dic[key]
+
     def write(self) :
         with open(self.file,"w") as f :
             dic = {}
@@ -34,17 +46,17 @@ class settings :
                 dic[key] = self.dic[key]
             f.write(yaml.dump(dic, default_flow_style=False))
 
-    def set(self, key, val) :
-        self.dic[key] = val
-
-    def get(self, key) :
-        return self.dic.get(key)
-
     def insert_list(self, key, val) :
         if val in self.dic[key] :
             self.dic[key].remove(val)
         self.dic[key].insert(0,val)
 
+
+
+
 if __name__ == '__main__' :
     s = settings()
     print s.dic
+    print s['size_jeton']
+    print s['pipo']
+

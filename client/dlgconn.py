@@ -23,7 +23,7 @@ class dlgconnframe(wx.Frame):
         self.SetIcon(icon)
         self.app = app
         self.settings = app.settings
-        fill = self.settings.get("size_fill")
+        fill = self.settings["size_fill"]
 
         conn = wx.FlexGridSizer(rows=3, cols=4, hgap=fill, vgap=fill)
         # conn = wx.GridBagSizer(hgap=fill, vgap=fill)
@@ -35,16 +35,16 @@ class dlgconnframe(wx.Frame):
 
         b = wx.ALIGN_RIGHT | wx.ALIGN_CENTER
         conn.Add(wx.StaticText(panel, label="Serveur : "), flag=b, border = fill)
-        self.txtaddr = wx.ComboBox(panel, value=self.settings.get("server_servers")[0], size=(200, -1), choices=self.settings.get("server_servers"))
+        self.txtaddr = wx.ComboBox(panel, value=self.settings["server_servers"][0], size=(200, -1), choices=self.settings["server_servers"])
         self.txtaddr.SetFocus()
         conn.Add(self.txtaddr, flag=wx.EXPAND)
 
         conn.Add(wx.StaticText(panel, label="Port : "), flag=b)
-        self.txtport = wx.TextCtrl(panel, value=str(self.settings.get("server_port")))
+        self.txtport = wx.TextCtrl(panel, value=str(self.settings["server_port"]))
         conn.Add(self.txtport, flag=wx.EXPAND)
 
         conn.Add(wx.StaticText(panel, label="Pseudo  : "), flag=b)
-        self.txtnom  = wx.TextCtrl(panel, value=self.settings.get("user_pseudo"))
+        self.txtnom  = wx.TextCtrl(panel, value=self.settings["user_pseudo"])
         conn.Add(self.txtnom, flag=wx.EXPAND)
         bok = wx.Button(panel, label="OK")
         bok.SetDefault()
@@ -82,9 +82,9 @@ class dlgconnframe(wx.Frame):
             utils.errordlg("Pas plus de 20 caractères pour le pseudo", "Erreur")
         else :
             self.Unbind(wx.EVT_CLOSE)
-            self.settings.set("server_port", port)
-            self.settings.set("user_pseudo", nick)
-            self.settings.set("user_email", email)
+            self.settings["server_port"] = port
+            self.settings["user_pseudo"] = nick
+            self.settings["user_email"]  = email
             self.settings.insert_list("server_servers", host)
             self.app.nick = nick
             self.app.host = host

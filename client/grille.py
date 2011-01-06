@@ -41,8 +41,8 @@ class grille(wx.Panel) :
         self.coord_cur = coord.coord()   # coordonnée courante 
         self.saisie_ok = False           # flag indiquant si on peut saisir (depend chrono)
         self.entry = False          # flag saisie en cours
-        size = self.app.settings.get("size_jeton")
-        fill = self.app.settings.get("size_fill")
+        size = self.app.settings["size_jeton"]
+        fill = self.app.settings["size_fill"]
         sizer = wx.GridBagSizer(hgap=0, vgap=0)
         sizer.Add( (2*fill,2*fill), pos=(0,0))
         sizer.Add( (fill,fill), pos=(16,16))

@@ -12,7 +12,7 @@ import case
 class case_tirage(case.case) :
     def __init__(self, parent, pos)  :
         case.case.__init__(self, parent)
-        size = self.app.settings.get("size_jeton")
+        size = self.app.settings["size_jeton"]
         self.tirage = True
         self.pos = pos
         self.allowdrag = False

@@ -15,17 +15,18 @@ import coord
 class frame(wx.Frame):
     def __init__(self, parent, app) :
         wx.Frame.__init__(self, parent, title = "wxScrab")
-        self.SetIcon(wx.Icon(app.settings.get("files_icone"), wx.BITMAP_TYPE_ICO))
-        self.panel = wx.Panel(self)
         self.app = app
+        s = self.app.settings
+        self.SetIcon(wx.Icon(app.settings["files_icone"], wx.BITMAP_TYPE_ICO))
+        self.panel = wx.Panel(self)
         self.max_props = 8
         self.tour = 0
-        fill = self.app.settings.get("size_fill")
+        fill = s["size_fill"]
 
         #Creation et dessin du timer
         timer_sizer  = self.cree_box_sizer("Temps")
         self.timer = wx.StaticText(self.panel, -1, str(utils.convert_time(0)))
-        font = wx.Font(self.app.settings.get("size_font_chrono"), wx.SWISS, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(s["size_font_chrono"], wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.timer.SetFont(font)
         timer_sizer.Add(self.timer, 0, wx.ALL|wx.EXPAND, fill)
 
@@ -43,15 +44,15 @@ class frame(wx.Frame):
 
         #Creation des items dans la box messages
         msgs_sizer = self.cree_box_sizer("Messages")
-        self.msgs = wx.TextCtrl(self.panel, -1, "", size=(app.settings.get("size_chat_size"), -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
-        self.set_police_msgs(self.app.settings.get("size_font_msgs"))
+        self.msgs = wx.TextCtrl(self.panel, -1, "", size=(app.settings["size_chat_size"], -1), style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
+        self.set_police_msgs(s["size_font_msgs"])
         msgs_sizer.Add(self.msgs, 1, wx.ALL|wx.EXPAND, fill)
 
         #Creation box proposition
         props_sizer = self.cree_box_sizer("Propositions", flag = wx.HORIZONTAL)
         self.props = wx.ComboBox(self.panel, -1, style=wx.CB_READONLY) 
         props_sizer.Add(self.props, 1, wx.ALL, fill) 
-        self.buttonpose = wx.Button(self.panel, -1, "Poser le mot", size=app.settings.get("size_button"))
+        self.buttonpose = wx.Button(self.panel, -1, "Poser le mot", size=app.settings["size_button"])
         self.buttonpose.Enable(False)
         self.buttonpose.SetDefault()
         props_sizer.Add(self.buttonpose, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
@@ -61,10 +62,10 @@ class frame(wx.Frame):
         #Creation box score
         score_sizer = self.cree_box_sizer("Score", flag = wx.HORIZONTAL)
         self.score = wx.StaticText(self.panel, -1, "")
-        font = wx.Font(self.app.settings.get("size_font_score"), wx.SWISS, wx.NORMAL, wx.NORMAL)
+        font = wx.Font(s["size_font_score"], wx.SWISS, wx.NORMAL, wx.NORMAL)
         self.score.SetFont(font)
         score_sizer.Add(self.score, 1, wx.ALL, fill) 
-        buttscore = wx.Button(self.panel, -1, "Scores", size=app.settings.get("size_button"))
+        buttscore = wx.Button(self.panel, -1, "Scores", size=app.settings["size_button"])
         score_sizer.Add(buttscore, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
         self.Bind(wx.EVT_BUTTON, self.show_score, buttscore)
 
@@ -72,7 +73,7 @@ class frame(wx.Frame):
         chat_sizer = self.cree_box_sizer("Chat", flag = wx.HORIZONTAL)
         self.txtchatin = wx.TextCtrl(self.panel, -1, "")
         chat_sizer.Add(self.txtchatin,1, wx.ALL, fill)
-        self.buttonchat = wx.Button(self.panel, -1, "Envoi msg", size=app.settings.get("size_button"))
+        self.buttonchat = wx.Button(self.panel, -1, "Envoi msg", size=app.settings["size_button"])
         chat_sizer.Add(self.buttonchat,0, wx.ALL|wx.ALIGN_RIGHT, fill)
         self.Bind(wx.EVT_BUTTON, self.chat_click, self.buttonchat)
 
@@ -85,17 +86,17 @@ class frame(wx.Frame):
                     ("Next", self.button_next),
                     ("Précédent", self.button_pose_last),
                 ]
-        if self.app.settings.get("user_admin") :
+        if s["user_admin"] :
             boutons.insert(2, ("Chrono", self.button_chrono))
         bouton_in_sizer = wx.GridSizer(rows=1, cols=len(boutons), hgap=fill, vgap=fill)
         for label, handler in boutons :
-            bouton = wx.Button(self.panel, label=label, size=app.settings.get("size_button"))
+            bouton = wx.Button(self.panel, label=label, size=app.settings["size_button"])
             bouton_in_sizer.Add(bouton, flag = wx.ALIGN_CENTER)
             self.Bind(wx.EVT_BUTTON, handler, bouton)
         bouton_sizer.Add(bouton_in_sizer, proportion=1, flag = wx.EXPAND)
 
         #Barre de menu
-        if  self.app.settings.get("view_menu") :
+        if  s["view_menu"] :
             menubar = wx.MenuBar()
 
             menu1 = wx.Menu()
@@ -107,18 +108,12 @@ class frame(wx.Frame):
             for i in range(8,14) :
                 menupol.Append(200+i,str(i),"Changer la police des messages serveur", wx.ITEM_RADIO)
                 self.Bind(wx.EVT_MENU, self.menu_police, id=200+i)
-            pset = self.app.settings.get("size_font_msgs")
+            pset = s["size_font_msgs"]
             menupol.Check(200+pset, True)
             self.set_police_msgs(pset)
 
-            #menusettings = wx.Menu()
-            #for i, t in enumerate(self.app.settings.liste_settings):
-            #    menusettings.Append(400+i, t, "Taille de la grille", wx.ITEM_RADIO)
-            #    self.Bind(wx.EVT_MENU, self.menu_settings, id=400+i)
-
             menu2 = wx.Menu()
             menu2.AppendMenu(299,"Taille police", menupol)
-            # menu2.AppendMenu(499,"Skin", menuskin)
             menubar.Append(menu2,"Options")
 
             menu3 = wx.Menu()
@@ -129,7 +124,7 @@ class frame(wx.Frame):
             self.SetMenuBar(menubar)
 
         #Barre de status
-        if  self.app.settings.get("view_status") :
+        if  s["view_status"] :
             self.st = self.CreateStatusBar()
             self.st.SetFieldsCount(4)
             self.st.SetStatusWidths([30, -1, 80, 80])
@@ -149,7 +144,7 @@ class frame(wx.Frame):
 
         sizer = wx.GridBagSizer(hgap=fill, vgap=fill) 
 
-        if  self.app.settings.get("view_layout") == "alt" :
+        if  s["view_layout"] == "alt" :
             sizer1.Add(tirage_sizer, 1, flag = wx.EXPAND)
             sizer1.Add( (fill,fill))
             sizer1.Add(timer_sizer, flag = wx.EXPAND)
@@ -236,16 +231,9 @@ class frame(wx.Frame):
 
     def menu_police(self, e) :
         i = e.GetId()-200
-        self.app.settings.set("size_font_msgs", i)
+        self.app.settings["size_font_msgs"] = i
         self.app.settings.write()
         self.set_police_msgs(i)
-
-    #def menu_skin(self, e) :
-    #    i = e.GetId()-400
-    #    skin = self.app.settings.liste_skin[i]
-    #    self.app.settings.set("skin", skin)
-    #    self.app.settings.write()
-    #    utils.errordlg("Relancer le programme pour prendre en compte le nouveau skin","Attention")
 
     def about(self, e):
         info = wx.AboutDialogInfo()
@@ -280,27 +268,26 @@ class frame(wx.Frame):
         self.msgs.SetValue('')
 
     def set_status_text(self, text) :
-        if self.app.settings.get("view_status") :
+        if self.app.settings["view_status"] :
             self.SetStatusText(text)
 
     def set_status_next(self, num) :
-        if self.app.settings.get("view_status") :
+        if self.app.settings["view_status"] :
             self.SetStatusText("Next : %d" % num, 3)
 
     def set_status_restart(self, num) :
-        if self.app.settings.get("view_status") :
+        if self.app.settings["view_status"] :
             self.SetStatusText("Restart : %d" % num, 2)
 
     def upd_status(self) :
-        if self.app.settings.get("view_status") :
-            self.st.SetStatusText(str(self.app.reliquat), 1)
+        if self.app.settings["view_status"] :
+            self.SetStatusText(str(self.app.reliquat), 1)
 
     def home_props(self) :
         self.props.SetValue('')
         self.props.SetSelection(-1)
         
     def insert_props(self, label, data) :
-        # pos = self.props.FindString(label, casesensitive = True)
         pos = self.props.FindString(label)
         if ( pos != wx.NOT_FOUND ) :
             self.props.Delete(pos)
