@@ -136,7 +136,7 @@ class grille(wx.Panel) :
         self.enleve_temp()
         self.coord_ini = coord.coord()
         self.entry = False
-        self.app.frame.set_status_text("")
+        self.app.frame.set_status_coo("")
 
     def pose_mot(self, coo, mot, status) :
         """ Pose un mot sur la grille 

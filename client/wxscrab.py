@@ -104,7 +104,7 @@ class App(wx.App):
             self.frame.buttonpose.Enable(True)
             self.frame.home_props()
             t.allowdrags(True)
-            self.frame.upd_status()
+            self.frame.set_status_reliq()
         elif m.cmd == 'chrono' :
             temps = m.param
             if temps > 0 :

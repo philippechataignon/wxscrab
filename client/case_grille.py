@@ -33,15 +33,15 @@ class case_grille(case.case) :
             self.coord.set_hor()
             g.entry = 0
             g.coord_ini = self.coord
-            f.set_status_text( "%s" % self.coord )
+            f.set_status_coo( "%s" % self.coord )
         elif self.fleche == coord.HOR :
             self.fleche = coord.VER
             self.coord.set_ver()
             g.coord_ini = self.coord
-            f.set_status_text( "%s" % self.coord )
+            f.set_status_coo( "%s" % self.coord )
         else  :
             self.fleche = coord.NUL
             g.coord_ini = coord.coord()
-            f.set_status_text( "" )
+            f.set_status_coo( "" )
         self.redraw()
         g.SetFocus()

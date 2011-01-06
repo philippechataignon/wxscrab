@@ -12,6 +12,11 @@ import jeton
 import msg
 import coord
 
+ST_COORD = 0
+ST_RELIQ = 1
+ST_RESTART = 2
+ST_NEXT = 3
+
 class frame(wx.Frame):
     def __init__(self, parent, app) :
         wx.Frame.__init__(self, parent, title = "wxScrab")
@@ -127,7 +132,7 @@ class frame(wx.Frame):
         if  s["view_status"] :
             self.st = self.CreateStatusBar()
             self.st.SetFieldsCount(4)
-            self.st.SetStatusWidths([30, -1, 80, 80])
+            self.st.SetStatusWidths(s['size_status'])
             self.set_status_next(0)
             self.set_status_restart(0)
 
@@ -267,21 +272,21 @@ class frame(wx.Frame):
     def efface_msgs(self) :
         self.msgs.SetValue('')
 
-    def set_status_text(self, text) :
+    def set_status_text(self, text, num) :
         if self.app.settings["view_status"] :
-            self.SetStatusText(text)
+            self.SetStatusText(text, num)
+
+    def set_status_coo(self, text) :
+        self.set_status_text(text, ST_COORD)
 
     def set_status_next(self, num) :
-        if self.app.settings["view_status"] :
-            self.SetStatusText("Next : %d" % num, 3)
+        self.set_status_text("Next : %d" % num, ST_NEXT)
 
     def set_status_restart(self, num) :
-        if self.app.settings["view_status"] :
-            self.SetStatusText("Restart : %d" % num, 2)
+        self.set_status_text("Restart : %d" % num, ST_RESTART)
 
-    def upd_status(self) :
-        if self.app.settings["view_status"] :
-            self.SetStatusText(str(self.app.reliquat), 1)
+    def set_status_reliq(self) :
+        self.set_status_text(str(self.app.reliquat), ST_RELIQ)
 
     def home_props(self) :
         self.props.SetValue('')

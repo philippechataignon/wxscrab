@@ -22,6 +22,7 @@ size_font_jeton: 20
 size_font_point: 7
 size_font_chrono: 24
 size_font_score: 18
+size_status: [40, -1, 80, 80]
 
 fontcol_fixejoker: GREY
 fontcol_fixenorm: BLACK
