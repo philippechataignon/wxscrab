@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import wx
 import os
 import sys
 import yaml
@@ -27,8 +26,6 @@ class settings :
         dic_perso = yaml.load(buff)
         for key, item in dic_perso.iteritems() :
             self.dic[key] = item
-        self.font_norm = wx.Font(self.get('size_font_jeton'), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        self.font_point = wx.Font(self.get('size_font_point'), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 
     def write(self) :
         with open(self.file,"w") as f :
@@ -47,9 +44,7 @@ class settings :
         if val in self.dic[key] :
             self.dic[key].remove(val)
         self.dic[key].insert(0,val)
- 
-    def get_fontnorm(self) :
-        return self.font_norm
 
-    def get_fontpoint(self) :
-        return self.font_point
+if __name__ == '__main__' :
+    s = settings()
+    print s.dic
