@@ -21,7 +21,6 @@ class settings :
             buff = f.read()
         self.dic = yaml.load(buff)
         self.def_keys = self.dic.keys()
-        self.def_keys.remove('images')
         if os.path.isfile(self.file) :
             with open(self.file) as f :
                 buff = f.read()

@@ -28,15 +28,3 @@ fontcol_fixenorm: BLACK
 fontcol_points: GREY
 fontcol_tempjoker: WHITE
 fontcol_tempnorm: BLUE
-
-images:
-    base: tile_null.png 
-    ld  : tile_DL.png   
-    lt  : tile_TL.png   
-    md  : tile_DW.png   
-    mt  : tile_TW.png   
-    temp: tile_blanc.png
-    norm: tile.png      
-    vide: tile_vide.png 
-    fl_b: fleche_bas.png
-    fl_r: fleche_bas.png
