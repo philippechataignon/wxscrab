@@ -52,17 +52,13 @@ class case(wx.Window) :
             dc = wx.PaintDC(self)
             dc.SetPen(wx.Pen(self.col_tour_jeton, 1, wx.SOLID))
             if self.jeton.status in (jeton.TEMP, jeton.PREPOSE) :
-                dc.SetBrush(wx.Brush(self.col_temp))
-                if self.jeton.is_joker() :
-                    dc.SetTextForeground(self.settings.get("fontcol_tempjoker"))
-                else :
-                    dc.SetTextForeground(self.settings.get("fontcol_tempnorm"))
+                col = self.col_temp
+                font = "fontcol_tempjoker" if self.jeton.is_joker() else "fontcol_tempnorm"
             else :
-                dc.SetBrush(wx.Brush(self.col_pose))
-                if self.jeton.is_joker() :
-                    dc.SetTextForeground(self.settings.get("fontcol_fixejoker"))
-                else :
-                    dc.SetTextForeground(self.settings.get("fontcol_fixenorm"))
+                col = self.col_pose
+                font = "fontcol_fixejoker" if self.jeton.is_joker() else "fontcol_fixenorm"
+            dc.SetBrush(wx.Brush(col))
+            dc.SetTextForeground(self.settings.get(font))
             dc.DrawRoundedRectangle(1, 1, self.size-2, self.size-2, 5)
             dc.SetFont(self.settings.get_fontnorm())
             l,h = dc.GetTextExtent(self.jeton.lettre.upper())
