@@ -23,7 +23,6 @@ class net(asynchat.async_chat) :
             self.connect((host, port))
         except socket.error, (errno, errmsg) :
             utils.errordlg(errmsg, "Erreur de connexion")
-            self.app.frame.Close()
 
     def handle_connect(self):
         m = msg.msg("joueur", (1, self.app.email), self.app.nick)

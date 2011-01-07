@@ -23,7 +23,8 @@ class App(wx.App):
         self.settings = settings.settings()
         # Crée la frame principale
         self.frame = frame.frame(None, self)
-        self.frame.Show()
+        self.frame.Show(True)
+        self.SetTopWindow(self.frame)
         self.score = frame_score.frame_score(self.frame, "")
         self.score.Show(False)
         self.son = son.son()
@@ -40,9 +41,6 @@ class App(wx.App):
         self.net  = net.net(self, self.host, self.port)
         self.t1.Start(100)
         self.Bind(wx.EVT_TIMER, self.net.watchnet)
-
-    def OnExit(self) :
-        self.t1.Stop()
 
 ## Fonctions basiques
     def envoi(self, txt) :
