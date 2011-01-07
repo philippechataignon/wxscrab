@@ -30,7 +30,7 @@ fontcol_points: GREY
 fontcol_tempjoker: WHITE
 fontcol_tempnorm: BLUE
 col_grille: ["#ccc2b8", "#95a5dd", "#6673a1", "#dd9595", "#a16767"]
-col_tirage :  "#e9e4e0"
+col_tirage :  "#dddddd"
 col_neutre :  "#eeeeee"
 col_temp :  "#ebe5d4"
 col_pose :  "#f6e594"

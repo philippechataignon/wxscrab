@@ -26,26 +26,21 @@ class case(wx.Window) :
     def OnKey(self, e) :
         self.app.frame.grille.OnKey(e)
 
-    def OnSize(self, evt):
-        pass
+    def redraw(self) :
+        self.Refresh()
 
     def OnPaint(self, evt):
-        self.redraw()
-
-    def redraw(self) :
         s = self.settings
         dc = wx.PaintDC(self)
-        if self.tirage :
-            dc.SetBrush(wx.Brush(s['col_tirage']))
-        else :
-            dc.SetBrush(wx.Brush(s['col_grille'][self.mult]))
+        col_fond = s['col_tirage'] if self.tirage else s['col_grille'][self.mult]
+        dc.SetBrush(wx.Brush(col_fond))
         # trace le carré de fond
         dc.SetPen(wx.Pen(s['col_neutre'], 1, wx.SOLID))
         dc.DrawRectangle(0, 0, self.size, self.size) 
         # puis le jeton éventuel
         if self.jeton is not None :
             dc = wx.PaintDC(self)
-            dc.SetPen(wx.Pen(s['col_tour_jeton'], 1, wx.SOLID))
+            dc.SetPen(wx.Pen(col_fond, 1, wx.SOLID))
             if self.jeton.status in (jeton.TEMP, jeton.PREPOSE) :
                 col = s['col_temp']
                 font = "fontcol_tempjoker" if self.jeton.is_joker() else "fontcol_tempnorm"
@@ -54,7 +49,7 @@ class case(wx.Window) :
                 font = "fontcol_fixejoker" if self.jeton.is_joker() else "fontcol_fixenorm"
             dc.SetBrush(wx.Brush(col))
             dc.SetTextForeground(s[font])
-            dc.DrawRoundedRectangle(1, 1, self.size-2, self.size-2, 5)
+            dc.DrawRoundedRectangle(0, 0, self.size , self.size, 5)
             font = wx.Font(s['size_font_jeton'], wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
             dc.SetFont(font)
             l,h = dc.GetTextExtent(self.jeton.lettre.upper())
@@ -68,8 +63,8 @@ class case(wx.Window) :
         elif self.fleche in (coord.HOR, coord.VER) :
             dc.SetBrush(wx.Brush(s['col_neutre']))
             dc.SetPen(wx.Pen("black", 1, wx.SOLID))
-            dc.DrawCircle(self.size/2, self.size/2, self.size/2-2)
-            dc.SetBrush(wx.Brush("blue"))
+            dc.DrawCircle(self.size/2, self.size/2, self.size/2)
+            dc.SetBrush(wx.Brush("green"))
             dc.SetPen(wx.Pen("black", 1, wx.SOLID))
             pts = [(2.0,6.5), (5,6.5), (5,8), (8.5,5), (5,2), (5,3.5), (2.0,3.5)]
             if self.fleche == coord.HOR :

@@ -28,6 +28,7 @@ class App(wx.App):
         self.score.Show(False)
         self.son = son.son()
         self.tour_on = False
+        self.t1 = wx.Timer(self)
         # Appelle la frame de connexion au début
         self.d = dlgconn.dlgconnframe(self.frame, self)
         self.d.Show()
@@ -37,9 +38,11 @@ class App(wx.App):
     def lance_net(self) :
         # Appelé en sortie de la dlgconn
         self.net  = net.net(self, self.host, self.port)
-        self.t1 = wx.Timer(self)
         self.t1.Start(100)
         self.Bind(wx.EVT_TIMER, self.net.watchnet)
+
+    def OnExit(self) :
+        self.t1.Stop()
 
 ## Fonctions basiques
     def envoi(self, txt) :

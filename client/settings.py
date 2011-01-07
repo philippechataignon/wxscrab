@@ -19,7 +19,7 @@ class settings :
         with open("def.yaml") as f :
             buff = f.read()
         self.dic = yaml.load(buff)
-        self.def_keys = self.dic.keys()
+        self.def_keys = [key for key in self.dic.iterkeys() if not key.startswith(('col_','fontcol_'))]
         if os.path.isfile(self.file) :
             with open(self.file) as f :
                 buff = f.read()
@@ -59,4 +59,4 @@ if __name__ == '__main__' :
     print s.dic
     print s['size_jeton']
     print s['pipo']
-
+    print s.def_keys
