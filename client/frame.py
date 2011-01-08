@@ -59,7 +59,6 @@ class frame(wx.Frame):
         props_sizer.Add(self.props, 1, wx.ALL, fill) 
         self.buttonpose = wx.Button(self.panel, -1, "Poser le mot", size=app.settings["size_button"])
         self.buttonpose.Enable(False)
-        self.buttonpose.SetDefault()
         props_sizer.Add(self.buttonpose, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
         self.Bind(wx.EVT_COMBOBOX, self.props_click, self.props)
         self.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
@@ -76,11 +75,9 @@ class frame(wx.Frame):
 
         #Creation du chat
         chat_sizer = self.cree_box_sizer("Chat", flag = wx.HORIZONTAL)
-        self.txtchatin = wx.TextCtrl(self.panel, -1, "")
+        self.txtchatin = wx.TextCtrl(self.panel, -1, "", style=wx.TE_PROCESS_ENTER)
         chat_sizer.Add(self.txtchatin,1, wx.ALL, fill)
-        self.buttonchat = wx.Button(self.panel, -1, "Envoi msg", size=app.settings["size_button"])
-        chat_sizer.Add(self.buttonchat,0, wx.ALL|wx.ALIGN_RIGHT, fill)
-        self.Bind(wx.EVT_BUTTON, self.chat_click, self.buttonchat)
+        self.Bind(wx.EVT_TEXT_ENTER, self.chat_enter, self.txtchatin)
 
         # cadres boutons 
         bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
@@ -122,7 +119,7 @@ class frame(wx.Frame):
             menubar.Append(menu2,"Options")
 
             menu3 = wx.Menu()
-            menu3.Append(301,"A propos\tCtrl-A")
+            menu3.Append(301,"A propos")
             menubar.Append(menu3,"Aide")
             self.Bind(wx.EVT_MENU, self.about, id=301)
 
@@ -194,7 +191,7 @@ class frame(wx.Frame):
     def button_random(self, e) :
         self.tirage.shuffle()
 
-    def chat_click(self, e) :
+    def chat_enter(self, e) :
         if self.txtchatin.GetValue() != "" :
             m = msg.msg("chat", self.txtchatin.GetValue())
             self.app.envoi(m)
@@ -206,6 +203,7 @@ class frame(wx.Frame):
             p = self.props.GetSelection()
             if p == -1 :
                 return
+            self.buttonpose.SetFocus()
             coo, mot = self.props.GetClientData(p)
             self.grille.pose_mot(coo, mot, jeton.TEMP)
         else :
