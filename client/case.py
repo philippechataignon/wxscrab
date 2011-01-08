@@ -61,11 +61,11 @@ class case(wx.Window) :
             dc.DrawText(self.jeton.point, self.size-2-l, self.size-2-h)
         # ou la flèche
         elif self.fleche in (coord.HOR, coord.VER) :
-            dc.SetBrush(wx.Brush(s['col_neutre']))
-            dc.SetPen(wx.Pen("black", 1, wx.SOLID))
-            dc.DrawCircle(self.size/2, self.size/2, self.size/2)
-            dc.SetBrush(wx.Brush("green"))
-            dc.SetPen(wx.Pen("black", 1, wx.SOLID))
+            dc.SetBrush(wx.Brush(s['col_cercle']))
+            dc.SetPen(wx.Pen(s['col_tour_cercle'], 3, wx.SOLID))
+            dc.DrawCircle(self.size/2, self.size/2, self.size/2-1)
+            dc.SetBrush(wx.Brush(s['col_fleche']))
+            dc.SetPen(wx.Pen(s['col_tour_fleche'], 1, wx.SOLID))
             pts = [(2.0,6.5), (5,6.5), (5,8), (8.5,5), (5,2), (5,3.5), (2.0,3.5)]
             if self.fleche == coord.HOR :
                 pts_reel = [(x*self.size/10, y*self.size/10) for (x,y) in pts]

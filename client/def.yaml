@@ -24,14 +24,18 @@ size_font_chrono: 24
 size_font_score: 18
 size_status: [40, -1, 80, 80]
 
-fontcol_fixejoker: GREY
-fontcol_fixenorm: BLACK
-fontcol_points: GREY
-fontcol_tempjoker: WHITE
-fontcol_tempnorm: BLUE
+fontcol_fixejoker: grey
+fontcol_fixenorm: black
+fontcol_points: grey
+fontcol_tempjoker: white
+fontcol_tempnorm: blue
 col_grille: ["#ccc2b8", "#95a5dd", "#6673a1", "#dd9595", "#a16767"]
 col_tirage :  "#dddddd"
 col_neutre :  "#eeeeee"
 col_temp :  "#ebe5d4"
 col_pose :  "#f6e594"
 col_tour_jeton :  "#b2a56b"
+col_cercle: '#eeeeee'
+col_tour_cercle: '#eeeeee'
+col_fleche: forest green
+col_tour_fleche: medium forest green

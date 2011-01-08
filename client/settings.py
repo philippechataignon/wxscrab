@@ -56,6 +56,7 @@ class settings :
 
 if __name__ == '__main__' :
     s = settings()
+    sys.stdout.write(yaml.dump(s.dic, default_flow_style=False))
     print s.dic
     print s['size_jeton']
     print s['pipo']
