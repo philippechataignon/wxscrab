@@ -59,6 +59,7 @@ class frame(wx.Frame):
         props_sizer.Add(self.props, 1, wx.ALL, fill) 
         self.buttonpose = wx.Button(self.panel, -1, "Poser le mot", size=app.settings["size_button"])
         self.buttonpose.Enable(False)
+        self.buttonpose.SetDefault() # important pour Windows pour capter la touche Entrée
         props_sizer.Add(self.buttonpose, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
         self.Bind(wx.EVT_COMBOBOX, self.props_click, self.props)
         self.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
