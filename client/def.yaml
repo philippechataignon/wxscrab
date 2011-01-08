@@ -39,3 +39,5 @@ col_cercle: '#eeeeee'
 col_tour_cercle: '#eeeeee'
 col_fleche: forest green
 col_tour_fleche: medium forest green
+
+jeton_carre: false
