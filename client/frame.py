@@ -248,7 +248,7 @@ class frame(wx.Frame):
         info.Copyright = l[2]
         info.Description = "Client Scrabble(r) Duplicate\nRevision: %s\nTag: %s" % (l[0], l[1])
         info.WebSite = ("http://wxscrab.ath.cx", "Site wxScrab")
-        info.Developers = l[3]
+        info.Developers = [l[3], 'xouillet']
         with open('GPL.txt') as f :
             license = f.read()
         info.License = license
