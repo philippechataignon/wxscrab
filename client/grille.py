@@ -81,26 +81,12 @@ class grille(wx.Panel) :
         else:
             return False
 
-    def raz_fleche(self) :
-        "Déselectionne toutes les cases de la grille"
-        for case in self.cases.itervalues() :
-            if case.fleche != coord.NUL :
-                case.fleche = coord.NUL
-                case.redraw()
-
-    def enleve_temp(self) :
-        "Enleve les jetons temporaires de la grille et les remet dans le tirage"
-        for case in self.cases.itervalues() :
-            if case.get_status() == jeton.TEMP : #si jeton temp
-                self.app.frame.tirage.remet(case.jeton)
-                case.vide()
+## Fonctions utilitaires
 
     def convert_prepose(self) :
         "Les jetons préposés (reçus du serveur) sont mis en fixe"
         for case in self.cases.itervalues() :
-            if case.get_status() == jeton.PREPOSE : #si jeton prepose
-                case.jeton.set_status(jeton.POSE) #met status pose
-                case.redraw()
+            case.convert_prepose()
 
     def get_mot_temp(self) :
         """
@@ -132,19 +118,22 @@ class grille(wx.Panel) :
 ## Principales fonctions publiques
 
     def reinit_saisie(self) :
-        self.raz_fleche()
-        self.enleve_temp()
-        self.coord_ini = coord.coord()
+        "Enleve la fleche et les jetons temporaires de la grille (remis dans le tirage)"
+        for case in self.cases.itervalues() :
+            if case.fleche is not None :
+                case.efface_fleche()
+            if case.get_status() == jeton.TEMP : #si jeton temp
+                self.app.frame.tirage.remet(case.jeton)
+                case.vide()
         self.entry = False
         self.app.frame.set_status_coo("")
+        self.coord_ini = coord.coord()
 
     def pose_mot(self, coo, mot, status) :
         """ Pose un mot sur la grille 
         Appelé pour le mot du Top pour permettre de le repérer (status = PREPOSE)
         Appelé depuis la box des propositions (status = TEMP)
         """
-        # co = coord.coord()
-        # co.fromstr(coo)
         for l in mot :
             if self.case_coord_vide(coo) :
                 j = self.app.frame.tirage.retire_jeton(l)
@@ -205,9 +194,8 @@ class grille(wx.Panel) :
         if j is not None :                          # si c'est possible
             j.set_status(jeton.TEMP)
             ca = self.case_coord(self.coord_cur)
+            ca.efface_fleche()   # efface la fleche
             ca.pose(j)  # pose le jeton en temp
-            ca.fleche = coord.NUL   # efface la fleche
-            ca.redraw()             # redessine
             self.entry = True                      # passe le flag saisie en cours à 1
 
             if self.coord_cur.next().isOK() :   # avance coord_cur en sautant les lettres
@@ -216,8 +204,7 @@ class grille(wx.Panel) :
                     self.coord_cur = self.coord_cur.next()
                 if self.coord_cur.isOK() :      # remet la fleche
                     ca = self.case_coord(self.coord_cur)
-                    ca.fleche = self.coord_ini.dir()
-                    ca.redraw()
+                    ca.set_fleche(self.coord_ini.dir())
 
     def recule_case(self) :
         "Gestion de la touche Backspace (depuis OnKey)"
@@ -234,8 +221,7 @@ class grille(wx.Panel) :
 
         # efface la fleche case en cours
         if  self.case_coord_vide(self.coord_cur) : 
-            self.case_coord(self.coord_cur).fleche =  coord.NUL 
-            self.case_coord(self.coord_cur).redraw()
+            self.case_coord(self.coord_cur).efface_fleche()
             self.coord_cur = self.coord_cur.prev()
 
         # on recule en sautant les jetons posées
@@ -246,7 +232,7 @@ class grille(wx.Panel) :
         c = self.case_coord(self.coord_cur)
         if not c.is_vide() :
             self.app.frame.tirage.remet(c.jeton)
-        c.fleche = self.coord_ini.dir()
+        c.set_fleche(self.coord_ini.dir())
         c.vide()
 
 ## Fonctions globales pour la grille

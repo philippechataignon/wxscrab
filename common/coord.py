@@ -74,11 +74,8 @@ class coord :
         else :
             self._dir = HOR
 
-    def set_hor(self) :
-        self._dir = HOR
-
-    def set_ver(self) :
-        self._dir = VER
+    def set_dir(self, dir) :
+        self._dir = dir
 
     def fromstr(self, strcoo) :
         "Affecte une coordonnée à partir d'une référence alphanumérique"

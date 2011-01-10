@@ -69,12 +69,13 @@ class App(wx.App):
 
     def traite(self, m) :
         # print "Traite %s %s %s" % (m.cmd, m.param, m.id)
-        g = self.frame.grille
-        t = self.frame.tirage
+        f = self.frame
+        g = f.grille
+        t = f.tirage
         if m.cmd == 'connect' :
             if m.param[0] == 0 :
                 utils.errordlg(m.param[1],"Erreur : nom existant")
-                self.frame.Close()
+                f.Close()
             elif m.param[0] == 1 :
                 self.info_serv("Connexion établie", wx.NamedColor("DARK GREEN"))
             elif m.param[0] == 2 :
@@ -102,16 +103,16 @@ class App(wx.App):
             g.reinit_saisie()
             g.convert_prepose()
             t.cree_tirage(m.param)
-            self.frame.buttonpose.Enable(True)
-            self.frame.home_props()
+            f.buttonpose.Enable(True)
+            f.home_props()
             t.allowdrags(True)
-            self.frame.set_status_reliq()
+            f.set_status_reliq()
         elif m.cmd == 'chrono' :
             temps = m.param
             if temps > 0 :
                 g.saisie_ok = True
                 self.tour_on = True
-            self.frame.timer.SetLabel(utils.convert_time(temps))
+            f.timer.SetLabel(utils.convert_time(temps))
             if temps == 0 :
                 self.envoi(msg.msg("tick"))
         elif m.cmd == 'error' :
@@ -121,7 +122,7 @@ class App(wx.App):
             self.tour_on = False
             t.allowdrags(False)
             g.saisie_ok = False
-            self.frame.buttonpose.Enable(False)
+            f.buttonpose.Enable(False)
             g.reinit_saisie()
             self.son.play("fin_tour")
             coord, mot = m.param
@@ -131,7 +132,7 @@ class App(wx.App):
         elif m.cmd == 'grille' :
             g.read_grille(m.param)
         elif m.cmd == 'new' :
-            self.frame.efface_msgs()
+            f.efface_msgs()
             self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
             self.score.Show(False)
             self.debut_partie()
@@ -143,7 +144,7 @@ class App(wx.App):
                 self.info_serv("En attente du prochain tour")
         elif m.cmd == 'score' :
             self.score.Close()
-            self.score = frame_score.frame_score(self.frame, m.param)
+            self.score = frame_score.frame_score(f, m.param)
             if not self.tour_on :
                 self.score.Show(True)
         elif m.cmd == 'valid' :
@@ -151,13 +152,13 @@ class App(wx.App):
             coo, mot, pts = m.param
             txt ="%s - %s  (%s pts)" % (coo, mot, pts)
             self.info_serv(">>  " + txt, wx.BLUE)
-            self.frame.insert_props(txt, (coo, mot))
+            f.insert_props(txt, (coo, mot))
         elif m.cmd == 'infojoueur' :
            total, top, prc, mess = m.param
-           self.frame.score.SetLabel("%s/%s - %5.1f%%" % (total, top, prc))
+           f.score.SetLabel("%s/%s - %5.1f%%" % (total, top, prc))
            for m in  mess :
                self.info_serv("Mot non existant : %s" % m, wx.RED)
         elif m.cmd == "oknext" :
-            self.frame.set_status_next(int(m.param))
+            f.set_status_next(int(m.param))
         elif m.cmd == "okrestart" :
-            self.frame.set_status_restart(int(m.param))
+            f.set_status_restart(int(m.param))

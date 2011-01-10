@@ -88,8 +88,7 @@ class case(wx.Window) :
             return self.jeton.status
 
     def pose(self, j) :
-        if not self.is_vide() :
-            self.app.frame.tirage.remet(self.jeton)
+        assert self.is_vide(), "Pose un jeton sur une case non vide"
         self.jeton = j
         self.redraw()
 
