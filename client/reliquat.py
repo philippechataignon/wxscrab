@@ -9,12 +9,7 @@ class reliquat :
         self.bag=dict(zip(self.char,repart))
 
     def __str__(self) :
-        s = "" 
-        for l in self.char :
-            s += l*self.bag[l]
-            if self.bag[l] != 0 :
-                s += " "
-        return s
+        return " ".join([l*self.bag[l] for l in self.char if self.bag[l] != 0 ])
 
     def retire(self, mot) :
         for l in mot :
