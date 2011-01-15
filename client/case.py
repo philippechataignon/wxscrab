@@ -53,7 +53,7 @@ class case(wx.Window) :
                 dc.DrawRectangle(0, 0, self.size , self.size)
             else :
                 dc.SetPen(wx.Pen(col_fond, 1, wx.SOLID))
-                dc.DrawRoundedRectangle(0, 0, self.size , self.size, 5)
+                dc.DrawRoundedRectangle(0, 0, self.size , self.size, s['size_arrondi'])
             font = wx.Font(s['size_font_jeton'], wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
             dc.SetFont(font)
             l,h = dc.GetTextExtent(self.jeton.lettre.upper())

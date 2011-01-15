@@ -23,6 +23,7 @@ size_font_point: 7
 size_font_chrono: 24
 size_font_score: 18
 size_status: [40, -1, 80, 80]
+size_arrondi: 5
 
 fontcol_fixejoker: grey
 fontcol_fixenorm: black
