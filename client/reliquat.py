@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from utils import lettre_joker
-
 class reliquat :
     def __init__(self) :
         self.char="ABCDEFGHIJKLMNOPQRSTUVWXYZ?"
@@ -13,12 +11,14 @@ class reliquat :
 
     def retire(self, mot) :
         for l in mot :
-            l = lettre_joker(l)
+            if 'a' <= l <= 'z' :
+                l = '?'
             self.bag[l] -= 1
 
     def remet(self, mot) :
         for l in mot :
-            l = lettre_joker(l)
+            if 'a' <= l <= 'z' :
+                l = '?'
             self.bag[l] += 1
 
 if __name__ == '__main__' :
