@@ -29,6 +29,9 @@ class tirage(wx.Panel) :
 
 ## Fonctions basiques
 
+    def cases_non_vides(self) :
+        return [case for case in self.cases if not case.is_vide()]
+
     def cree_tirage(self, mot) :
         """Cree les jetons quand on reçoit un mot"""
         self.vide_tirage()
@@ -36,97 +39,76 @@ class tirage(wx.Panel) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                self.cases[pos].pose(jeton.jeton(lettre, jeton.POSE, self.app.settings))
                 self.app.reliquat.retire(lettre)
+                self.cases[pos].pose(jeton.jeton(lettre, jeton.POSE, self.app.settings))
                 pos += 1
             elif lettre in ("+",'-') :
                 pos += 1
 
     def vide_tirage(self) :
         """Vide toutes les cases et remet les jetons dans le reliquat
-
-        Appelé par cree_tirage
         """
-        for pos in xrange(self.nbpos)  :
-            j = self.cases[pos].jeton
-            if j is not None :
-                l = j.lettre
-                self.cases[pos].vide()
-                self.app.reliquat.remet(l)
+        for c in self.cases_non_vides() :
+            l = c.jeton.lettre
+            self.app.reliquat.remet(l)
+            c.vide()
 
     def allowdrags(self, allow) :
         for c in self.cases :
             c.allowdrag = allow
 
 ## Principales fonctions publiques 
-    def pos_retire_jeton(self, lettre) :
-        """Retire et renvoie la position dans le tirage
-        qui correspond à la lettre transmise.
-        On choisit le premier jeton ayant la lettre, sinon le joker s'il y en a un.
-        Pour forcer le joker, on passe la lettre en minuscule
-        """
-        if not( 'A' <= lettre <= 'Z' or 'a' <= lettre <= 'z') :
-            return None
-        # Liste des cases non vides
-        lc = [case for case in self.cases if not case.is_vide()]
-        if 'A' <= lettre <= 'Z' :
-            for case in lc :
-                j = case.jeton
-                if j.lettre == lettre :
-                    return case.pos
-        for case in lc :
-            j = case.jeton
-            if j.lettre == "?" :
-                j.lettre = lettre.lower()
-                return case.pos
-        return None
+    def retire_jeton(self, lettre) :
+        cherche = "?" if 'a' <= lettre <= 'z' else lettre
+        ok = False
+        for c in self.cases_non_vides() :
+            if c.jeton.lettre == cherche :
+                case = c
+                ok = True
+                break
+            if c.jeton.lettre == "?" : # joker au coup où
+                case = c
+                ok = True 
 
-    def retire_jeton_case(self, case) :
-        if case.is_vide() :
-            return None
-        else :
-            j = case.jeton
+        if ok :
+            j = case.jeton 
+            j.set_status(jeton.TEMP)
+            if j.lettre == "?" : #cas du joker
+                j.lettre = lettre.lower()
             case.vide()
             return j
-
-    def retire_jeton(self, lettre) :
-        pos = self.pos_retire_jeton(lettre) 
-        if pos is not None :
-            j = self.retire_jeton_case(self.cases[pos])
-            j.set_status(jeton.TEMP)
-            return j
-        return None
+        else :
+            return None
 
     def remet(self, j) :
         """Remet le jeton j dans le tirage
         On remet le jeton dans la première case libre trouvée
         """
-        for pos in xrange(self.nbpos) :
-            if self.cases[pos].is_vide() :
+        for c in self.cases :
+            if c.is_vide() :
                 if j.is_joker() :
                     j.lettre = '?'
                 j.set_status(jeton.POSE)
-                self.cases[pos].pose(j)
+                c.pose(j)
                 break
 
 ## Fonctions de manipulation : tri, swap...
 
     def alpha(self) :
-        lj = [case.jeton for case in self.cases if not case.is_vide()]
+        lj = [c.jeton for c in self.cases_non_vides()]
         lj.sort(key=lambda x: x.lettre.lower())
-        self.permute(lj)
+        self.pose_liste(lj)
 
     def shuffle(self) :
-        lj = [case.jeton for case in self.cases if not case.is_vide()]
+        lj = [c.jeton for c in self.cases_non_vides()]
         random.shuffle(lj)
-        self.permute(lj)
+        self.pose_liste(lj)
 
-    def permute(self, lj) :
-        for pos in xrange(self.nbpos) :
-            if pos < len(lj) :
-                self.cases[pos].pose(lj[pos])
-            else :
-                self.cases[pos].vide()
+    def pose_liste(self, lj) :
+        self.vide_tirage()
+        for pos, j in enumerate(lj) :
+            self.app.reliquat.retire(j.lettre)
+            self.cases[pos].pose(j)
 
     def shift(self, pos) :
         end = -1
