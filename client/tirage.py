@@ -39,8 +39,8 @@ class tirage(wx.Panel) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                self.app.reliquat.retire(lettre)
-                self.cases[pos].pose(jeton.jeton(lettre, jeton.POSE, self.app.settings))
+                j = self.app.reliquat.retire(lettre, jeton.TIRAGE)
+                self.cases[pos].pose(j)
                 pos += 1
             elif lettre in ("+",'-') :
                 pos += 1
@@ -49,8 +49,7 @@ class tirage(wx.Panel) :
         """Vide toutes les cases et remet les jetons dans le reliquat
         """
         for c in self.cases_non_vides() :
-            l = c.jeton.lettre
-            self.app.reliquat.remet(l)
+            self.app.reliquat.remet(c.jeton)
             c.vide()
 
     def allowdrags(self, allow) :
@@ -88,27 +87,25 @@ class tirage(wx.Panel) :
             if c.is_vide() :
                 if j.is_joker() :
                     j.lettre = '?'
-                j.set_status(jeton.POSE)
+                j.set_status(jeton.TIRAGE)
                 c.pose(j)
                 break
 
 ## Fonctions de manipulation : tri, swap...
 
-    def alpha(self) :
-        lj = [c.jeton for c in self.cases_non_vides()]
-        lj.sort(key=lambda x: x.lettre.lower())
-        self.pose_liste(lj)
+    def alpha(self): 
+        # implémente un magnifique tri à bulles...
+        for n in xrange(self.nbpos -1 ) :
+            for i in xrange(self.nbpos-1) :
+                if self.cases[i+1].is_vide() :
+                    continue
+                if self.cases[i].is_vide() or self.cases[i].jeton.lettre > self.cases[i+1].jeton.lettre :
+                    self.swap(i, i+1)
 
     def shuffle(self) :
-        lj = [c.jeton for c in self.cases_non_vides()]
-        random.shuffle(lj)
-        self.pose_liste(lj)
-
-    def pose_liste(self, lj) :
-        self.vide_tirage()
-        for pos, j in enumerate(lj) :
-            self.app.reliquat.retire(j.lettre)
-            self.cases[pos].pose(j)
+        for i in xrange(self.nbpos) :
+            alea = random.randint(0, self.nbpos-1)
+            self.swap(i, alea)
 
     def shift(self, pos) :
         end = -1

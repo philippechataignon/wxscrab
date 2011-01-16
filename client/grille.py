@@ -252,8 +252,8 @@ class grille(wx.Panel) :
             for x, char in enumerate(ligne) :
                 if char != "." :
                     case = self.case_coord(coord.coord(x,y))
-                    case.pose(jeton.jeton(char, jeton.POSE, self.app.settings))
-                    self.app.reliquat.retire(char)
+                    j = self.app.reliquat.retire(char, jeton.POSE)
+                    case.pose(j)
 
 if __name__ == '__main__' :
     app = wx.PySimpleApp()

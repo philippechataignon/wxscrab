@@ -59,7 +59,7 @@ class App(wx.App):
     def debut_partie(self) :
         # vide tirage pour eviter pb reliquat
         self.frame.tirage.vide_tirage()
-        self.reliquat = reliquat.reliquat()
+        self.reliquat = reliquat.reliquat(self.settings)
         self.envoi(msg.msg("askgrille"))
         self.envoi(msg.msg("askinfo"))
         self.envoi(msg.msg("askscore"))
