@@ -19,7 +19,6 @@ class casedroptarget(wx.PyDropTarget) :
             dep = t.cases[pos]
             if not dep.is_vide() :
                 j = dep.jeton
-        # arr=self.case
                 if self.case.tirage :
                     "Départ et arrivée dans tirage : on swap"
                     t.swap_cases(dep, self.case)

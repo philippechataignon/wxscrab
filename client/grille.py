@@ -123,7 +123,7 @@ class grille(wx.Panel) :
             if case.fleche is not None :
                 case.efface_fleche()
             if case.get_status() == jeton.TEMP : #si jeton temp
-                self.app.frame.tirage.to_pose(case, case.jeton)
+                self.app.frame.tirage.move_to(case)
         self.entry = False
         self.app.frame.set_status_coo("")
         self.coord_ini = coord.coord()
@@ -134,7 +134,7 @@ class grille(wx.Panel) :
         Appelé depuis la box des propositions (status = TEMP)
         """
         for l in mot :
-            j = self.app.frame.tirage.from_pose(self.case_coord(coo), status, l)
+            j = self.app.frame.tirage.move_from(self.case_coord(coo), status, l)
             coo = coo.next()
 
     def envoi_mot(self) :
@@ -186,7 +186,7 @@ class grille(wx.Panel) :
         if self.case_coord_occ(self.coord_cur) : # si case occupée, on sort
             return
         ca = self.case_coord(self.coord_cur)
-        ok = self.app.frame.tirage.from_pose(ca, jeton.TEMP, l)   # prend le jeton dans le tirage
+        ok = self.app.frame.tirage.move_from(ca, jeton.TEMP, l)   # prend le jeton dans le tirage
         if ok :                          # si c'est possible
             ca.efface_fleche()   # efface la fleche
             self.entry = True                      # passe le flag saisie en cours à 1
@@ -224,7 +224,7 @@ class grille(wx.Panel) :
         # on retire le jeton temp et on remet la fleche (cas standard)
         c = self.case_coord(self.coord_cur)
         if not c.is_vide() :
-            self.app.frame.tirage.remet(c, c.jeton)
+            self.app.frame.tirage.move_to(c)
         c.set_fleche(self.coord_ini.dir())
 
 ## Fonctions globales pour la grille
@@ -243,7 +243,7 @@ class grille(wx.Panel) :
         for y, ligne in enumerate(txt_grille.split("\n")) :
             for x, char in enumerate(ligne) :
                 if char != "." :
-                    self.app.reliquat.from_pose(self.case_coord(coord.coord(x,y)), jeton.POSE, char)
+                    self.app.reliquat.move_from(self.case_coord(coord.coord(x,y)), jeton.POSE, char)
 
 if __name__ == '__main__' :
     app = wx.PySimpleApp()

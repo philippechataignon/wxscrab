@@ -34,6 +34,7 @@ class App(wx.App):
         self.d = dlgconn.dlgconnframe(self.frame, self)
         self.d.Show()
         self.d.MakeModal(True)
+        self.reliquat = reliquat.reliquat(self.settings)
         return True
 
     def lance_net(self) :

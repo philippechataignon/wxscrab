@@ -39,7 +39,7 @@ class tirage(wx.Panel) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                j = self.app.reliquat.from_pose(self.cases[pos], jeton.TIRAGE, lettre)
+                j = self.app.reliquat.move_from(self.cases[pos], jeton.TIRAGE, lettre)
                 pos += 1
             elif lettre in ("+",'-') :
                 pos += 1
@@ -47,8 +47,8 @@ class tirage(wx.Panel) :
     def vide_tirage(self) :
         """Vide toutes les cases et remet les jetons dans le reliquat
         """
-        for c in self.cases_non_vides() :
-            self.app.reliquat.to_vide(c, c.jeton)
+        for c in self.cases :
+            self.app.reliquat.move_to(c)
 
     def allowdrags(self, allow) :
         for c in self.cases :
@@ -67,7 +67,7 @@ class tirage(wx.Panel) :
                 c_dep = c
         return c_dep
 
-    def from_pose(self, c_dest, status, lettre) :
+    def move_from(self, c_dest, status, lettre) :
         # si destination non vide, on dégage
         if not c_dest.is_vide() :
             return False
@@ -85,10 +85,14 @@ class tirage(wx.Panel) :
         else :
             return False
 
-    def to_pose(self, c_dep, j) :
-        """Remet le jeton j dans le tirage
-        On remet le jeton dans la première case libre trouvée
+    def move_to(self, c_dep) :
+        """Remet le jeton j de la case c_dep 
+        dans la première case libre trouvée
         """
+        if c_dep.is_vide() :
+            return False
+
+        j = c_dep.jeton
         for c in self.cases :
             if c.is_vide() :
                 if j.is_joker() :
