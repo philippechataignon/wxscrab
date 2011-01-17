@@ -123,8 +123,7 @@ class grille(wx.Panel) :
             if case.fleche is not None :
                 case.efface_fleche()
             if case.get_status() == jeton.TEMP : #si jeton temp
-                self.app.frame.tirage.remet(case.jeton)
-                case.vide()
+                self.app.frame.tirage.to_pose(case, case.jeton)
         self.entry = False
         self.app.frame.set_status_coo("")
         self.coord_ini = coord.coord()
@@ -135,11 +134,7 @@ class grille(wx.Panel) :
         Appelé depuis la box des propositions (status = TEMP)
         """
         for l in mot :
-            if self.case_coord_vide(coo) :
-                j = self.app.frame.tirage.retire_jeton(l)
-                if j is not None :
-                    j.set_status(status)
-                    self.case_coord(coo).pose(j)
+            j = self.app.frame.tirage.from_pose(self.case_coord(coo), status, l)
             coo = coo.next()
 
     def envoi_mot(self) :
@@ -190,12 +185,10 @@ class grille(wx.Panel) :
             return
         if self.case_coord_occ(self.coord_cur) : # si case occupée, on sort
             return
-        j = self.app.frame.tirage.retire_jeton(l)   # prend le jeton dans le tirage
-        if j is not None :                          # si c'est possible
-            j.set_status(jeton.TEMP)
-            ca = self.case_coord(self.coord_cur)
+        ca = self.case_coord(self.coord_cur)
+        ok = self.app.frame.tirage.from_pose(ca, jeton.TEMP, l)   # prend le jeton dans le tirage
+        if ok :                          # si c'est possible
             ca.efface_fleche()   # efface la fleche
-            ca.pose(j)  # pose le jeton en temp
             self.entry = True                      # passe le flag saisie en cours à 1
 
             if self.coord_cur.next().isOK() :   # avance coord_cur en sautant les lettres
@@ -231,9 +224,8 @@ class grille(wx.Panel) :
         # on retire le jeton temp et on remet la fleche (cas standard)
         c = self.case_coord(self.coord_cur)
         if not c.is_vide() :
-            self.app.frame.tirage.remet(c.jeton)
+            self.app.frame.tirage.remet(c, c.jeton)
         c.set_fleche(self.coord_ini.dir())
-        c.vide()
 
 ## Fonctions globales pour la grille
 
@@ -251,9 +243,7 @@ class grille(wx.Panel) :
         for y, ligne in enumerate(txt_grille.split("\n")) :
             for x, char in enumerate(ligne) :
                 if char != "." :
-                    case = self.case_coord(coord.coord(x,y))
-                    j = self.app.reliquat.retire(char, jeton.POSE)
-                    case.pose(j)
+                    self.app.reliquat.from_pose(self.case_coord(coord.coord(x,y)), jeton.POSE, char)
 
 if __name__ == '__main__' :
     app = wx.PySimpleApp()

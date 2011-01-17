@@ -39,8 +39,7 @@ class tirage(wx.Panel) :
         for c in mot :
             lettre = c.upper()
             if  'A'<= lettre <= 'Z' or lettre == '?' :
-                j = self.app.reliquat.retire(lettre, jeton.TIRAGE)
-                self.cases[pos].pose(j)
+                j = self.app.reliquat.from_pose(self.cases[pos], jeton.TIRAGE, lettre)
                 pos += 1
             elif lettre in ("+",'-') :
                 pos += 1
@@ -49,37 +48,44 @@ class tirage(wx.Panel) :
         """Vide toutes les cases et remet les jetons dans le reliquat
         """
         for c in self.cases_non_vides() :
-            self.app.reliquat.remet(c.jeton)
-            c.vide()
+            self.app.reliquat.to_vide(c, c.jeton)
 
     def allowdrags(self, allow) :
         for c in self.cases :
             c.allowdrag = allow
 
 ## Principales fonctions publiques 
-    def retire_jeton(self, lettre) :
+
+    def cherche_case_lettre(self, lettre) :
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
-        ok = False
+        c_dep = None
         for c in self.cases_non_vides() :
             if c.jeton.lettre == cherche :
-                case = c
-                ok = True
+                c_dep = c
                 break
             if c.jeton.lettre == "?" : # joker au coup où
-                case = c
-                ok = True 
+                c_dep = c
+        return c_dep
 
-        if ok :
-            j = case.jeton 
-            j.set_status(jeton.TEMP)
+    def from_pose(self, c_dest, status, lettre) :
+        # si destination non vide, on dégage
+        if not c_dest.is_vide() :
+            return False
+        c_dep = self.cherche_case_lettre(lettre)
+        # on a un jeton dans le tirage :
+        # le transfert est possible
+        if c_dep is not None :
+            j = c_dep.jeton 
+            j.set_status(status)
             if j.lettre == "?" : #cas du joker
                 j.lettre = lettre.lower()
-            case.vide()
-            return j
+            c_dest.pose(j)
+            c_dep.vide()
+            return True
         else :
-            return None
+            return False
 
-    def remet(self, j) :
+    def to_pose(self, c_dep, j) :
         """Remet le jeton j dans le tirage
         On remet le jeton dans la première case libre trouvée
         """
@@ -89,7 +95,9 @@ class tirage(wx.Panel) :
                     j.lettre = '?'
                 j.set_status(jeton.TIRAGE)
                 c.pose(j)
-                break
+                c_dep.vide()
+                return True
+        return False
 
 ## Fonctions de manipulation : tri, swap...
 
@@ -131,7 +139,9 @@ class tirage(wx.Panel) :
                 self.cases[pos].vide()
 
     def swap(self, pos_old, pos_new) :
-        self.cases[pos_old].jeton, self.cases[pos_new].jeton = self.cases[pos_new].jeton, self.cases[pos_old].jeton  
-        self.cases[pos_old].redraw()
-        self.cases[pos_new].redraw()
-
+        self.swap_cases(self.cases[pos_old], self.cases[pos_new])
+        
+    def swap_cases(self, dep, arr) :
+        dep.jeton, arr.jeton  = arr.jeton, dep.jeton
+        dep.redraw()
+        arr.redraw()

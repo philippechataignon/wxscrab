@@ -16,7 +16,9 @@ class reliquat :
     def __str__(self) :
         return " ".join([l*self.freq[l] for l in self.char if self.freq[l] != 0 ])
 
-    def retire(self, lettre, status) :
+    def from_pose(self, case, status, lettre) :
+        """ Prend un jeton dans le reliquat pour le poser sur une case avec un status
+        """
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
         self.freq[cherche] -= 1
         ll = [j.lettre for j in self.jetons]
@@ -25,14 +27,17 @@ class reliquat :
         j.set_status(status)
         if cherche == "?" :
             j.lettre = lettre
-        return j
+        case.pose(j)
+        return True
 
-    def remet(self, j) :
+    def to_vide(self, case, j) :
         if 'a' <= j.lettre <= 'z' :
             j.lettre = '?'
         self.freq[j.lettre] += 1
         j.set_status(jeton.RELIQUAT)
         self.jetons.append(j)
+        case.vide()
+        return True
 
 if __name__ == '__main__' :
     r = reliquat()

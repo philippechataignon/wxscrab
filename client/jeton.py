@@ -34,19 +34,8 @@ class jeton :
     def set_status(self, status) :
         self.status = status
 
-    def deplace(self, dep, arr) :
+    def deplace(self, dep, arr, status) :
         """ Déplace un jeton de la case dep vers la case arr
             Avec le statut d'arrivée status
         """
-        if dep.tirage :
-            if arr.tirage :
-                "Départ et arrivée dans tirage : on swap"
-                dep.jeton, arr.jeton = arr.jeton, dep.jeton 
-                dep.redraw()
-                arr.redraw()
-            elif arr.is_vide() :
-                "Arrivée sur la grille"
-                if not self.is_joker() : #ne pas poser le joker
-                    dep.jeton.set_status(TEMP)
-                    arr.pose(dep.jeton)
-                    dep.vide()
+        pass
