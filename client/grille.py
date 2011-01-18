@@ -141,7 +141,7 @@ class grille(wx.Panel) :
         "Envoie le mot courant au serveur"
         debut, mot = self.get_mot_temp()
         if mot is not None :
-            m = msg.msg("propo", (debut,mot,0))
+            m = msg.msg("propo", (debut, mot, 0))
             self.app.envoi(m)
         self.reinit_saisie()
 
@@ -221,7 +221,8 @@ class grille(wx.Panel) :
         while self.case_coord_occ(self.coord_cur) and self.case_coord(self.coord_cur).get_status() == jeton.POSE :
             self.coord_cur = self.coord_cur.prev()
 
-        # on retire le jeton temp et on remet la fleche (cas standard)
+        # on remet le jeton temp dans le tirage
+        # et on remet la fleche (cas standard)
         c = self.case_coord(self.coord_cur)
         if not c.is_vide() :
             self.app.frame.tirage.move_to(c)
@@ -244,11 +245,3 @@ class grille(wx.Panel) :
             for x, char in enumerate(ligne) :
                 if char != "." :
                     self.app.reliquat.move_from(self.case_coord(coord.coord(x,y)), jeton.POSE, char)
-
-if __name__ == '__main__' :
-    app = wx.PySimpleApp()
-    frame = wx.Frame(None, -1)
-    panel = wx.Panel(frame)
-    g = grille(panel, app)
-    frame.Show()
-    app.MainLoop()

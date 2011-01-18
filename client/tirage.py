@@ -16,11 +16,11 @@ class tirage(wx.Panel) :
         self.app = app
         self.cases=[]
         self.allowdrag = False
-        self.nbpos = self.app.settings["view_tirage_nbpos"]
+        nbpos = self.app.settings["view_tirage_nbpos"]
         size = self.app.settings["size_jeton"]
         fill = self.app.settings["size_fill"]
-        sizer = wx.GridSizer(rows = 1, cols = self.nbpos, hgap=fill, vgap=fill)
-        for pos in xrange(self.nbpos)  :
+        sizer = wx.GridSizer(rows = 1, cols = nbpos, hgap=fill, vgap=fill)
+        for pos in xrange(nbpos)  :
             case = case_tirage.case_tirage(self, pos)
             self.cases.append(case)
             sizer.Add(case, flag=wx.ALIGN_CENTER)
@@ -31,6 +31,12 @@ class tirage(wx.Panel) :
 
     def cases_non_vides(self) :
         return [case for case in self.cases if not case.is_vide()]
+
+    def nb_pos(self) :
+        return len(self.cases)
+
+    def nb_jeton(self) :
+        return len(self.cases_non_vides())
 
     def cree_tirage(self, mot) :
         """Cree les jetons quand on reçoit un mot"""
@@ -54,7 +60,6 @@ class tirage(wx.Panel) :
         for c in self.cases :
             c.allowdrag = allow
 
-## Principales fonctions publiques 
 
     def cherche_case_lettre(self, lettre) :
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
@@ -67,6 +72,7 @@ class tirage(wx.Panel) :
                 c_dep = c
         return c_dep
 
+## Principales fonctions publiques 
     def move_from(self, c_dest, status, lettre) :
         # si destination non vide, on dégage
         if not c_dest.is_vide() :
@@ -105,23 +111,38 @@ class tirage(wx.Panel) :
 
 ## Fonctions de manipulation : tri, swap...
 
+    def compacte(self) :
+        """ Met tous les jetons à gauche et toutes les cases vides à droite
+        """
+        p_vide = self.nb_pos() - 1
+        while (self.cases[p_vide].is_vide()) :
+            p_vide -= 1
+        p = 0
+        while (p < p_vide) :
+            if self.cases[p].is_vide() :
+                self.swap(p, p_vide)
+                while (self.cases[p_vide].is_vide()) :
+                    p_vide -= 1
+            p += 1
+
     def alpha(self): 
-        # implémente un magnifique tri à bulles...
-        for n in xrange(self.nbpos -1 ) :
-            for i in xrange(self.nbpos-1) :
-                if self.cases[i+1].is_vide() :
-                    continue
-                if self.cases[i].is_vide() or self.cases[i].jeton.lettre > self.cases[i+1].jeton.lettre :
-                    self.swap(i, i+1)
+        self.compacte()
+        lj = [case.jeton for case in self.cases_non_vides()]
+        lj.sort(key=lambda x: x.lettre.lower())
+        for i in xrange(len(lj)) :
+            self.cases[i].vide()
+            self.cases[i].pose(lj[i])
 
     def shuffle(self) :
-        for i in xrange(self.nbpos) :
-            alea = random.randint(0, self.nbpos-1)
+        self.compacte()
+        nbj = self.nb_jeton()
+        for i in xrange(nbj) :
+            alea = random.randint(0, nbj-1)
             self.swap(i, alea)
 
     def shift(self, pos) :
         end = -1
-        for i in xrange(pos+1, self.nbpos) :
+        for i in xrange(pos+1, self.nb_pos()) :
             if self.cases[i].is_vide() :
                 end = i
                 break
