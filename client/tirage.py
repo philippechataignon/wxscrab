@@ -142,16 +142,20 @@ class tirage(wx.Panel) :
 
     def shift(self, pos) :
         end = -1
+        # cherche index première case vide à droite
         for i in xrange(pos+1, self.nb_pos()) :
             if self.cases[i].is_vide() :
                 end = i
                 break
+        # il y a une case vide : on décale en posant et vidant à chaque pas
         if end >= 0 :
             for i in xrange(end, pos, -1) :
-                self.cases[i].jeton = self.cases[i-1].jeton
-                self.cases[i].redraw()
+                self.cases[i].pose(self.cases[i-1].jeton)
+                self.cases[i-1].vide()
             self.cases[pos].vide()
         else :
+            # symétrique du traitement précédent
+            # mais sur la gauche
             end2 = -1
             for i in xrange(0, pos) :
                 if self.cases[i].is_vide() :
@@ -159,8 +163,8 @@ class tirage(wx.Panel) :
                     break
             if end2 >= 0 :
                 for i in xrange(end2, pos) :
-                    self.cases[i].jeton = self.cases[i+1].jeton
-                    self.cases[i].redraw()
+                    self.cases[i].pose(self.cases[i+1].jeton)
+                    self.cases[i+1].vide()
                 self.cases[pos].vide()
 
     def swap(self, pos_old, pos_new) :
