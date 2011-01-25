@@ -59,16 +59,18 @@ class grille :
                 self.cases[(x,y)] = case.case(x, y, grille.mult[x][y])
 
     def __str__(self) :
-        m = ""
+        vide = '.'
+        saut = '\n'
+        m = []
         for y in range(0,15) :
             for x in range(0,15) :
                 j = self.cases[(x,y)].jeton
                 if j is None :
-                    m += "."
+                    m.append(vide)
                 else :
-                    m += j.lettre
-            m += "\n"
-        return m
+                    m.append(j.lettre)
+            m.append(saut)
+        return "".join(m)
 
     def aff_erreur(self, erreur) :
         if erreur in erreur_msg :
