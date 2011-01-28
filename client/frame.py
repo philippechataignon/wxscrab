@@ -211,7 +211,7 @@ class frame(wx.Frame):
             self.home_props()
 
     def button_pose_last(self, e) :
-        if self.props.Count >= 2 and self.tour_on :
+        if self.props.Count >= 2 and self.app.tour_on :
             self.grille.reinit_saisie()
             coo, mot = self.props.GetClientData(1)
             m = msg.msg("propo",(coo, mot, 0))
