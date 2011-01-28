@@ -40,7 +40,7 @@ class case(wx.Window) :
         # puis le jeton éventuel
         if self.jeton is not None :
             dc = wx.PaintDC(self)
-            if self.jeton.status in (jeton.TEMP, jeton.PREPOSE) :
+            if self.jeton.get_status() in (jeton.TEMP, jeton.PREPOSE) :
                 col = s['col_temp']
                 font = "fontcol_tempjoker" if self.jeton.is_joker() else "fontcol_tempnorm"
             else :
@@ -56,13 +56,15 @@ class case(wx.Window) :
                 dc.DrawRoundedRectangle(0, 0, self.size , self.size, s['size_arrondi'])
             font = wx.Font(s['size_font_jeton'], wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
             dc.SetFont(font)
-            l,h = dc.GetTextExtent(self.jeton.lettre.upper())
-            dc.DrawText(self.jeton.lettre.upper(),(self.size-l)/2,(self.size-h)/2)
+            text = self.jeton.get_lettre().upper()
+            l,h = dc.GetTextExtent(text)
+            dc.DrawText(text, (self.size-l)/2,(self.size-h)/2)
             font = wx.Font(s['size_font_point'], wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
             dc.SetFont(font)
             dc.SetTextForeground(s["fontcol_points"])
-            l,h = dc.GetTextExtent(self.jeton.point)
-            dc.DrawText(self.jeton.point, self.size-2-l, self.size-2-h)
+            text = self.jeton.get_point()
+            l,h = dc.GetTextExtent(text)
+            dc.DrawText(text, self.size-2-l, self.size-2-h)
         # ou la flèche
         elif self.fleche in (coord.HOR, coord.VER) :
             dc.SetBrush(wx.Brush(s['col_cercle']))
@@ -85,7 +87,7 @@ class case(wx.Window) :
         if self.is_vide() :
             return jeton.NUL
         else :
-            return self.jeton.status
+            return self.jeton.get_status()
 
     def pose(self, j) :
         assert self.is_vide(), "Pose un jeton sur une case non vide"

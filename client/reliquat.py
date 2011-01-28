@@ -3,30 +3,29 @@
 import jeton
 
 class reliquat :
-    def __init__(self, settings) :
-        self.settings = settings
-        self.char="ABCDEFGHIJKLMNOPQRSTUVWXYZ?"
+    def __init__(self) :
+        self.__char="ABCDEFGHIJKLMNOPQRSTUVWXYZ?"
         repart = [9,2,2,3,15,2,2,2,8,1,1,5,3,6,6,2,1,6,6,6,6,2,1,1,1,1,2]
-        self.freq = dict(zip(self.char,repart))
-        self.jetons = []
-        for lettre in self.char :
-            for i in xrange(self.freq[lettre]) :
-                self.jetons.append(jeton.jeton(lettre, jeton.RELIQUAT, self.settings))
+        self.__freq = dict(zip(self.__char,repart))
+        self.__jetons = []
+        for lettre in self.__char :
+            for i in xrange(self.__freq[lettre]) :
+                self.__jetons.append(jeton.jeton(lettre, jeton.RELIQUAT))
 
     def __str__(self) :
-        return " ".join([l*self.freq[l] for l in self.char if self.freq[l] != 0 ])
+        return " ".join([l*self.__freq[l] for l in self.__char if self.__freq[l] != 0 ])
 
     def move_from(self, c_dest, status, lettre) :
         """ Prend un jeton dans le reliquat pour le poser sur la case c_dest 
             avec un status donné et portant la lettre demandée
         """
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
-        self.freq[cherche] -= 1
-        ll = [j.lettre for j in self.jetons]
+        self.__freq[cherche] -= 1
+        ll = [j.get_lettre() for j in self.__jetons]
         pos = ll.index(cherche)
-        j = self.jetons.pop(pos)
+        j = self.__jetons.pop(pos)
         if cherche == "?" :
-            j.lettre = lettre
+            j.set_lettre(lettre)
         j.set_status(status)
         c_dest.pose(j)
         return True
@@ -37,16 +36,14 @@ class reliquat :
         if c_dep.is_vide() :
             return False
         j = c_dep.jeton
-        if 'a' <= j.lettre <= 'z' :
-            j.lettre = '?'
-        self.freq[j.lettre] += 1
+        if 'a' <= j.get_lettre() <= 'z' :
+            j.set_lettre('?')
+        self.__freq[j.get_lettre()] += 1
         j.set_status(jeton.RELIQUAT)
-        self.jetons.append(j)
+        self.__jetons.append(j)
         c_dep.vide()
         return True
 
 if __name__ == '__main__' :
-    import settings
-    s = settings.settings()
-    r = reliquat(s)
+    r = reliquat()
     print r

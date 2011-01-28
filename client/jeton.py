@@ -13,29 +13,31 @@ pts={'A':1,'B':3,'C':3,'D':2,'E':1,'F':4,'G':2,'H':4,'I':1,
 
 #Fichier définition class
 class jeton :
-    def __init__(self, lettre, status, settings) :
-        self.settings = settings
-        self.lettre = lettre
-        self.status = status
+    def __init__(self, lettre, status) :
+        self.__lettre = lettre
+        self.__status = status
         if self.is_joker() :
-            self.point = str(pts['?'])
+            self.__point = str(pts['?'])
         else :
-            self.point = str(pts[self.lettre])
+            self.__point = str(pts[lettre])
 
     def __str__(self) :
-        return self.lettre
+        return self.__lettre
 
     def is_joker(self) :
-        return 'a' <= self.lettre <='z' or self.lettre == '?'
+        return 'a' <= self.__lettre <='z' or self.__lettre == '?'
 
     def get_status(self) :
-        return self.status
+        return self.__status
 
     def set_status(self, status) :
-        self.status = status
+        self.__status = status
 
-    def deplace(self, dep, arr, status) :
-        """ Déplace un jeton de la case dep vers la case arr
-            Avec le statut d'arrivée status
-        """
-        pass
+    def get_lettre(self) :
+        return self.__lettre
+
+    def set_lettre(self, lettre) :
+        self.__lettre = lettre
+
+    def get_point(self) :
+        return self.__point

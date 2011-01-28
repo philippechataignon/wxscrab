@@ -34,7 +34,7 @@ class App(wx.App):
         self.d = dlgconn.dlgconnframe(self.frame, self)
         self.d.Show()
         self.d.MakeModal(True)
-        self.reliquat = reliquat.reliquat(self.settings)
+        self.reliquat = reliquat.reliquat()
         return True
 
     def lance_net(self) :
@@ -60,7 +60,7 @@ class App(wx.App):
     def debut_partie(self) :
         # vide tirage pour eviter pb reliquat
         self.frame.tirage.vide_tirage()
-        self.reliquat = reliquat.reliquat(self.settings)
+        self.reliquat = reliquat.reliquat()
         self.envoi(msg.msg("askgrille"))
         self.envoi(msg.msg("askinfo"))
         self.envoi(msg.msg("askscore"))

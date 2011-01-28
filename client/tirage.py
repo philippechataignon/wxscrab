@@ -14,12 +14,11 @@ class tirage(wx.Panel) :
     def __init__(self, parent, app) :
         wx.Panel.__init__(self, parent, -1)
         self.app = app
-        self.cases=[]
         self.allowdrag = False
         nbpos = self.app.settings["view_tirage_nbpos"]
-        size = self.app.settings["size_jeton"]
         fill = self.app.settings["size_fill"]
         sizer = wx.GridSizer(rows = 1, cols = nbpos, hgap=fill, vgap=fill)
+        self.cases=[]
         for pos in xrange(nbpos)  :
             case = case_tirage.case_tirage(self, pos)
             self.cases.append(case)
@@ -28,7 +27,6 @@ class tirage(wx.Panel) :
         self.Fit()
 
 ## Fonctions basiques
-
     def cases_non_vides(self) :
         return [case for case in self.cases if not case.is_vide()]
 
@@ -65,10 +63,10 @@ class tirage(wx.Panel) :
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
         c_dep = None
         for c in self.cases_non_vides() :
-            if c.jeton.lettre == cherche :
+            if c.jeton.get_lettre() == cherche :
                 c_dep = c
                 break
-            if c.jeton.lettre == "?" : # joker au coup où
+            if c.jeton.get_lettre() == "?" : # joker au coup où
                 c_dep = c
         return c_dep
 
@@ -83,8 +81,8 @@ class tirage(wx.Panel) :
         if c_dep is not None :
             j = c_dep.jeton 
             j.set_status(status)
-            if j.lettre == "?" : #cas du joker
-                j.lettre = lettre.lower()
+            if j.get_lettre() == "?" : #cas du joker
+                j.set_lettre(lettre.lower())
             c_dest.pose(j)
             c_dep.vide()
             return True
@@ -102,7 +100,7 @@ class tirage(wx.Panel) :
         for c in self.cases :
             if c.is_vide() :
                 if j.is_joker() :
-                    j.lettre = '?'
+                    j.set_lettre('?')
                 j.set_status(jeton.TIRAGE)
                 c.pose(j)
                 c_dep.vide()
@@ -110,7 +108,6 @@ class tirage(wx.Panel) :
         return False
 
 ## Fonctions de manipulation : tri, swap...
-
     def compacte(self) :
         """ Met tous les jetons à gauche et toutes les cases vides à droite
         """
@@ -128,7 +125,7 @@ class tirage(wx.Panel) :
     def alpha(self): 
         self.compacte()
         lj = [case.jeton for case in self.cases_non_vides()]
-        lj.sort(key=lambda x: x.lettre.lower())
+        lj.sort(key=lambda x: x.get_lettre())
         for i in xrange(len(lj)) :
             self.cases[i].vide()
             self.cases[i].pose(lj[i])
