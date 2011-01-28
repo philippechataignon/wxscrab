@@ -41,7 +41,6 @@ class main(threading.Thread):
         self.lock_vote = threading.Lock()
         self.init_vote()
         self.stop = False
-        self.decr_chrono = 1
 
     def run(self, f_attente=True) :
         self.boucle_game()
@@ -92,12 +91,12 @@ class main(threading.Thread):
                 raise Next
         time.sleep(tps)
         if self.votes['stopchrono'] > 0 :
-            self.decr_chrono = 1 - self.decr_chrono
-            if self.decr_chrono == 0 :
-                self.info("Le chrono est stoppé")
-            else :
-                self.info("Le chrono est reparti")
             self.raz_vote('stopchrono')
+            self.info("Le chrono est stoppé")
+            while (self.votes['stopchrono'] == 0) :
+                time.sleep(0.5)
+            self.raz_vote('stopchrono')
+            self.info("Le chrono est reparti")
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour, chrono_total) :
         self.jo.score_tour_zero()
@@ -117,7 +116,7 @@ class main(threading.Thread):
                 self.attente(1)
             except Next :
                 self.chrono = 1
-            self.chrono -= self.decr_chrono
+            self.chrono -= 1
         self.tour_on = False
         self.jo.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (coord_mot_top, mot_top, pts_mot_top))

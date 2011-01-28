@@ -133,7 +133,7 @@ class App(wx.App):
         elif m.cmd == 'grille' :
             g.read_grille(m.param)
         elif m.cmd == 'new' :
-            f.efface_msgs()
+            self.info_serv("="*20, wx.NamedColor("DARK GREEN"))
             self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
             self.score.Show(False)
             self.debut_partie()
