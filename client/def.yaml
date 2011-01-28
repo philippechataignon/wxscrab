@@ -15,9 +15,9 @@ view_tirage_nbpos: 8
 
 size_font_msgs: 11
 size_case: 34
-size_button: [100,24]
-size_chat_size: 300
-size_fill: 10
+size_button: [80,24]
+size_chat_size: 200
+size_fill: 8
 size_font_jeton: 20
 size_font_point: 7
 size_font_chrono: 24
@@ -35,10 +35,7 @@ col_tirage :  "#dddddd"
 col_neutre :  "#eeeeee"
 col_temp :  "#ebe5d4"
 col_pose :  "#f6e594"
-col_tour_jeton :  "#b2a56b"
 col_cercle: '#eeeeee'
-col_tour_cercle: '#eeeeee'
 col_fleche: forest green
-col_tour_fleche: medium forest green
 
 jeton_carre: false

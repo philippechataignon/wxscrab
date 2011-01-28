@@ -17,6 +17,7 @@ class case(wx.Window) :
         self.size = self.settings["size_case"]
         wx.Window.__init__(self, parent, size=(self.size, self.size))
         self.jeton = None
+        self.fleche = None
         self.font_jeton = wx.Font(self.settings['size_font_jeton'], \
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.font_point = wx.Font(self.settings['size_font_point'], \
@@ -24,7 +25,6 @@ class case(wx.Window) :
         self.SetDropTarget(dnd.casedroptarget(self))
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
-        self.fleche = None
 
     def OnKey(self, e) :
         self.app.frame.grille.OnKey(e)
@@ -66,10 +66,10 @@ class case(wx.Window) :
         # ou la flèche
         elif self.fleche in (coord.HOR, coord.VER) :
             dc.SetBrush(wx.Brush(s['col_cercle']))
-            dc.SetPen(wx.Pen(s['col_tour_cercle'], 3, wx.SOLID))
-            dc.DrawCircle(self.size/2, self.size/2, self.size/2-1)
+            dc.SetPen(wx.Pen(s['col_cercle'], 1, wx.TRANSPARENT))
+            dc.DrawCircle(self.size/2, self.size/2, self.size/2-2)
             dc.SetBrush(wx.Brush(s['col_fleche']))
-            dc.SetPen(wx.Pen(s['col_tour_fleche'], 1, wx.SOLID))
+            dc.SetPen(wx.Pen(s['col_fleche'], 1, wx.TRANSPARENT))
             pts = [(2.0,6.5), (5,6.5), (5,8), (8.5,5), (5,2), (5,3.5), (2.0,3.5)]
             if self.fleche == coord.HOR :
                 pts_reel = [(x*self.size/10, y*self.size/10) for (x,y) in pts]
@@ -96,3 +96,8 @@ class case(wx.Window) :
         """Appelé quand on enlève un jeton d'une case"""
         self.jeton = None
         self.Refresh()
+
+    def swap(self, other) :
+        self.jeton, other.jeton  = other.jeton, self.jeton
+        self.Refresh()
+        other.Refresh()

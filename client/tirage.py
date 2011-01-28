@@ -159,9 +159,4 @@ class tirage(wx.Panel) :
                 self.cases[pos].vide()
 
     def swap(self, pos_old, pos_new) :
-        self.swap_cases(self.cases[pos_old], self.cases[pos_new])
-        
-    def swap_cases(self, dep, arr) :
-        dep.jeton, arr.jeton  = arr.jeton, dep.jeton
-        dep.Refresh()
-        arr.Refresh()
+        self.cases[pos_old].swap(self.cases[pos_new])

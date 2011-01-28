@@ -26,7 +26,7 @@ class casedroptarget(wx.PyDropTarget) :
                     tirage = False
                 if tirage :
                     "Départ et arrivée dans tirage : on swap"
-                    t.swap_cases(dep, self.case)
+                    self.case.swap(dep)
                 elif self.case.is_vide() and not j.is_joker():
                     j.set_status(jeton.TEMP)
                     self.case.pose(j)
