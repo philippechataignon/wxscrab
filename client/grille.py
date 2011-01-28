@@ -226,19 +226,17 @@ class grille(wx.Panel) :
             self.app.frame.tirage.move_to(c)
         c.set_fleche(self.coord_ini.dir())
 
-## Fonctions globales pour la grille
-
-    def vide(self) :
-        "Vide complétement la grille"
-        self.reinit_saisie()
-        for case in self.cases.itervalues() :
-            case.vide()
-
+## Initialisation de la grille
     def read_grille(self, txt_grille) :
         """
         Initialise la grille à partir du texte renvoyé par le serveur
         """
-        self.vide()
+        self.reinit_saisie()
+        # remet les jetons dans le reliquat
+        for case in self.cases.itervalues() :
+            self.app.reliquat.move_to(case)
+        # prend les jetons dans le reliquat
+        # et les pose sur la grille
         for y, ligne in enumerate(txt_grille.split("\n")) :
             for x, char in enumerate(ligne) :
                 if char != "." :

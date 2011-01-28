@@ -58,15 +58,14 @@ class App(wx.App):
         self.frame.info_serv(txt, color)
 
     def debut_partie(self) :
-        # vide tirage pour eviter pb reliquat
+        # vide tirage pour mettre jeton dans reliquat
         self.frame.tirage.vide_tirage()
-        self.reliquat = reliquat.reliquat()
+        # pour la grille, les jetons sont remis dans le reliquat par read_grille
         self.envoi(msg.msg("askgrille"))
         self.envoi(msg.msg("askinfo"))
         self.envoi(msg.msg("askscore"))
 
 ## Traitement des messages reçus
-
     def traite(self, m) :
         # print "Traite %s %s %s" % (m.cmd, m.param, m.id)
         f = self.frame
@@ -85,7 +84,7 @@ class App(wx.App):
             self.debut_partie()
             self.envoi(msg.msg("asktour"))
 
-        # analyse pas les commandes si non connecté
+        # pas d'analyse des commandes si non connecté (sauf connect)
         if not self.connected :
             return
 

@@ -60,6 +60,7 @@ class main(threading.Thread):
                 print "------------------------------------------------------------------"
                 print self.options
                 tour = 0
+                time.sleep(1)
                 for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
                     tour +=1
                     if self.options.tour is not None and tour < self.options.tour :
@@ -74,7 +75,7 @@ class main(threading.Thread):
             except Next :
                 pass
             except Stop :
-                print "Sortie thread partie"
+                print "Sortie thread partie (loop)"
                 break
             else :
                 f_attente = True

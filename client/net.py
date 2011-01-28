@@ -36,7 +36,7 @@ class net(asynchat.async_chat) :
         self.buffer = []
         m = pickle.loads(txt)
         if self.debug == True :
-            print m.cmd, m.param, m.id
+            print "<-",m.cmd, m.param, m.id
         self.app.traite(m)
 
     def handle_close(self) :
@@ -46,7 +46,7 @@ class net(asynchat.async_chat) :
 
     def envoi_net(self, m):
         if self.debug == True :
-            print m.cmd, m.param, m.id
+            print "->",m.cmd, m.param, m.id
         self.push(pickle.dumps(m, 2)+net.term)
 
     def watchnet(self, e) :
