@@ -94,8 +94,10 @@ class case(wx.Window) :
 
     def vide(self) :
         """Appelé quand on enlève un jeton d'une case"""
+        j = self.jeton
         self.jeton = None
         self.Refresh()
+        return j
 
     def swap(self, other) :
         self.jeton, other.jeton  = other.jeton, self.jeton

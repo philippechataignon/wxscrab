@@ -35,13 +35,12 @@ class reliquat :
         """
         if c_dep.is_vide() :
             return False
-        j = c_dep.jeton
+        j = c_dep.vide()
         if 'a' <= j.get_lettre() <= 'z' :
             j.set_lettre('?')
         self.__freq[j.get_lettre()] += 1
         j.set_status(jeton.RELIQUAT)
         self.__jetons.append(j)
-        c_dep.vide()
         return True
 
 if __name__ == '__main__' :

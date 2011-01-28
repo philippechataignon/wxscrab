@@ -73,12 +73,11 @@ class tirage(wx.Panel) :
         # on a un jeton dans le tirage :
         # le transfert est possible
         if c_dep is not None :
-            j = c_dep.jeton 
+            j = c_dep.vide()
             j.set_status(status)
             if j.get_lettre() == "?" : #cas du joker
                 j.set_lettre(lettre.lower())
             c_dest.pose(j)
-            c_dep.vide()
             return True
         else :
             return False
@@ -89,15 +88,13 @@ class tirage(wx.Panel) :
         """
         if c_dep.is_vide() :
             return False
-
-        j = c_dep.jeton
         for c in self.cases :
             if c.is_vide() :
+                j = c_dep.vide()
                 if j.is_joker() :
                     j.set_lettre('?')
                 j.set_status(jeton.TIRAGE)
                 c.pose(j)
-                c_dep.vide()
                 return True
         return False
 
@@ -141,8 +138,8 @@ class tirage(wx.Panel) :
         # il y a une case vide : on décale en posant et vidant à chaque pas
         if end >= 0 :
             for i in xrange(end, pos, -1) :
-                self.cases[i].pose(self.cases[i-1].jeton)
-                self.cases[i-1].vide()
+                j = self.cases[i-1].vide()
+                self.cases[i].pose(j)
             self.cases[pos].vide()
         else :
             # symétrique du traitement précédent
@@ -154,8 +151,8 @@ class tirage(wx.Panel) :
                     break
             if end2 >= 0 :
                 for i in xrange(end2, pos) :
-                    self.cases[i].pose(self.cases[i+1].jeton)
-                    self.cases[i+1].vide()
+                    j = self.cases[i+1].vide()
+                    self.cases[i].pose(j)
                 self.cases[pos].vide()
 
     def swap(self, pos_old, pos_new) :
