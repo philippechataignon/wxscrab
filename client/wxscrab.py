@@ -64,7 +64,6 @@ class App(wx.App):
         self.envoi(msg.msg("askgrille"))
         self.envoi(msg.msg("askinfo"))
         self.envoi(msg.msg("askscore"))
-        self.envoi(msg.msg("asktour"))
 
 ## Traitement des messages reçus
 
@@ -84,6 +83,7 @@ class App(wx.App):
             self.settings.write()
             self.connected = True
             self.debut_partie()
+            self.envoi(msg.msg("asktour"))
 
         # analyse pas les commandes si non connecté
         if not self.connected :
