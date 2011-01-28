@@ -71,9 +71,10 @@ if __name__ == '__main__' :
     import grille
     class options :
         def __init__(self) :
-            self.dico = "dic/ods5.dawg"
+            self.dico = "../dic/ods5.dawg"
+            self.game = "partie/p_20101231164246.partie"
 
-    d = dico.dico("dic/ods5.dawg")
+    d = dico.dico("../dic/ods5.dawg")
     g = grille.grille()
     c = coord.coord()
     o = options()
