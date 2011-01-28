@@ -103,13 +103,13 @@ class tirage(wx.Panel) :
         """ Met tous les jetons à gauche et toutes les cases vides à droite
         """
         p_vide = self.nb_pos() - 1
-        while (self.cases[p_vide].is_vide()) :
+        while (p_vide>= 0 and self.cases[p_vide].is_vide()) :
             p_vide -= 1
         p = 0
         while (p < p_vide) :
             if self.cases[p].is_vide() :
                 self.swap(p, p_vide)
-                while (self.cases[p_vide].is_vide()) :
+                while (p_vide>=0 and self.cases[p_vide].is_vide()) :
                     p_vide -= 1
             p += 1
 
@@ -140,7 +140,6 @@ class tirage(wx.Panel) :
             for i in xrange(end, pos, -1) :
                 j = self.cases[i-1].vide()
                 self.cases[i].pose(j)
-            self.cases[pos].vide()
         else :
             # symétrique du traitement précédent
             # mais sur la gauche
@@ -153,7 +152,6 @@ class tirage(wx.Panel) :
                 for i in xrange(end2, pos) :
                     j = self.cases[i+1].vide()
                     self.cases[i].pose(j)
-                self.cases[pos].vide()
 
     def swap(self, pos_old, pos_new) :
         self.cases[pos_old].swap(self.cases[pos_new])
