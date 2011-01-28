@@ -29,9 +29,6 @@ class case(wx.Window) :
     def OnKey(self, e) :
         self.app.frame.grille.OnKey(e)
 
-    def redraw(self) :
-        self.Refresh()
-
     def OnPaint(self, evt):
         s = self.settings
         dc = wx.PaintDC(self)
@@ -93,9 +90,9 @@ class case(wx.Window) :
     def pose(self, j) :
         assert self.is_vide(), "Pose un jeton sur une case non vide"
         self.jeton = j
-        self.redraw()
+        self.Refresh()
 
     def vide(self) :
         """Appelé quand on enlève un jeton d'une case"""
         self.jeton = None
-        self.redraw()
+        self.Refresh()

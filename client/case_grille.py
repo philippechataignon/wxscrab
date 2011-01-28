@@ -45,7 +45,7 @@ class case_grille(case.case) :
 
     def set_fleche(self, dir) :
         self.fleche = dir
-        self.redraw()
+        self.Refresh()
 
     def efface_fleche(self) :
         self.set_fleche(None)
@@ -53,4 +53,4 @@ class case_grille(case.case) :
     def convert_prepose(self) :
         if self.get_status() == jeton.PREPOSE : #si jeton prepose
             self.jeton.set_status(jeton.POSE) #met status pose
-            self.redraw()
+            self.Refresh()

@@ -163,5 +163,5 @@ class tirage(wx.Panel) :
         
     def swap_cases(self, dep, arr) :
         dep.jeton, arr.jeton  = arr.jeton, dep.jeton
-        dep.redraw()
-        arr.redraw()
+        dep.Refresh()
+        arr.Refresh()
