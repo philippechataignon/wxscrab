@@ -41,7 +41,6 @@ class net(asynchat.async_chat) :
 
     def handle_close(self) :
         self.close()
-        self.app.frame.grille.saisie_ok = False
         utils.errordlg("Serveur déconnecté","Erreur Socket")
         self.app.frame.Close()
 

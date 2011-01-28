@@ -39,7 +39,6 @@ class grille(wx.Panel) :
         self.cases = {}
         self.coord_ini = coord.coord()   # coord_ini est récupéré depuis case (OnClickCase)
         self.coord_cur = coord.coord()   # coordonnée courante 
-        self.saisie_ok = False           # flag indiquant si on peut saisir (depend chrono)
         self.entry = False          # flag saisie en cours
         fill = self.app.settings["size_fill"]
         sizer = wx.GridBagSizer(hgap=0, vgap=0)
@@ -148,7 +147,7 @@ class grille(wx.Panel) :
     def OnKey(self, e) :
         # en provenance de la case
         l = e.GetKeyCode()
-        if l is None or self.saisie_ok == False :
+        if l is None or self.app.tour_on == False :
             return
         if l == wx.WXK_RETURN or l == wx.WXK_NUMPAD_ENTER :
             self.envoi_mot()

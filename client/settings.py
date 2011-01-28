@@ -26,6 +26,8 @@ class settings :
         dic_perso = yaml.load(buff)
         for key, item in dic_perso.iteritems() :
             self.dic[key] = item
+        # assure que la taille de la case est paire
+        self.dic['size_case'] = (self.dic['size_case'] // 2) * 2
 
     def __getitem__(self, key):
         if key in self.dic:
@@ -50,9 +52,6 @@ class settings :
         if val in self.dic[key] :
             self.dic[key].remove(val)
         self.dic[key].insert(0,val)
-
-
-
 
 if __name__ == '__main__' :
     s = settings()

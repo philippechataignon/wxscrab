@@ -14,7 +14,6 @@ class tirage(wx.Panel) :
     def __init__(self, parent, app) :
         wx.Panel.__init__(self, parent, -1)
         self.app = app
-        self.allowdrag = False
         nbpos = self.app.settings["view_tirage_nbpos"]
         fill = self.app.settings["size_fill"]
         sizer = wx.GridSizer(rows = 1, cols = nbpos, hgap=fill, vgap=fill)
@@ -53,11 +52,6 @@ class tirage(wx.Panel) :
         """
         for c in self.cases :
             self.app.reliquat.move_to(c)
-
-    def allowdrags(self, allow) :
-        for c in self.cases :
-            c.allowdrag = allow
-
 
     def cherche_case_lettre(self, lettre) :
         cherche = "?" if 'a' <= lettre <= 'z' else lettre

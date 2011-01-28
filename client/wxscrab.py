@@ -106,12 +106,10 @@ class App(wx.App):
             t.cree_tirage(m.param)
             f.buttonpose.Enable(True)
             f.home_props()
-            t.allowdrags(True)
             f.set_status_reliq()
         elif m.cmd == 'chrono' :
             temps = m.param
             if temps > 0 :
-                g.saisie_ok = True
                 self.tour_on = True
             f.timer.SetLabel(utils.convert_time(temps))
             if temps == 0 :
@@ -121,8 +119,6 @@ class App(wx.App):
         elif m.cmd == 'mot_top' :
             #Fin du tour
             self.tour_on = False
-            t.allowdrags(False)
-            g.saisie_ok = False
             f.buttonpose.Enable(False)
             g.reinit_saisie()
             self.son.play("fin_tour")

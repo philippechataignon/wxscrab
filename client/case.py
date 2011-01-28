@@ -14,10 +14,13 @@ class case(wx.Window) :
     def __init__(self, parent) :
         self.app = parent.app
         self.settings = self.app.settings
-        self.size = self.settings["size_jeton"]
+        self.size = self.settings["size_case"]
         wx.Window.__init__(self, parent, size=(self.size, self.size))
         self.jeton = None
-        self.tirage = False
+        self.font_jeton = wx.Font(self.settings['size_font_jeton'], \
+                wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        self.font_point = wx.Font(self.settings['size_font_point'], \
+                wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.SetDropTarget(dnd.casedroptarget(self))
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
@@ -32,13 +35,13 @@ class case(wx.Window) :
     def OnPaint(self, evt):
         s = self.settings
         dc = wx.PaintDC(self)
-        col_fond = s['col_tirage'] if self.tirage else s['col_grille'][self.mult]
-        dc.SetBrush(wx.Brush(col_fond))
+        dc.SetBrush(wx.Brush(self.col_fond))
         # trace le carré de fond
         dc.SetPen(wx.Pen(s['col_neutre'], 1, wx.SOLID))
         dc.DrawRectangle(0, 0, self.size, self.size) 
         # puis le jeton éventuel
         if self.jeton is not None :
+            #size_jeton = self.settings["size_jeton"]
             dc = wx.PaintDC(self)
             if self.jeton.get_status() in (jeton.TEMP, jeton.PREPOSE) :
                 col = s['col_temp']
@@ -48,23 +51,21 @@ class case(wx.Window) :
                 font = "fontcol_fixejoker" if self.jeton.is_joker() else "fontcol_fixenorm"
             dc.SetBrush(wx.Brush(col))
             dc.SetTextForeground(s[font])
+            dc.SetPen(wx.Pen(s['col_neutre'], 1, wx.TRANSPARENT))
+            size_jeton = self.size - 2
             if s['jeton_carre'] :
-                dc.SetPen(wx.Pen(s['col_neutre'], 1, wx.SOLID))
-                dc.DrawRectangle(0, 0, self.size , self.size)
+                dc.DrawRectangle(1, 1, size_jeton, size_jeton)
             else :
-                dc.SetPen(wx.Pen(col_fond, 1, wx.SOLID))
-                dc.DrawRoundedRectangle(0, 0, self.size , self.size, s['size_arrondi'])
-            font = wx.Font(s['size_font_jeton'], wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-            dc.SetFont(font)
+                dc.DrawRoundedRectangle(1, 1, size_jeton , size_jeton, s['size_arrondi'])
+            dc.SetFont(self.font_jeton)
             text = self.jeton.get_lettre().upper()
             l,h = dc.GetTextExtent(text)
-            dc.DrawText(text, (self.size-l)/2,(self.size-h)/2)
-            font = wx.Font(s['size_font_point'], wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-            dc.SetFont(font)
+            dc.DrawText(text, (size_jeton - l)/2 + 1 , (size_jeton - h)/2 + 1)
+            dc.SetFont(self.font_point)
             dc.SetTextForeground(s["fontcol_points"])
             text = self.jeton.get_point()
             l,h = dc.GetTextExtent(text)
-            dc.DrawText(text, self.size-2-l, self.size-2-h)
+            dc.DrawText(text, size_jeton-l, size_jeton-h)
         # ou la flèche
         elif self.fleche in (coord.HOR, coord.VER) :
             dc.SetBrush(wx.Brush(s['col_cercle']))

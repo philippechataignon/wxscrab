@@ -17,14 +17,15 @@ class case_grille(case.case) :
         self.coord = coord.coord(x,y)
         self.mult = mult
         self.fleche = None
+        self.col_fond = self.app.settings['col_grille'][self.mult]
         self.Bind(wx.EVT_LEFT_DOWN, self.OnClickCase)
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnClickCase)
      
     def OnClickCase(self, evt) :
-        g = self.app.frame.grille
-        if g.saisie_ok == False :
+        # si pas de tour en cours, on sort
+        if self.app.tour_on == False :
             return
-
+        g = self.app.frame.grille
         # si la case est vide, on met une fleche horizontale
         if self.fleche is None : 
             g.reinit_saisie()
