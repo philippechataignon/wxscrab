@@ -18,9 +18,9 @@ class case(wx.Window) :
         wx.Window.__init__(self, parent, size=(self.size, self.size))
         self.jeton = None
         self.fleche = None
-        self.font_jeton = wx.Font(self.settings['size_font_jeton'], \
+        self.font_jeton = wx.Font(self.settings['size_font_jeton'],
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        self.font_point = wx.Font(self.settings['size_font_point'], \
+        self.font_point = wx.Font(self.settings['size_font_point'],
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.SetDropTarget(dnd.casedroptarget(self))
         self.Bind(wx.EVT_PAINT, self.OnPaint)

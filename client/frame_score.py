@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 import wx
 import wx.grid
-import xml.dom.minidom
-from xml.parsers.expat import ExpatError
+import xml.etree.cElementTree as ET
 
 class CustomDataTable(wx.grid.PyGridTableBase):
     def __init__(self, data):
@@ -11,41 +10,31 @@ class CustomDataTable(wx.grid.PyGridTableBase):
         self.colLabels = []
         self.rowLabels = []
         self.data = []
-        self.max = 0
+        self.max_len_row = 0
         try :
-            dom = xml.dom.minidom.parseString(data)
-        except ExpatError :
-            return
+            tree = ET.XML(data)
+        except SyntaxError :
+            pass
+        else :
+            for n in tree.findall('label/col') :
+                self.colLabels.append(n.text)
 
-        for node in dom.getElementsByTagName("col") :
-            for n in node.childNodes:
-                if n.nodeType == node.TEXT_NODE:
-                    t = str(n.data.strip())
-                    self.colLabels.append(t)
-
-
-        for l in dom.getElementsByTagName("ligne") :
-            for n in l.getElementsByTagName("nom")[0].childNodes :
-                if n.nodeType == node.TEXT_NODE:
-                    t = str(n.data.strip())
-                    self.rowLabels.append(t)
-                    if (len(t) > self.max) : 
-                        self.max = len(t)
-                break
-            cur_row_data = []
-            for node in l.getElementsByTagName("val") :
-                typ=node.getAttribute("type")
-                for n in node.childNodes:
-                    if n.nodeType == node.TEXT_NODE:
-                        if typ == "i" :
-                            t = int(n.data.strip())
-                        elif typ == "f" :
-                            t = float(n.data.strip())
-                        else:
-                            t = n.data.strip()
-                        cur_row_data.append(t)
-                    break
-            self.data.append(cur_row_data)
+            for l in tree.findall('ligne') :
+                n = l.find('nom')
+                self.rowLabels.append(n.text)
+                if len(n.text) > self.max_len_row :
+                    self.max_len_row = len(n.text)
+                cur_row_data = []
+                for c in l.findall('val') :
+                    type = c.attrib.get('type')
+                    if type == 'i' :
+                        v = int(c.text)
+                    elif type == 'f' :
+                        v = float(c.text)
+                    else :
+                        v = c.text
+                    cur_row_data.append(v)
+                self.data.append(cur_row_data)
 
     def sort(self, col, rev=True) :
         z=zip(self.rowLabels, self.data)
@@ -87,7 +76,7 @@ class ScoreGrid(wx.grid.Grid):
         self.EnableDragColSize(False)
         self.EnableDragRowSize(False)
         self.AutoSizeColumns()
-        self.SetRowLabelSize(self.table.max*self.GetLabelFont().GetPointSize())
+        self.SetRowLabelSize(self.table.max_len_row*self.GetLabelFont().GetPointSize())
         self.SetDefaultCellAlignment(wx.ALIGN_RIGHT, wx.ALIGN_CENTER)
         self.SetRowLabelAlignment(wx.ALIGN_LEFT, wx.ALIGN_CENTER)
         self.SetSize(self.GetBestSize())
@@ -142,9 +131,9 @@ if __name__ == '__main__' :
             t="""<score>
             <label>
             <col>Total</col><col>%</col></label>
-            <ligne><nom>Xouillet</nom><val>250</val><val>24.325</val></ligne>
-            <ligne><nom>mlerose</nom><val>750</val><val>86</val></ligne>
-            <ligne><nom>Kikoolol</nom><val>210</val><val>23</val></ligne>
+            <ligne><nom>Xouillet</nom><val>250</val><val type="f">24.325</val></ligne>
+            <ligne><nom>mlerose</nom><val>750</val><val type="i">86</val></ligne>
+            <ligne><nom>Kikoolol</nom><val>210</val><val type="f">23</val></ligne>
             <ligne><nom>Bibilolo</nom><val>430</val><val>30</val></ligne></score>
             """
             self.score = frame_score(None, t) 
