@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import wx
 import wx.grid
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 
 class CustomDataTable(wx.grid.PyGridTableBase):
     def __init__(self, data):
