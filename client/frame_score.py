@@ -32,10 +32,10 @@ class CustomDataTable(wx.grid.PyGridTableBase):
                 cur_row_data.append(v)
             self.data.append(cur_row_data)
 
-    def sort(self, col, rev=True) :
+    def sort(self, col, rev) :
         z=zip(self.rowLabels, self.data)
         if col == 0 :
-            z.sort(key=lambda x: x[0])
+            z.sort(key=lambda x: x[0], reverse=rev)
         else :
             z.sort(key=lambda x: x[1][col-1], reverse=rev)
         self.rowLabels = [x[0] for x in z]
@@ -72,14 +72,15 @@ class ScoreGrid(wx.grid.Grid):
         self.EnableDragColSize(False)
         self.EnableDragRowSize(False)
         self.AutoSizeColumns()
-        self.SetRowLabelSize(self.table.max_len_row*self.GetLabelFont().GetPointSize())
+        self.SetRowLabelSize(self.table.max_len_row * self.GetLabelFont().GetPointSize())
         self.SetDefaultCellAlignment(wx.ALIGN_RIGHT, wx.ALIGN_CENTER)
         self.SetRowLabelAlignment(wx.ALIGN_LEFT, wx.ALIGN_CENTER)
         self.SetSize(self.GetBestSize())
         self.SetScrollbars(0,0,0,0,0,0)
         self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.OnClick)
         self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_DCLICK, self.OnClick)
-        self.sorted = 0
+        self.col_tri = 0
+        self.rev = True
         self.tri(1)
     
     def OnClick(self,e) :
@@ -87,17 +88,13 @@ class ScoreGrid(wx.grid.Grid):
         self.tri(c)
 
     def tri(self, c) :
-        # self.sorted =
-        # 1 a n pour les colonnes ;
-        # -1 a -n si rev ;
-        # 0 pour les tetes de lignes
-        if self.sorted == c :
-            rev = False
-            self.sorted = -c
+        # on reclique sur la colonne du tri actuel
+        if self.col_tri == c :
+            self.rev = not self.rev
         else :
-            rev = True
-            self.sorted = c
-        self.table.sort(abs(c), rev)
+            self.col_tri = c
+            self.rev = True
+        self.table.sort(self.col_tri, self.rev)
         self.Refresh()
             
 class frame_score(wx.Frame):
@@ -115,9 +112,9 @@ class frame_score(wx.Frame):
             else :
             # on passe le tree pour constituer la table de données
                 grid = ScoreGrid(panel, tree)
-                border.Add(grid,0,wx.ALL,10)
+                border.Add(grid, 0, wx.ALL, 10)
         butt = wx.Button(panel, 10, "Fermer")
-        border.Add(butt,0, wx.ALL|wx.ALIGN_RIGHT, 10)
+        border.Add(butt, 0, wx.ALL|wx.ALIGN_RIGHT, 10)
         self.Bind(wx.EVT_BUTTON, self.quit, butt)
         self.Bind(wx.EVT_CLOSE, self.quit)
         panel.SetSizerAndFit(border)

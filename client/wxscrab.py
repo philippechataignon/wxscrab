@@ -133,7 +133,7 @@ class App(wx.App):
             else:
                 self.info_serv("En attente du prochain tour")
         elif m.cmd == 'score' :
-            self.score.Close()
+            self.score.Destroy()
             self.score = frame_score.frame_score(f, m.param)
             if not self.tour_on :
                 self.score.Show(True)
