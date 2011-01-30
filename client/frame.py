@@ -229,7 +229,7 @@ class frame(wx.Frame):
             self.home_props()
 
     def show_score(self, e) :
-        self.app.bascule_score()
+        self.app.score.Show(not self.app.score.IsShown())
 
 ## Evts Menu
 

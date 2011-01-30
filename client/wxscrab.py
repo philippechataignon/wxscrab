@@ -25,7 +25,7 @@ class App(wx.App):
         self.frame = frame.frame(None, self)
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
-        self.score = frame_score.frame_score(self.frame, "")
+        self.score = frame_score.frame_score(self.frame)
         self.score.Show(False)
         self.son = son.son()
         self.tour_on = False
@@ -48,12 +48,6 @@ class App(wx.App):
         txt.set_id(self.nick)
         self.net.envoi_net(txt)
         
-    def bascule_score(self) :
-        if self.score.IsShown() :
-            self.score.Show(False)
-        else :
-            self.score.Show(True)
-
     def info_serv(self, txt, color = wx.BLACK) :
         self.frame.info_serv(txt, color)
 

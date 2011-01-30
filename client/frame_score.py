@@ -3,38 +3,34 @@
 import wx
 import wx.grid
 import xml.etree.ElementTree as ET
+from xml.parsers.expat import ExpatError
 
 class CustomDataTable(wx.grid.PyGridTableBase):
-    def __init__(self, data):
+    def __init__(self, tree):
         wx.grid.PyGridTableBase.__init__(self)
         self.colLabels = []
         self.rowLabels = []
         self.data = []
         self.max_len_row = 0
-        try :
-            tree = ET.XML(data)
-        except SyntaxError :
-            pass
-        else :
-            for n in tree.findall('label/col') :
-                self.colLabels.append(n.text)
+        for n in tree.findall('label/col') :
+            self.colLabels.append(n.text)
 
-            for l in tree.findall('ligne') :
-                n = l.find('nom')
-                self.rowLabels.append(n.text)
-                if len(n.text) > self.max_len_row :
-                    self.max_len_row = len(n.text)
-                cur_row_data = []
-                for c in l.findall('val') :
-                    type = c.attrib.get('type')
-                    if type == 'i' :
-                        v = int(c.text)
-                    elif type == 'f' :
-                        v = float(c.text)
-                    else :
-                        v = c.text
-                    cur_row_data.append(v)
-                self.data.append(cur_row_data)
+        for l in tree.findall('ligne') :
+            n = l.find('nom')
+            self.rowLabels.append(n.text)
+            if len(n.text) > self.max_len_row :
+                self.max_len_row = len(n.text)
+            cur_row_data = []
+            for c in l.findall('val') :
+                type = c.attrib.get('type')
+                if type == 'i' :
+                    v = int(c.text)
+                elif type == 'f' :
+                    v = float(c.text)
+                else :
+                    v = c.text
+                cur_row_data.append(v)
+            self.data.append(cur_row_data)
 
     def sort(self, col, rev=True) :
         z=zip(self.rowLabels, self.data)
@@ -67,9 +63,9 @@ class CustomDataTable(wx.grid.PyGridTableBase):
         return self.rowLabels[row]
 
 class ScoreGrid(wx.grid.Grid):
-    def __init__(self, parent, data):
+    def __init__(self, parent, tree):
         wx.grid.Grid.__init__(self, parent, -1)
-        self.table = CustomDataTable(data)
+        self.table = CustomDataTable(tree)
         self.SetTable(self.table, True)
         self.EnableEditing(False)
         self.EnableDragGridSize(False)
@@ -104,22 +100,29 @@ class ScoreGrid(wx.grid.Grid):
         self.table.sort(abs(c), rev)
         self.Refresh()
             
-
 class frame_score(wx.Frame):
-    def __init__(self, parent, data) :
-        #wx.MiniFrame.__init__(self, parent, -1, "wxScrab scores", style=wx.CLOSE_BOX|wx.SYSTEM_MENU|wx.CAPTION|wx.FRAME_FLOAT_ON_PARENT, pos=parent.GetPosition())
+    def __init__(self, parent, data = None) :
         wx.Frame.__init__(self, parent, -1, "wxScrab scores", style=wx.CLOSE_BOX|wx.SYSTEM_MENU|wx.CAPTION)
         panel = wx.Panel(self, -1)
         border = wx.BoxSizer(wx.VERTICAL)
-        grid = ScoreGrid(panel, data)
-        border.Add(grid,0,wx.ALL,10)
+        # data est None à la création initiale dans wxscrab
+        if data is not None :
+            try :
+                tree = ET.XML(data)
+            # si on ne peut pas parser le XML => frame vide mais pas d'erreur
+            except (SyntaxError, ExpatError) :
+                pass
+            else :
+            # on passe le tree pour constituer la table de données
+                grid = ScoreGrid(panel, tree)
+                border.Add(grid,0,wx.ALL,10)
         butt = wx.Button(panel, 10, "Fermer")
-        self.Bind(wx.EVT_BUTTON, self.quit, butt)
         border.Add(butt,0, wx.ALL|wx.ALIGN_RIGHT, 10)
+        self.Bind(wx.EVT_BUTTON, self.quit, butt)
+        self.Bind(wx.EVT_CLOSE, self.quit)
         panel.SetSizerAndFit(border)
         self.SetSize(self.GetBestSize())
         self.Centre()
-        self.Bind(wx.EVT_CLOSE, self.quit)
  
     def quit(self,evt) :
         self.Hide()
