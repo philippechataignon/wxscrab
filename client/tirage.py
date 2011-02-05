@@ -66,9 +66,16 @@ class tirage(wx.Panel) :
 
 ## Principales fonctions publiques 
     def move_from(self, c_dest, status, lettre) :
-        # si destination non vide, on dégage
+        """ déplace un jeton du tirage vers la case c_dest
+
+        La fonction renvoie true si le transfert s'est fait, false sinon
+        Si on trouve un jeton portant la lettre, le jeton est déplacé
+        et il prend le status indiqué
+        """
+        # si destination non vide, pas de transfert
         if not c_dest.is_vide() :
             return False
+        # on cherche si un jeton a la lettre (ou un joker éventuellement)
         c_dep = self.cherche_case_lettre(lettre)
         # on a un jeton dans le tirage :
         # le transfert est possible
@@ -86,11 +93,13 @@ class tirage(wx.Panel) :
         """Remet le jeton j de la case c_dep 
         dans la première case libre trouvée
         """
+        # la case de départ est vide, on sort
         if c_dep.is_vide() :
             return False
         for c in self.cases :
             if c.is_vide() :
                 j = c_dep.vide()
+                # on remet le ? sur le joker
                 if j.is_joker() :
                     j.set_lettre('?')
                 j.set_status(jeton.TIRAGE)
@@ -98,35 +107,29 @@ class tirage(wx.Panel) :
                 return True
         return False
 
-## Fonctions de manipulation : tri, swap...
-    def compacte(self) :
-        """ Met tous les jetons à gauche et toutes les cases vides à droite
-        """
-        p_vide = self.nb_pos() - 1
-        while (p_vide>= 0 and self.cases[p_vide].is_vide()) :
-            p_vide -= 1
-        p = 0
-        while (p < p_vide) :
-            if self.cases[p].is_vide() :
-                self.swap(p, p_vide)
-                while (p_vide>=0 and self.cases[p_vide].is_vide()) :
-                    p_vide -= 1
-            p += 1
-
-    def alpha(self): 
-        self.compacte()
-        lj = [case.jeton for case in self.cases_non_vides()]
-        lj.sort(key=lambda x: x.get_lettre())
-        for i in xrange(len(lj)) :
-            self.cases[i].vide()
-            self.cases[i].pose(lj[i])
+## Fonctions de manipulation : tri, shuffle
+    def alpha(self) :
+        self.permute('A')
 
     def shuffle(self) :
-        self.compacte()
-        nbj = self.nb_jeton()
-        for i in xrange(nbj) :
-            alea = random.randint(0, nbj-1)
-            self.swap(i, alea)
+        self.permute('R')
+
+    def permute(self, code = 'R') :
+        temp = []
+        # met les jetons dans temp
+        for c in self.cases :
+            j = c.vide()
+            if j is not None :
+                temp.append(j)
+        if code == 'A' :
+            # tri temp selon la lettre
+            temp.sort(key=lambda x: x.get_lettre())
+        elif code == 'R' :
+            # mélange temp
+            random.shuffle(temp)
+        # et repose
+        for i, j in enumerate(temp) :
+            self.cases[i].pose(j)
 
     def shift(self, pos) :
         end = -1
@@ -152,6 +155,3 @@ class tirage(wx.Panel) :
                 for i in xrange(end2, pos) :
                     j = self.cases[i+1].vide()
                     self.cases[i].pose(j)
-
-    def swap(self, pos_old, pos_new) :
-        self.cases[pos_old].swap(self.cases[pos_new])
