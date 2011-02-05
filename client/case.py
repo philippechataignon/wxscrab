@@ -81,7 +81,7 @@ class case(wx.Window) :
     def is_vide(self) :
         return self.jeton is None
 
-    def get_status(self) :
+    def get_jeton_status(self) :
         if self.is_vide() :
             return jeton.NUL
         else :

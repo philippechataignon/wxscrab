@@ -120,7 +120,7 @@ class grille(wx.Panel) :
         for case in self.cases.itervalues() :
             if case.fleche is not None :
                 case.efface_fleche()
-            if case.get_status() == jeton.TEMP : #si jeton temp
+            if case.get_jeton_status() == jeton.TEMP : #si jeton temp
                 self.app.frame.tirage.move_to(case)
         self.entry = False
         self.app.frame.set_status_coo("")
@@ -216,7 +216,7 @@ class grille(wx.Panel) :
             self.coord_cur = self.coord_cur.prev()
 
         # on recule en sautant les jetons posées
-        while self.case_coord_occ(self.coord_cur) and self.case_coord(self.coord_cur).get_status() == jeton.POSE :
+        while self.case_coord_occ(self.coord_cur) and self.case_coord(self.coord_cur).get_jeton_status() == jeton.POSE :
             self.coord_cur = self.coord_cur.prev()
 
         # on remet le jeton temp dans le tirage

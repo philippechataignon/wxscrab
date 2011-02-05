@@ -51,6 +51,6 @@ class case_grille(case.case) :
         self.set_fleche(None)
 
     def convert_prepose(self) :
-        if self.get_status() == jeton.PREPOSE : #si jeton prepose
+        if self.get_jeton_status() == jeton.PREPOSE : #si jeton prepose
             self.jeton.set_status(jeton.POSE) #met status pose
             self.Refresh()

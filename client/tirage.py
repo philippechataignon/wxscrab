@@ -116,6 +116,7 @@ class tirage(wx.Panel) :
 
     def permute(self, code = 'R') :
         temp = []
+        # vide les cases et
         # met les jetons dans temp
         for c in self.cases :
             j = c.vide()
@@ -127,7 +128,8 @@ class tirage(wx.Panel) :
         elif code == 'R' :
             # mélange temp
             random.shuffle(temp)
-        # et repose
+        # et repose les jetons de temp
+        # dans les cases
         for i, j in enumerate(temp) :
             self.cases[i].pose(j)
 
