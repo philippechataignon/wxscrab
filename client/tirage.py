@@ -26,17 +26,12 @@ class tirage(wx.Panel) :
         self.Fit()
 
 ## Fonctions basiques
-    def cases_non_vides(self) :
-        return [case for case in self.cases if not case.is_vide()]
-
     def nb_pos(self) :
         return len(self.cases)
 
-    def nb_jeton(self) :
-        return len(self.cases_non_vides())
-
     def cree_tirage(self, mot) :
-        """Cree les jetons quand on reçoit un mot"""
+        """Cree les jetons quand on reçoit un mot
+        """
         self.vide_tirage()
         pos = 0
         for c in mot :
@@ -56,7 +51,9 @@ class tirage(wx.Panel) :
     def cherche_case_lettre(self, lettre) :
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
         c_dep = None
-        for c in self.cases_non_vides() :
+        for c in self.cases :
+            if c.is_vide() :
+                continue
             if c.jeton.get_lettre() == cherche :
                 c_dep = c
                 break

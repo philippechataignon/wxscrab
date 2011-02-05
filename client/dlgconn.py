@@ -92,7 +92,7 @@ class dlgconnframe(wx.Frame):
             self.app.email = email
             self.MakeModal(False)
             self.app.lance_net()
-            self.Close()
+            self.Destroy()
 
     def OnClose(self,evt) :
         self.app.frame.Close()

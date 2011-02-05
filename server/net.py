@@ -50,5 +50,5 @@ class channel(asynchat.async_chat) :
         if self.server.parent.options.verbose == True :
             print "-> %s" % mm.cmd
         self.server.lock.acquire()
-        self.push(pickle.dumps(mm,2) + channel.term)
+        self.push(pickle.dumps(mm, pickle.HIGHEST_PROTOCOL) + channel.term)
         self.server.lock.release()

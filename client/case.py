@@ -77,7 +77,6 @@ class case(wx.Window) :
                 pts_reel = [(y*self.size/10, x*self.size/10) for (x,y) in pts]
             dc.DrawPolygon(pts_reel) 
 
-
     def is_vide(self) :
         return self.jeton is None
 
