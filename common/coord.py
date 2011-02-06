@@ -37,7 +37,7 @@ class coord :
             return "EE0"
         
     def __eq__(self, other) :
-        if self._x==other._x and self._y==other._y and self._dir==other._dir :
+        if self._x==other._x and self._y==other._y :
             return True
         else :
             return False
@@ -148,7 +148,7 @@ if __name__ == '__main__' :
     e = coord()
     c.fromstr(" h    8")
     print c
-    e.fromstr("H8")
+    e.fromstr("8H")
     print e
     print c==e
     c.fromstr("E10")
@@ -179,7 +179,7 @@ if __name__ == '__main__' :
     print c,d
     c.change_dir()
     print c
-
     c.fromstr("H8")
-
+    print c,c.next(),c.prev(),c.haut(),c.bas()
+    c.fromstr("H15")
     print c,c.next(),c.prev(),c.haut(),c.bas()

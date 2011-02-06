@@ -175,27 +175,26 @@ class grille(wx.Panel) :
             self.traite_keycode(chr(l))
         
     def traite_keycode(self, l) :
-        if not self.coord_ini.isOK() :  #pas de fleche en cours (ex : apres envoi d'un mot)
-            return
         if (self.entry == False) :          # si pas de saisie en cours
             self.coord_cur = self.coord_ini # coord_cur=coord_ini=coord de la case cliquée 
-        if not self.coord_cur.isOK() :  # si coord incorrecte, on sort
+                                            # sinon, la coord courante existe
+        if not self.coord_cur.isOK() :      # si coord incorrecte, on sort
             return
-        if self.case_coord_occ(self.coord_cur) : # si case occupée, on sort
+        c = self.case_coord(self.coord_cur)
+        if not c.is_vide() : # si case occupée, on sort
             return
-        ca = self.case_coord(self.coord_cur)
-        ok = self.app.frame.tirage.move_from(ca, jeton.TEMP, l)   # prend le jeton dans le tirage
-        if ok :                          # si c'est possible
-            ca.efface_fleche()   # efface la fleche
-            self.entry = True                      # passe le flag saisie en cours à 1
-
-            if self.coord_cur.next().isOK() :   # avance coord_cur en sautant les lettres
+        # prend le jeton dans le tirage
+        ok = self.app.frame.tirage.move_from(c, jeton.TEMP, l)
+        if ok :                 # si c'est possible
+            c.efface_fleche()   # efface la fleche
+            self.entry = True   # passe le flag saisie en cours à True
+            # avance coord_cur en sautant les cases occupées
+            while self.case_coord_occ(self.coord_cur) : 
                 self.coord_cur = self.coord_cur.next()
-                while self.case_coord_occ(self.coord_cur) :
-                    self.coord_cur = self.coord_cur.next()
-                if self.coord_cur.isOK() :      # remet la fleche
-                    ca = self.case_coord(self.coord_cur)
-                    ca.set_fleche(self.coord_ini.dir())
+            # met la fleche si possible
+            if self.coord_cur.isOK() :      
+                c = self.case_coord(self.coord_cur)
+                c.set_fleche(self.coord_ini.dir())
 
     def recule_case(self) :
         "Gestion de la touche Backspace (depuis OnKey)"
@@ -211,17 +210,19 @@ class grille(wx.Panel) :
             return
 
         # efface la fleche case en cours
-        if  self.case_coord_vide(self.coord_cur) : 
-            self.case_coord(self.coord_cur).efface_fleche()
-            self.coord_cur = self.coord_cur.prev()
+        c = self.case_coord(self.coord_cur)
+        if  c.is_vide() :
+            c.efface_fleche()
 
-        # on recule en sautant les jetons posées
-        while self.case_coord_occ(self.coord_cur) and self.case_coord(self.coord_cur).get_jeton_status() == jeton.POSE :
+        # on recule en sautant les jetons posés
+        flag = True
+        while flag or c.get_jeton_status() == jeton.POSE :
             self.coord_cur = self.coord_cur.prev()
+            c = self.case_coord(self.coord_cur)
+            flag = False
 
         # on remet le jeton temp dans le tirage
         # et on remet la fleche (cas standard)
-        c = self.case_coord(self.coord_cur)
         if not c.is_vide() :
             self.app.frame.tirage.move_to(c)
         c.set_fleche(self.coord_ini.dir())
