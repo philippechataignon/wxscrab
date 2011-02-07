@@ -215,11 +215,11 @@ class grille(wx.Panel) :
             c.efface_fleche()
 
         # on recule en sautant les jetons posés
-        flag = True
-        while flag or c.get_jeton_status() == jeton.POSE :
+        while True :
             self.coord_cur = self.coord_cur.prev()
             c = self.case_coord(self.coord_cur)
-            flag = False
+            if c.get_jeton_status() != jeton.POSE :
+                break
 
         # on remet le jeton temp dans le tirage
         # et on remet la fleche (cas standard)

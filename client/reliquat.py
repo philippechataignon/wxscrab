@@ -1,19 +1,19 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import jeton
+char = "ABCDEFGHIJKLMNOPQRSTUVWXYZ?"
+repart = [9,2,2,3,15,2,2,2,8,1,1,5,3,6,6,2,1,6,6,6,6,2,1,1,1,1,2]
 
 class reliquat :
     def __init__(self) :
-        self.__char="ABCDEFGHIJKLMNOPQRSTUVWXYZ?"
-        repart = [9,2,2,3,15,2,2,2,8,1,1,5,3,6,6,2,1,6,6,6,6,2,1,1,1,1,2]
-        self.__freq = dict(zip(self.__char,repart))
+        self.__freq = dict(zip(char,repart))
         self.__jetons = []
-        for lettre in self.__char :
+        for lettre in char :
             for i in xrange(self.__freq[lettre]) :
                 self.__jetons.append(jeton.jeton(lettre, jeton.RELIQUAT))
 
     def __str__(self) :
-        return " ".join([l*self.__freq[l] for l in self.__char if self.__freq[l] != 0 ])
+        return " ".join([l*self.__freq[l] for l in char if self.__freq[l] != 0 ])
 
     def move_from(self, c_dest, status, lettre) :
         """ Prend un jeton dans le reliquat pour le poser sur la case c_dest 

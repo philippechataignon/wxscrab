@@ -74,7 +74,7 @@ class tirage(wx.Panel) :
             return False
         # on cherche si un jeton a la lettre (ou un joker éventuellement)
         c_dep = self.cherche_case_lettre(lettre)
-        # on a un jeton dans le tirage :
+        # si on a un jeton dans le tirage :
         # le transfert est possible
         if c_dep is not None :
             j = c_dep.vide()
