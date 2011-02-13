@@ -10,7 +10,6 @@ class tirage(wx.Panel) :
     """
     Représente le tirage
     """
-
     def __init__(self, parent, app) :
         wx.Panel.__init__(self, parent, -1)
         self.app = app
@@ -27,10 +26,12 @@ class tirage(wx.Panel) :
 
 ## Fonctions basiques
     def nb_pos(self) :
+        """ Renvoie nombre de cases du tirage 
+        """
         return len(self.cases)
 
     def cree_tirage(self, mot) :
-        """Cree les jetons quand on reçoit un mot
+        """ Crée les jetons quand on reçoit un mot
         """
         self.vide_tirage()
         pos = 0
@@ -43,12 +44,14 @@ class tirage(wx.Panel) :
                 pos += 1
 
     def vide_tirage(self) :
-        """Vide toutes les cases et remet les jetons dans le reliquat
+        """ Vide toutes les cases et remet les jetons dans le reliquat
         """
         for c in self.cases :
             self.app.reliquat.move_to(c)
 
     def cherche_case_lettre(self, lettre) :
+        """ Renvoie la première case portant un jeton ayant la lettre indiquée
+        """
         cherche = "?" if 'a' <= lettre <= 'z' else lettre
         c_dep = None
         for c in self.cases :
@@ -63,7 +66,7 @@ class tirage(wx.Panel) :
 
 ## Principales fonctions publiques 
     def move_from(self, c_dest, status, lettre) :
-        """ déplace un jeton du tirage vers la case c_dest
+        """ Déplace un jeton du tirage vers la case c_dest
 
         La fonction renvoie true si le transfert s'est fait, false sinon
         Si on trouve un jeton portant la lettre, le jeton est déplacé
@@ -77,7 +80,7 @@ class tirage(wx.Panel) :
         # si on a un jeton dans le tirage :
         # le transfert est possible
         if c_dep is not None :
-            j = c_dep.vide()
+            j = c_dep.prend()
             j.set_status(status)
             if j.get_lettre() == "?" : #cas du joker
                 j.set_lettre(lettre.lower())
@@ -87,7 +90,7 @@ class tirage(wx.Panel) :
             return False
 
     def move_to(self, c_dep) :
-        """Remet le jeton j de la case c_dep 
+        """ Remet le jeton j de la case c_dep 
         dans la première case libre trouvée
         """
         # la case de départ est vide, on sort
@@ -95,7 +98,7 @@ class tirage(wx.Panel) :
             return False
         for c in self.cases :
             if c.is_vide() :
-                j = c_dep.vide()
+                j = c_dep.prend()
                 # on remet le ? sur le joker
                 if j.is_joker() :
                     j.set_lettre('?')
@@ -106,17 +109,23 @@ class tirage(wx.Panel) :
 
 ## Fonctions de manipulation : tri, shuffle
     def alpha(self) :
+        """ Trie les jetons par ordre alphabétique
+        """
         self.permute('A')
 
     def shuffle(self) :
+        """ Trie les jetons par ordre aléatoire
+        """
         self.permute('R')
 
     def permute(self, code = 'R') :
+        """ Fonction interne pour alpha et shuffle
+        """
         temp = []
         # vide les cases et
         # met les jetons dans temp
         for c in self.cases :
-            j = c.vide()
+            j = c.prend()
             if j is not None :
                 temp.append(j)
         if code == 'A' :
@@ -131,6 +140,8 @@ class tirage(wx.Panel) :
             self.cases[i].pose(j)
 
     def shift(self, pos) :
+        """Décale les jetons (clic droit)
+        """
         end = -1
         # cherche index première case vide à droite
         for i in xrange(pos+1, self.nb_pos()) :
@@ -140,7 +151,7 @@ class tirage(wx.Panel) :
         # il y a une case vide : on décale en posant et vidant à chaque pas
         if end >= 0 :
             for i in xrange(end, pos, -1) :
-                j = self.cases[i-1].vide()
+                j = self.cases[i-1].prend()
                 self.cases[i].pose(j)
         else :
             # symétrique du traitement précédent
@@ -152,5 +163,5 @@ class tirage(wx.Panel) :
                     break
             if end2 >= 0 :
                 for i in xrange(end2, pos) :
-                    j = self.cases[i+1].vide()
+                    j = self.cases[i+1].prend()
                     self.cases[i].pose(j)

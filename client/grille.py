@@ -33,10 +33,13 @@ mult =   ((MT,OO,OO,LD,OO,OO,OO,MT,OO,OO,OO,LD,OO,OO,MT),
           (MT,OO,OO,LD,OO,OO,OO,MT,OO,OO,OO,LD,OO,OO,MT))
 
 class grille(wx.Panel) :
+    """ Représente la grille de jeu
+
+    Une grille est composée, pour l'essentiel, d'une matrice 15x15 de case_grille
+    """
     def __init__(self, parent, app) :
         wx.Panel.__init__(self, parent, -1)
         self.app = app
-        self.cases = {}
         self.coord_ini = coord.coord()   # coord_ini est récupéré depuis case (OnClickCase)
         self.coord_cur = coord.coord()   # coordonnée courante 
         self.entry = False          # flag saisie en cours
@@ -49,6 +52,7 @@ class grille(wx.Panel) :
             sizer.Add(wx.StaticText(self, -1, t), pos=(0,i+1), flag=wx.ALIGN_CENTER)
             t = chr(65+i)
             sizer.Add(wx.StaticText(self, -1, t), pos=(i+1,0), flag=wx.ALIGN_CENTER)
+        self.cases = {}
         for y in range(15) :
             for x in range(15) :
                 self.cases[(x,y)] = case_grille.case_grille(self, x, y, mult[x][y])
@@ -135,22 +139,16 @@ class grille(wx.Panel) :
             j = self.app.frame.tirage.move_from(self.case_coord(coo), status, l)
             coo = coo.next()
 
-    def envoi_mot(self) :
-        "Envoie le mot courant au serveur"
-        debut, mot = self.get_mot_temp()
-        if mot is not None :
-            m = msg.msg("propo", (debut, mot, 0))
-            self.app.envoi(m)
-        self.reinit_saisie()
-
 ## Gestion des évenements clavier
     def OnKey(self, e) :
-        # en provenance de la case
+        """ Gère les événements clavier en provenance de la case_grille
+        Raccourcis clavier ou lettre
+        """
         l = e.GetKeyCode()
         if l is None or self.app.tour_on == False :
             return
         if l == wx.WXK_RETURN or l == wx.WXK_NUMPAD_ENTER :
-            self.envoi_mot()
+            self.app.envoi_mot()
         elif l == wx.WXK_BACK :
             self.recule_case()
         elif l == wx.WXK_ESCAPE :
@@ -175,6 +173,11 @@ class grille(wx.Panel) :
             self.traite_keycode(chr(l))
         
     def traite_keycode(self, l) :
+        """ Traite le cas où une lettre est demandée dans le cas
+        d'une saisie en cours
+
+        Prend le jeton dans le tirage, le pose et fait avancer la flèche
+        """
         if (self.entry == False) :          # si pas de saisie en cours
             self.coord_cur = self.coord_ini # coord_cur=coord_ini=coord de la case cliquée 
                                             # sinon, la coord courante existe
@@ -197,7 +200,8 @@ class grille(wx.Panel) :
                 c.set_fleche(self.coord_ini.dir())
 
     def recule_case(self) :
-        "Gestion de la touche Backspace (depuis OnKey)"
+        """ Gestion de la touche Backspace (depuis OnKey)
+        """
         if self.entry == False : #Pas de saisie en cours
             return
 
@@ -229,8 +233,7 @@ class grille(wx.Panel) :
 
 ## Initialisation de la grille
     def read_grille(self, txt_grille) :
-        """
-        Initialise la grille à partir du texte renvoyé par le serveur
+        """ Initialise la grille à partir du texte renvoyé par le serveur
         """
         self.reinit_saisie()
         # remet les jetons dans le reliquat

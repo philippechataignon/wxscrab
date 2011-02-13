@@ -47,6 +47,15 @@ class App(wx.App):
     def envoi(self, txt) :
         txt.set_id(self.nick)
         self.net.envoi_net(txt)
+
+    def envoi_mot(self) :
+        "Envoie le mot courant au serveur"
+        g = self.frame.grille
+        debut, mot = g.get_mot_temp()
+        if mot is not None :
+            m = msg.msg("propo", (debut, mot, 0))
+            self.envoi(m)
+        g.reinit_saisie()
         
     def info_serv(self, txt, color = wx.BLACK) :
         self.frame.info_serv(txt, color)

@@ -10,6 +10,8 @@ import dnd
 import case
 
 class case_tirage(case.case) :
+    """ Repésente une case du tirage
+    """
     def __init__(self, parent, pos)  :
         case.case.__init__(self, parent)
         self.pos = pos
@@ -18,7 +20,9 @@ class case_tirage(case.case) :
         self.Bind(wx.EVT_RIGHT_DOWN, self.shift)
 
     def shift(self, e) :
-        """ Appelée par l'évenement RIGHT_CLICK """
+        """ Décale les jetons
+        Appelée par l'évenement RIGHT_CLICK 
+        """
         self.app.frame.tirage.shift(self.pos)
 
     def drag(self, e) :

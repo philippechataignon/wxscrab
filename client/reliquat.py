@@ -35,7 +35,7 @@ class reliquat :
         """
         if c_dep.is_vide() :
             return False
-        j = c_dep.vide()
+        j = c_dep.prend()
         if 'a' <= j.get_lettre() <= 'z' :
             j.set_lettre('?')
         self.__freq[j.get_lettre()] += 1

@@ -18,16 +18,18 @@ class casedroptarget(wx.PyDropTarget) :
             t = self.app.frame.tirage
             dep = t.cases[pos]
             if not dep.is_vide() :
-                j = dep.jeton
-                tirage = True
                 try :
+                    tirage = True
                     self.case.pos
                 except AttributeError :
                     tirage = False
                 if tirage :
-                    "Départ et arrivée dans tirage : on swap"
+                    # départ et arrivée dans tirage : on swap"
                     self.case.swap(dep)
-                elif self.case.is_vide() and not j.is_joker():
-                    j.set_status(jeton.TEMP)
-                    self.case.pose(j)
-                    dep.vide()
+                elif self.case.is_vide() :
+                    j = dep.prend()
+                    if j.is_joker() :
+                        dep.pose(j)
+                    else :
+                        j.set_status(jeton.TEMP)
+                        self.case.pose(j)

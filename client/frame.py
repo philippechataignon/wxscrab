@@ -220,7 +220,7 @@ class frame(wx.Frame):
     def pose(self, e) :
         p = self.props.GetSelection()
         if p < 0 : 
-            self.grille.envoi_mot()
+            self.app.envoi_mot()
         else :
             coo, mot = self.props.GetClientData(p)
             m = msg.msg("propo",(coo, mot, 0))

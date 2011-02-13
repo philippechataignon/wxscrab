@@ -8,9 +8,11 @@ import wx
 import coord
 import dnd
 import jeton
-import grille
 
 class case(wx.Window) :
+    """ Cette classe représente une case qui peut être sur la grille
+        ou dans le tirage
+    """
     def __init__(self, parent) :
         self.app = parent.app
         self.settings = self.app.settings
@@ -27,9 +29,15 @@ class case(wx.Window) :
         self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
 
     def OnKey(self, e) :
+        """ Gestion de l'événement onKey
+        Utile pour les cases de la grille pour intercepter les frappes sur le clavier
+        qui correspondent aux lettres posées
+        """
         self.app.frame.grille.OnKey(e)
 
     def OnPaint(self, evt):
+        """ Fonction gérant le dessin de la case : fond de cases, jeton ou flèche éventuel
+        """
         s = self.settings
         dc = wx.PaintDC(self)
         dc.SetBrush(wx.Brush(self.col_fond))
@@ -78,27 +86,38 @@ class case(wx.Window) :
             dc.DrawPolygon(pts_reel) 
 
     def is_vide(self) :
+        """ Renvoit True si la case est vide (pas de jeton)
+        """
         return self.jeton is None
 
     def get_jeton_status(self) :
+        """ Renvoie le status du jeton de la case ou jeton.NUL
+        """
         if self.is_vide() :
             return jeton.NUL
         else :
             return self.jeton.get_status()
 
     def pose(self, j) :
+        """ Pose un jeton sur la case
+        La case doit obligatoirement être vide
+        """
         assert self.is_vide(), "Pose un jeton sur une case non vide"
         self.jeton = j
         self.Refresh()
 
-    def vide(self) :
-        """Appelé quand on enlève un jeton d'une case"""
+    def prend(self) :
+        """ Appelé quand on prend un jeton sur une case
+        Renvoie le jeton éventuel, sinon None
+        """
         j = self.jeton
         self.jeton = None
         self.Refresh()
         return j
 
     def swap(self, other) :
+        """ Echange les jetons (éventuels) de deux cases
+        """
         self.jeton, other.jeton  = other.jeton, self.jeton
         self.Refresh()
         other.Refresh()
