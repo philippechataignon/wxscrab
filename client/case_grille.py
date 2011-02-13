@@ -5,11 +5,9 @@ import sys
 sys.path.append('../common')
 
 import wx
-import coord
-import dnd
-import jeton
-import grille
 import case
+import coord
+import jeton
 
 class case_grille(case.case) :
     """ Représente une case de la grille

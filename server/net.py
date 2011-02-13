@@ -38,7 +38,7 @@ class channel(asynchat.async_chat) :
         self.buffer = []
         mm = pickle.loads(txt)
         if self.server.parent.options.verbose == True :
-            print "<- %s" % mm.cmd
+            print "<- %s" % mm
         self.server.parent.traite(self, mm)
         
     def handle_close(self) :
@@ -48,7 +48,7 @@ class channel(asynchat.async_chat) :
 
     def envoi(self, mm):
         if self.server.parent.options.verbose == True :
-            print "-> %s" % mm.cmd
+            print "-> %s" % mm
         self.server.lock.acquire()
         self.push(pickle.dumps(mm, pickle.HIGHEST_PROTOCOL) + channel.term)
         self.server.lock.release()

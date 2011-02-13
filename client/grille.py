@@ -8,7 +8,6 @@ import wx
 import case_grille
 import coord
 import jeton
-import msg
 
 OO = 0
 LD = 1
@@ -236,12 +235,14 @@ class grille(wx.Panel) :
         """ Initialise la grille à partir du texte renvoyé par le serveur
         """
         self.reinit_saisie()
+        r = self.app.reliquat
         # remet les jetons dans le reliquat
         for case in self.cases.itervalues() :
-            self.app.reliquat.move_to(case)
+            r.move_to(case)
         # prend les jetons dans le reliquat
         # et les pose sur la grille
         for y, ligne in enumerate(txt_grille.split("\n")) :
-            for x, char in enumerate(ligne) :
-                if char != "." :
-                    self.app.reliquat.move_from(self.case_coord(coord.coord(x,y)), jeton.POSE, char)
+            for x, lettre in enumerate(ligne) :
+                if lettre != "." :
+                    c = coord.coord(x, y)
+                    r.move_from(self.case_coord(c), jeton.POSE, lettre)

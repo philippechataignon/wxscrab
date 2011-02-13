@@ -1,16 +1,7 @@
 ﻿#! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
-import sys
-sys.path.append('../common')
-
 import wx
-import net
-import frame
 import utils
-import socket
-import msg
-import cPickle as pickle
 
 class TooMuchTry(Exception) :
     pass

@@ -5,8 +5,6 @@ import sys
 sys.path.append('../common')
 
 import wx
-import coord
-import dnd
 import case
 
 class case_tirage(case.case) :

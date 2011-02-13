@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import wx
-import utils
 import jeton
 
 class casedroptarget(wx.PyDropTarget) :
