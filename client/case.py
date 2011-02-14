@@ -6,8 +6,37 @@ sys.path.append('../common')
 
 import wx
 import coord
-import dnd
 import jeton
+
+class casedroptarget(wx.PyDropTarget) :
+    def __init__(self, case) :
+        wx.PyDropTarget.__init__(self)
+        self.case = case
+        self.app = case.app
+        self.data = wx.TextDataObject()
+        self.SetDataObject(self.data) 
+
+    def OnData(self, x, y, d) :
+        if self.GetData() :
+            pos = int(self.data.GetText())
+            t = self.app.frame.tirage
+            dep = t.cases[pos]
+            if not dep.is_vide() :
+                try :
+                    tirage = True
+                    self.case.pos
+                except AttributeError :
+                    tirage = False
+                if tirage :
+                    # départ et arrivée dans tirage : on swap"
+                    self.case.swap(dep)
+                elif self.case.is_vide() :
+                    j = dep.prend()
+                    if j.is_joker() :
+                        dep.pose(j)
+                    else :
+                        j.set_status(jeton.TEMP)
+                        self.case.pose(j)
 
 class case(wx.Window) :
     """ Cette classe représente une case qui peut être sur la grille
@@ -24,7 +53,7 @@ class case(wx.Window) :
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.font_point = wx.Font(self.settings['size_font_point'],
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        self.SetDropTarget(dnd.casedroptarget(self))
+        self.SetDropTarget(casedroptarget(self))
         self.Bind(wx.EVT_PAINT, self.OnPaint)
         self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
 

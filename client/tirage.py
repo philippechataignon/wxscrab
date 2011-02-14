@@ -1,10 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import wx
-import jeton
-import dnd
-import case_tirage
 import random
+import jeton
+import case_tirage
 
 class tirage(wx.Panel) :
     """
