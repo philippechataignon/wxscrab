@@ -16,7 +16,6 @@ class case_grille(case.case) :
         case.case.__init__(self, parent)
         self.coord = coord.coord(x,y)
         self.mult = mult
-        self.fleche = None
         self.col_fond = self.app.settings['col_grille'][self.mult]
         self.Bind(wx.EVT_LEFT_DOWN, self.OnClickCase)
         self.Bind(wx.EVT_LEFT_DCLICK, self.OnClickCase)
@@ -29,12 +28,12 @@ class case_grille(case.case) :
         if self.app.tour_on == False :
             return
         g = self.app.frame.grille
-        # si la case est vide, on met une fleche horizontale
-        if self.fleche is None : 
+        # si la case est vide , on met une fleche horizontale
+        if not self.is_fleche() : 
             g.reinit_saisie()
             self.init_saisie(coord.HOR)
         # la flèche passe verticale que s'il n'y a pas de saisie en cours (g.entry)
-        elif self.fleche == coord.HOR and g.entry == False:
+        elif self._fleche == coord.HOR and g.entry == False:
             self.init_saisie(coord.VER)
         else  :
             g.reinit_saisie()
@@ -53,7 +52,7 @@ class case_grille(case.case) :
     def set_fleche(self, dir) :
         """ Définit la flèche
         """
-        self.fleche = dir
+        self._fleche = dir
         self.Refresh()
 
     def efface_fleche(self) :
@@ -61,10 +60,13 @@ class case_grille(case.case) :
         """
         self.set_fleche(None)
 
+    def is_fleche(self) :
+        return self._fleche is not None
+
     def convert_prepose(self) :
         """ Convertit le status du jeton de PREPOSE à POSE
         Appelé depuis la fonction convert_prepose de la grille
         """
         if self.get_jeton_status() == jeton.PREPOSE : #si jeton prepose
-            self.jeton.set_status(jeton.POSE) #met status pose
+            self._jeton.set_status(jeton.POSE) #met status pose
             self.Refresh()

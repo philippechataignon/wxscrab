@@ -57,10 +57,10 @@ class tirage(wx.Panel) :
         for c in self.cases :
             if c.is_vide() :
                 continue
-            if c.jeton.get_lettre() == cherche :
+            if c.get_jeton_lettre() == cherche :
                 c_dep = c
                 break
-            if c.jeton.get_lettre() == "?" : # joker au coup où
+            if c.get_jeton_lettre() == "?" : # joker au coup où
                 c_dep = c
         return c_dep
 

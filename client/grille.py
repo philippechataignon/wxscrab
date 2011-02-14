@@ -109,7 +109,7 @@ class grille(wx.Panel) :
             debut = cur
             # Lettres à droite
             while self.case_coord_occ(cur) :
-                mot.append(self.case_coord(cur).jeton.get_lettre())
+                mot.append(self.case_coord(cur).get_jeton_lettre())
                 cur = cur.next()
             if mot == [] :
                 return (None, None)
@@ -121,7 +121,7 @@ class grille(wx.Panel) :
     def reinit_saisie(self) :
         "Enleve la fleche et les jetons temporaires de la grille (remis dans le tirage)"
         for case in self.cases.itervalues() :
-            if case.fleche is not None :
+            if case.is_fleche() :
                 case.efface_fleche()
             if case.get_jeton_status() == jeton.TEMP : #si jeton temp
                 self.app.frame.tirage.move_to(case)
