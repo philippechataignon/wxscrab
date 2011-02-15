@@ -140,4 +140,7 @@ class casedroptarget(wx.PyDropTarget) :
         if self.GetData() :
             pos = int(self.data.GetText())
             t = self.app.frame.tirage
-            self.case.traite_drop(t.cases[pos])
+            dep = t.cases[pos]
+            if not dep.is_vide() :
+                self.case.traite_drop(dep)
+
