@@ -24,7 +24,7 @@ class frame(wx.Frame):
         s = self.app.settings
         self.SetIcon(wx.Icon(app.settings["files_icone"], wx.BITMAP_TYPE_ICO))
         self.panel = wx.Panel(self)
-        self.max_props = 8
+        self.max_props = app.settings["max_props"]
         self.tour = 0
         fill = s["size_fill"]
 
