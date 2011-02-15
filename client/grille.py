@@ -86,8 +86,11 @@ class grille(wx.Panel) :
 
     def convert_prepose(self) :
         "Les jetons préposés (reçus du serveur) sont mis en fixe"
-        for case in self.cases.itervalues() :
-            case.convert_prepose()
+        for c in self.cases.itervalues() :
+            if c.get_jeton_status() == jeton.PREPOSE : #si jeton prepose
+                j = c.prend()
+                j.set_status(jeton.POSE) #met status pose
+                c.pose(j)
 
     def get_mot_temp(self) :
         """

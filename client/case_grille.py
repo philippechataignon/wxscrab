@@ -63,23 +63,13 @@ class case_grille(case.case) :
     def is_fleche(self) :
         return self._fleche is not None
 
-    def convert_prepose(self) :
-        """ Convertit le status du jeton de PREPOSE à POSE
-        Appelé depuis la fonction convert_prepose de la grille
-        """
-        if self.get_jeton_status() == jeton.PREPOSE : #si jeton prepose
-            self._jeton.set_status(jeton.POSE) #met status pose
-            self.Unbind(wx.EVT_LEFT_DOWN)
-            self.Unbind(wx.EVT_LEFT_DCLICK)
-            self.Refresh()
-
     def pose(self, j) :
         """ Pose un jeton
         Gère le Bind de la souris
         """
         case.case.pose(self, j)
         # si le jeton a le statut POSE, on enlève le Bind
-        if self.get_jeton_status() == jeton.POSE :
+        if j.get_status() == jeton.POSE :
             self.Unbind(wx.EVT_LEFT_DOWN)
             self.Unbind(wx.EVT_LEFT_DCLICK)
 
@@ -89,8 +79,9 @@ class case_grille(case.case) :
         """
         j = case.case.prend(self)
         # on remet le Bind
-        self.Bind(wx.EVT_LEFT_DOWN, self.OnClickCase)
-        self.Bind(wx.EVT_LEFT_DCLICK, self.OnClickCase)
+        if j.get_status() == jeton.POSE :
+            self.Bind(wx.EVT_LEFT_DOWN, self.OnClickCase)
+            self.Bind(wx.EVT_LEFT_DCLICK, self.OnClickCase)
         return j
 
     def traite_drop(self, dep) :
