@@ -49,6 +49,7 @@ class channel(asynchat.async_chat) :
     def envoi(self, mm):
         if self.server.parent.options.verbose == True :
             print "-> %s" % mm
+        msg = pickle.dumps(mm, pickle.HIGHEST_PROTOCOL) + channel.term
         self.server.lock.acquire()
-        self.push(pickle.dumps(mm, pickle.HIGHEST_PROTOCOL) + channel.term)
+        self.push(msg)
         self.server.lock.release()
