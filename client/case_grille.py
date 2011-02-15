@@ -79,3 +79,12 @@ class case_grille(case.case) :
         if self.get_jeton_status() == jeton.POSE :
             self.Unbind(wx.EVT_LEFT_DOWN)
             self.Unbind(wx.EVT_LEFT_DCLICK)
+
+    def traite_drop(self, dep) :
+        if self.is_vide() :
+            j = dep.prend()
+            if j.is_joker() :
+                dep.pose(j)
+            else :
+                j.set_status(jeton.TEMP)
+                self.pose(j)

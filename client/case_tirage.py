@@ -33,3 +33,6 @@ class case_tirage(case.case) :
             dropSource = wx.DropSource(self)
             dropSource.SetData(data)
             dropSource.DoDragDrop(True)
+
+    def traite_drop(self, dep) :
+        self.swap(dep)
