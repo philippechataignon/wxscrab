@@ -14,7 +14,6 @@ class case_tirage(case.case) :
         case.case.__init__(self, parent)
         self.pos = pos
         self.col_fond = self.app.settings['col_tirage']
-        self.Bind(wx.EVT_LEFT_DOWN, self.drag)
         self.Bind(wx.EVT_RIGHT_DOWN, self.shift)
 
     def shift(self, e) :
@@ -34,5 +33,26 @@ class case_tirage(case.case) :
             dropSource.SetData(data)
             dropSource.DoDragDrop(True)
 
+    def pose(self, j) :
+        """ Pose un jeton
+        La case doit obligatoirement être vide
+        Gère le drag dans le tirage
+        """
+        case.case.pose(self, j)
+        # s'il y a un jeton, autorise le drag
+        if not self.is_vide() :
+            self.Bind(wx.EVT_LEFT_DOWN, self.drag)
+
+    def prend(self) :
+        """ Appelé quand on prend un jeton sur une case
+        Renvoie le jeton éventuel, sinon None
+        """
+        j = case.case.prend(self)
+        self.Unbind(wx.EVT_LEFT_DOWN)
+        return j
+
     def traite_drop(self, dep) :
+        """ Appelé quand on drop sur la case
+        """
         self.swap(dep)
+

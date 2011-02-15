@@ -74,13 +74,28 @@ class case_grille(case.case) :
             self.Refresh()
 
     def pose(self, j) :
+        """ Pose un jeton
+        Gère le Bind de la souris
+        """
         case.case.pose(self, j)
         # si le jeton a le statut POSE, on enlève le Bind
         if self.get_jeton_status() == jeton.POSE :
             self.Unbind(wx.EVT_LEFT_DOWN)
             self.Unbind(wx.EVT_LEFT_DCLICK)
 
+    def prend(self) :
+        """ Prend un jeton
+        Gère le Bind de la souris
+        """
+        j = case.case.prend(self)
+        # on remet le Bind
+        self.Bind(wx.EVT_LEFT_DOWN, self.OnClickCase)
+        self.Bind(wx.EVT_LEFT_DCLICK, self.OnClickCase)
+        return j
+
     def traite_drop(self, dep) :
+        """ Appelé quand on drop sur la case
+        """
         if self.is_vide() :
             j = dep.prend()
             if j.is_joker() :
