@@ -69,4 +69,13 @@ class case_grille(case.case) :
         """
         if self.get_jeton_status() == jeton.PREPOSE : #si jeton prepose
             self._jeton.set_status(jeton.POSE) #met status pose
+            self.Unbind(wx.EVT_LEFT_DOWN)
+            self.Unbind(wx.EVT_LEFT_DCLICK)
             self.Refresh()
+
+    def pose(self, j) :
+        case.case.pose(self, j)
+        # si le jeton a le statut POSE, on enlève le Bind
+        if self.get_jeton_status() == jeton.POSE :
+            self.Unbind(wx.EVT_LEFT_DOWN)
+            self.Unbind(wx.EVT_LEFT_DCLICK)
