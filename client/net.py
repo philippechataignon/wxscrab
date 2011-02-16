@@ -25,7 +25,8 @@ class net(asynchat.async_chat) :
             utils.errordlg(errmsg, "Erreur de connexion")
 
     def handle_connect(self):
-        m = msg.msg("joueur", (1, self.app.email), self.app.nick)
+        protocol = 2
+        m = msg.msg("joueur", (protocol, self.app.email), self.app.nick)
         self.envoi_net(m)
 
     def collect_incoming_data(self, data):

@@ -5,6 +5,8 @@
 import sys
 sys.path.append('../common')
 import wx
+import xml.etree.ElementTree as ET
+
 import settings
 import frame
 import frame_score
@@ -61,10 +63,8 @@ class App(wx.App):
         self.frame.info_serv(txt, color)
 
     def debut_partie(self) :
-        # vide tirage pour mettre jeton dans reliquat
-        self.frame.tirage.vide_tirage()
         # pour la grille, les jetons sont remis dans le reliquat par read_grille
-        self.envoi(msg.msg("askgrille"))
+        self.envoi(msg.msg("askall"))
         self.envoi(msg.msg("askinfo"))
         self.envoi(msg.msg("askscore"))
 
@@ -85,7 +85,6 @@ class App(wx.App):
             self.settings.write()
             self.connected = True
             self.debut_partie()
-            self.envoi(msg.msg("asktour"))
 
         # pas d'analyse des commandes si non connecté (sauf connect)
         if not self.connected :
@@ -128,19 +127,11 @@ class App(wx.App):
             g.pose_mot(coord, mot, status=jeton.PREPOSE)
             #Questionner serveur pour pts et message mot
             self.envoi(msg.msg("askinfo"))
-        elif m.cmd == 'grille' :
-            g.read_grille(m.param)
         elif m.cmd == 'new' :
             self.info_serv("="*20, wx.NamedColor("DARK GREEN"))
             self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
             self.score.Show(False)
             self.debut_partie()
-        elif m.cmd == 'tour' :
-            self.tour_on = m.param
-            if self.tour_on :
-                self.envoi(msg.msg("asktirage"))
-            else:
-                self.info_serv("En attente du prochain tour")
         elif m.cmd == 'score' :
             self.score.Destroy()
             self.score = frame_score.frame_score(f, m.param)
@@ -161,3 +152,23 @@ class App(wx.App):
             f.set_status_next(int(m.param))
         elif m.cmd == "okrestart" :
             f.set_status_restart(int(m.param))
+        elif m.cmd == "all" :
+            # vide tirage pour mettre jeton dans reliquat
+            t.vide_tirage()
+            tree = ET.XML(m.param)
+            gr = tree.find("grille")
+            # read_grille met les jetons de la grille dans le reliquat
+            # puis les reprend pour créer la grille
+            g.read_grille(gr.text)
+            gr = tree.find("tour_on")
+            self.tour_on = (gr.text == 'True')
+            gr = tree.find("tirage")
+            if gr.text is not None :
+                t.cree_tirage(str(gr.text))
+            if self.tour_on :
+                self.son.play("debut")
+                f.buttonpose.Enable(True)
+                f.home_props()
+                f.set_status_reliq()
+            else :
+                self.info_serv("En attente du prochain tour")

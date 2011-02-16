@@ -6,6 +6,8 @@ import optparse
 import sys
 import threading
 import asyncore
+import xml.etree.cElementTree as ET
+import time
 
 import dico
 
@@ -15,7 +17,7 @@ import logger
 import msg
 import grille
 import net
-import time
+import tirage
 
 class Stop(Exception) :
     pass
@@ -34,6 +36,7 @@ class main(threading.Thread):
         self.dic = dico.dico(self.options.dico)
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
+        self.tirage = tirage.tirage("")
         self.tour_on = False
         self.categ_vote = ('restart', 'next', 'stopchrono')
         self.votes = {}
@@ -171,8 +174,6 @@ class main(threading.Thread):
             else:
                 m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
                 channel.envoi(m)
-        elif c == 'askgrille' :
-            channel.envoi(msg.msg("grille", str(self.gr)))
         elif c == 'askscore' :
             channel.envoi(msg.msg("score", self.jo.tableau_score()))
         elif c == 'askinfo' :
@@ -187,8 +188,17 @@ class main(threading.Thread):
             channel.envoi(m)
         elif c == 'asktirage' :
             channel.envoi(msg.msg("tirage",self.tirage.get_mot()))
-        elif c == 'asktour' :
-            channel.envoi(msg.msg("tour", self.tour_on))
+        elif c == 'askall' :
+            tree = ET.Element("all")
+            elt = ET.SubElement(tree, "grille")
+            elt.text = str(self.gr)
+            elt = ET.SubElement(tree, "tour_on")
+            elt.text = str(self.tour_on)
+            elt = ET.SubElement(tree, "tirage")
+            if self.tour_on :
+                elt.text = self.tirage.get_mot()
+            xml = ET.tostring(tree)
+            channel.envoi(msg.msg("all", xml))
         elif c == 'chat' :
             m = msg.msg("info", mm.param, nick)
             self.jo.envoi_all(m)
@@ -198,6 +208,12 @@ class main(threading.Thread):
             self.vote("next", channel)
         elif c == "stopchrono" :
             self.vote("stopchrono", channel)
+        elif c == 'askgrille' :
+            channel.envoi(msg.msg("grille", str(self.gr)))
+        elif c == 'asktour' :
+            channel.envoi(msg.msg("tour", self.tour_on))
+
+
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)

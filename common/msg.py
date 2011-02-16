@@ -4,7 +4,8 @@ list_cmd = ("propo", "joueur", "chat", "tick",
     "askgrille", "asktour", "askscore", "asktirage", "askinfo",
     "connect", "error", "grille", "chrono", "mot_top", 
     "new", "tour", "score", "tirage", "valid", "info", "infojoueur",
-    "next", "restart", "oknext", "okrestart", "stopchrono", "okstopchrono"
+    "next", "restart", "oknext", "okrestart", "stopchrono", "okstopchrono",
+    "askall", "all",
     )
 
 class msg :
