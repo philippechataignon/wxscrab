@@ -56,6 +56,7 @@ class main(threading.Thread):
                 self.options.game = None
                 self.log = logger.logger(self.pa.get_nom_partie())
                 self.gr = grille.grille()
+                self.points_top = 0
                 self.jo.score_raz()
                 if f_attente :
                     self.info("Prochaine partie dans %d secondes" % self.options.attente)
