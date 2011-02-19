@@ -6,6 +6,7 @@ sys.path.append('../common')
 import xml.etree.cElementTree as ET
 import time
 import os
+import subprocess
 
 import coord
 import tirage
@@ -14,10 +15,13 @@ class partie:
     def __init__(self, options) :
         self.options = options
         if self.options.game is None :
+            pgm = '../gen/gen_part'
             rep = "partie"
             nom_partie = "p_%s.partie" % time.strftime("%Y%m%d%H%M%S")
             self.file_partie = os.path.join(rep, nom_partie)
-            os.system("../gen/gen_part -d %s > %s" % (self.options.dico, self.file_partie))
+            f = open(self.file_partie, "w")
+            subprocess.call([pgm, '-d', self.options.dico], stdout = f)
+            f.close()
         else :
             self.file_partie = self.options.game
         tree = ET.parse(self.file_partie)
@@ -30,29 +34,14 @@ class partie:
             ccc = coord.coord()
             ccc.fromstr(n.text)
             n = e.find("mot")
-            mmm = str(n.text.strip())
+            mmm = str(n.text)
             n = e.find("points")
             pts = int(n.text)
             tour += 1
             self.liste.append( (ttt, ccc, mmm, pts, tour) )
-        self.num = 0
 
     def get_nom_partie(self) :
         return  os.path.basename(self.file_partie)
-
-    def get_tour(self, num) :
-        if self.num < len(self.liste) :
-            return self.liste[self.num]
-        else :
-            return None
-
-    def get_next_tour(self) :
-        if self.num < len(self.liste) :
-            l = self.liste[self.num]
-            self.num += 1
-            return l
-        else :
-            return None
 
 if __name__ == '__main__' :
     import dico
@@ -61,6 +50,7 @@ if __name__ == '__main__' :
         def __init__(self) :
             self.dico = "../dic/ods5.dawg"
             self.game = "partie/p_20101231164246.partie"
+            self.game = None
 
     d = dico.dico("../dic/ods5.dawg")
     g = grille.grille()

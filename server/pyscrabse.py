@@ -60,7 +60,7 @@ class main(threading.Thread):
                     self.info("Prochaine partie dans %d secondes" % self.options.attente)
                     self.attente(self.options.attente)
                 self.jo.envoi_all(msg.msg("new"))
-                print "------------------------------------------------------------------"
+                print "-"*20, self.pa.get_nom_partie(),"-"*20
                 print self.options
                 tour = 0
                 time.sleep(1)
