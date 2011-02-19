@@ -160,6 +160,10 @@ class App(wx.App):
             # read_grille met les jetons de la grille dans le reliquat
             # puis les reprend pour créer la grille
             g.read_grille(gr.text)
+            gr = tree.find("points_top")
+            pts_top = int(gr.text)
+            if pts_top > 0 :
+                self.info_serv("Le top fait %d points" % pts_top)
             gr = tree.find("tour_on")
             self.tour_on = (gr.text == 'True')
             gr = tree.find("tirage")

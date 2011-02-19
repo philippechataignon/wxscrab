@@ -38,6 +38,7 @@ class main(threading.Thread):
         self.chrono = self.options.chrono
         self.tirage = tirage.tirage("")
         self.tour_on = False
+        self.points_top = 0
         self.categ_vote = ('restart', 'next', 'stopchrono')
         self.votes = {}
         self.votants = {}
@@ -109,6 +110,7 @@ class main(threading.Thread):
         self.info("Tour n°%d" % num_tour)
         if self.options.topping :
             self.info("Le top fait %d points" % pts_mot_top)
+            self.points_top = pts_mot_top
         self.log.debut_tour(num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.jo.envoi_all(m)
@@ -198,6 +200,8 @@ class main(threading.Thread):
             elt = ET.SubElement(tree, "tirage")
             if self.tour_on :
                 elt.text = self.tirage.get_mot()
+            elt = ET.SubElement(tree, "points_top")
+            elt.text = str(self.points_top)
             xml = ET.tostring(tree)
             channel.envoi(msg.msg("all", xml))
         elif c == 'chat' :
