@@ -3,7 +3,7 @@
 import sys
 sys.path.append('../common')
 
-import xml.dom.minidom
+import xml.etree.cElementTree as ET
 import time
 import os
 
@@ -20,34 +20,22 @@ class partie:
             os.system("../gen/gen_part -d %s > %s" % (self.options.dico, self.file_partie))
         else :
             self.file_partie = self.options.game
-        self.dom = xml.dom.minidom.parse(self.file_partie)
+        tree = ET.parse(self.file_partie)
         self.liste = []
         tour = 0
-        for e in self.dom.getElementsByTagName("tour"):
-            for node in e.getElementsByTagName("tirage"):
-                for n in node.childNodes:
-                    if n.nodeType == node.TEXT_NODE:
-                            tt = n.data.strip()
-            for node in e.getElementsByTagName("coord"):
-                for n in node.childNodes:
-                    if n.nodeType == node.TEXT_NODE:
-                            cc = n.data.strip()
-            for node in e.getElementsByTagName("mot"):
-                for n in node.childNodes:
-                    if n.nodeType == node.TEXT_NODE:
-                            mm = n.data.strip()
-            for node in e.getElementsByTagName("points"):
-                for n in node.childNodes:
-                    if n.nodeType == node.TEXT_NODE:
-                            pts = int(n.data.strip())
-            ttt = tirage.tirage(tt)
+        for e in tree.findall("tour"):
+            n = e.find("tirage")
+            ttt = tirage.tirage(n.text)
+            n = e.find("coord")
             ccc = coord.coord()
-            ccc.fromstr(cc)
-            mmm = str(mm)
+            ccc.fromstr(n.text)
+            n = e.find("mot")
+            mmm = str(n.text.strip())
+            n = e.find("points")
+            pts = int(n.text)
             tour += 1
             self.liste.append( (ttt, ccc, mmm, pts, tour) )
         self.num = 0
-
 
     def get_nom_partie(self) :
         return  os.path.basename(self.file_partie)

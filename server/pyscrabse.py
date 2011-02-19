@@ -73,6 +73,7 @@ class main(threading.Thread):
                         self.attente(self.options.inter)
                 self.info("Fin de la partie")
                 self.log.fin_partie()
+                self.options.tour = None        # tour ne s'applique qu'au premier lancement
             except Restart :
                 f_attente = False
             except Next :
@@ -212,8 +213,6 @@ class main(threading.Thread):
             channel.envoi(msg.msg("grille", str(self.gr)))
         elif c == 'asktour' :
             channel.envoi(msg.msg("tour", self.tour_on))
-
-
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
