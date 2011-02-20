@@ -25,14 +25,7 @@ class case(wx.Window) :
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.SetDropTarget(casedroptarget(self))
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
-
-    def OnKey(self, e) :
-        """ Gestion de l'événement onKey
-        Utile pour les cases de la grille pour intercepter les frappes sur le clavier
-        qui correspondent aux lettres posées
-        """
-        self.app.frame.grille.OnKey(e)
+        self.Bind(wx.EVT_KEY_DOWN, self.app.OnKey)
 
     def OnPaint(self, evt):
         """ Fonction gérant le dessin de la case : fond de cases, jeton ou flèche éventuel

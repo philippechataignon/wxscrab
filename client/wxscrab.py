@@ -45,6 +45,41 @@ class App(wx.App):
         self.t1.Start(100)
         self.Bind(wx.EVT_TIMER, self.net.watchnet)
 
+## Gestion des évenements clavier
+    def OnKey(self, e) :
+        """ Gère les événements clavier en provenance de la case_grille
+        Raccourcis clavier ou lettre
+        """
+        f = self.frame
+        g = f.grille
+        l = e.GetKeyCode()
+        if l is None or self.tour_on == False :
+            return
+        if l == wx.WXK_RETURN or l == wx.WXK_NUMPAD_ENTER :
+            self.envoi_mot()
+        elif l == wx.WXK_BACK :
+            g.recule_case()
+        elif l == wx.WXK_ESCAPE :
+            g.reinit_saisie()
+        elif l == wx.WXK_DELETE :
+            f.button_pose_last(e)
+        # control
+        elif e.ControlDown() :
+            if l == 88 : # ctrl-x
+                f.button_pose_last(e)
+            elif l == 78 : #ctrl-n
+                f.button_next(e)
+            elif l == 65 : #crtl-a
+                f.button_alpha(e)
+            elif l == 82 : #crtl-r
+                f.button_random(e)
+            elif l == 83 : #crtl-s
+                f.show_score(e)
+        elif (ord('A') <= l <= ord('Z') or ord('a') <= l <= ord('z')):
+            if e.ShiftDown() :
+                l += 32
+            g.traite_keycode(chr(l))
+
 ## Fonctions basiques
     def envoi(self, txt) :
         txt.set_id(self.nick)
@@ -170,7 +205,6 @@ class App(wx.App):
             if gr.text is not None :
                 t.cree_tirage(str(gr.text))
             if self.tour_on :
-                self.son.play("debut")
                 f.buttonpose.Enable(True)
                 f.home_props()
                 f.set_status_reliq()
