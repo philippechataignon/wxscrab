@@ -33,7 +33,7 @@ class case_grille(case.case) :
             g.reinit_saisie()
             self.init_saisie(coord.HOR)
         # la flèche passe verticale que s'il n'y a pas de saisie en cours (g.entry)
-        elif self._fleche == coord.HOR and g.entry == False:
+        elif self._fleche == coord.HOR and not g.entry :
             self.init_saisie(coord.VER)
         else  :
             g.reinit_saisie()

@@ -43,6 +43,8 @@ class main(threading.Thread):
         self.votes = {}
         self.votants = {}
         self.lock_vote = threading.Lock()
+        # protège chrono et tour_on
+        self.lock_main = threading.Lock()
         self.init_vote()
         self.stop = False
 
@@ -106,6 +108,8 @@ class main(threading.Thread):
             self.info("Le chrono est reparti")
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour, chrono_total) :
+        # prend le lock à l'initialisation du tour
+        self.lock_main.acquire()
         self.jo.score_tour_zero()
         self.info("------------------------")
         self.info("Tour n°%d" % num_tour)
@@ -118,13 +122,22 @@ class main(threading.Thread):
         self.tour_on = True
         self.chrono = chrono_total
         self.init_vote()
-        while self.chrono >= 0 :
+        on = (self.chrono >= 0)
+        self.lock_main.release()
+        while on :
             self.jo.envoi_all(msg.msg("chrono", self.chrono))
             try :
                 self.attente(1)
             except Next :
+                self.lock_main.acquire()
                 self.chrono = 1
+                self.lock_main.release()
+            self.lock_main.acquire()
             self.chrono -= 1
+            on = (self.chrono >= 0)
+            if on :
+                self.lock_main.release()
+        # le lock est gardé pour la fin du tour
         self.tour_on = False
         self.jo.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (coord_mot_top, mot_top, pts_mot_top))
@@ -135,6 +148,7 @@ class main(threading.Thread):
         if message != "" :
             self.info(message)
         self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
+        self.lock_main.release()
         return False
 
     def traite(self, channel, mm) :
@@ -142,21 +156,27 @@ class main(threading.Thread):
         nick  = mm.id
         # print "Traite %s %s %s" % (mm.cmd, mm.param, mm.id)
         if c == 'joueur' :
-            if mm.param == mm.id :
-                proto = 0
-            else :
-                proto = mm.param[0]
-            ret = self.jo.add_joueur(nick, proto, channel)
+            proto_serv = 2
+            proto_client = mm.param[0]
+            ret = self.jo.add_joueur(nick, proto_client, channel)
             if ret == 1 :
-                m = msg.msg("connect",(1,"Connexion OK"))
+                m = msg.msg("connect",(1,"Connexion OK", proto_serv))
                 channel.envoi(m)
                 self.info("Connexion de %s" % nick)
+                if proto_client < proto_serv :
+                    m = msg.msg("info", "Attention : le protocole de votre programme (%d) est plus ancien que celui du serveur (%d)."  % (proto_client, proto_serv))
+                    channel.envoi(m)
+                    m = msg.msg("info", "Il faut mettre votre programme à jour dès que possible")
+                    channel.envoi(m)
+                elif proto_serv < proto_client : 
+                    m = msg.msg("info", "Info : le protocole du serveur (%d) est plus ancien que celui de votre programme. (%d)" % (proto_serv, proto_client))
+                    channel.envoi(m)
             elif ret == 0 :
-                m = msg.msg("connect",(0,"Erreur : nom existant"))
+                m = msg.msg("connect",(0,"Erreur : nom existant", proto_serv))
                 channel.envoi(m)
                 self.info("Tentative de %s" % nick)
             elif ret == 2 :
-                m = msg.msg("connect",(2,"Reconnexion"))
+                m = msg.msg("connect",(2,"Reconnexion", proto_serv))
                 channel.envoi(m)
                 self.info("Reconnexion de %s" % nick)
         elif c == 'propo' and self.tour_on :
@@ -191,8 +211,11 @@ class main(threading.Thread):
                 m = msg.msg("infojoueur", (score, top, pct, txt))
             channel.envoi(m)
         elif c == 'asktirage' :
+            self.lock_main.acquire()
             channel.envoi(msg.msg("tirage",self.tirage.get_mot()))
+            self.lock_main.release()
         elif c == 'askall' :
+            self.lock_main.acquire()
             tree = ET.Element("all")
             elt = ET.SubElement(tree, "grille")
             elt.text = str(self.gr)
@@ -203,6 +226,7 @@ class main(threading.Thread):
                 elt.text = self.tirage.get_mot()
             elt = ET.SubElement(tree, "points_top")
             elt.text = str(self.points_top)
+            self.lock_main.release()
             xml = ET.tostring(tree)
             channel.envoi(msg.msg("all", xml))
         elif c == 'chat' :
@@ -215,9 +239,13 @@ class main(threading.Thread):
         elif c == "stopchrono" :
             self.vote("stopchrono", channel)
         elif c == 'askgrille' :
+            self.lock_main.acquire()
             channel.envoi(msg.msg("grille", str(self.gr)))
+            self.lock_main.release()
         elif c == 'asktour' :
+            self.lock_main.acquire()
             channel.envoi(msg.msg("tour", self.tour_on))
+            self.lock_main.release()
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)

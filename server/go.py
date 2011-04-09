@@ -29,7 +29,7 @@ parser.add_option("-v", "--verbose", dest="verbose",  \
 print options
 g = pyscrabse.main(options)
 g.start()
-delai = 0.02
+delai = 0.1
 while not g.stop :
     try :
         g.net.lock.acquire()

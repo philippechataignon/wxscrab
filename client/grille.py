@@ -59,6 +59,11 @@ class grille(wx.Panel) :
         self.SetSizer(sizer)
         self.Fit()
 
+    def __iter__(self) :
+        """ L'itérateur de la grille parcourt l'ensemble des cases
+        """
+        return self.cases.itervalues()
+
 ## Fonctions basiques
 
     def case_coord(self, coord) :
@@ -86,7 +91,7 @@ class grille(wx.Panel) :
 
     def convert_prepose(self) :
         "Les jetons préposés (reçus du serveur) sont mis en fixe"
-        for c in self.cases.itervalues() :
+        for c in self :
             if c.get_jeton_status() == jeton.PREPOSE : #si jeton prepose
                 j = c.prend()
                 j.set_status(jeton.POSE) #met status pose
@@ -123,11 +128,11 @@ class grille(wx.Panel) :
 
     def reinit_saisie(self) :
         "Enleve la fleche et les jetons temporaires de la grille (remis dans le tirage)"
-        for case in self.cases.itervalues() :
-            if case.is_fleche() :
-                case.efface_fleche()
-            if case.get_jeton_status() == jeton.TEMP : #si jeton temp
-                self.app.frame.tirage.move_to(case)
+        for c in self :
+            if c.is_fleche() :
+                c.efface_fleche()
+            if c.get_jeton_status() == jeton.TEMP :
+                self.app.frame.tirage.move_to(c)
         self.entry = False
         self.app.frame.set_status_coo("")
         self.coord_ini = coord.coord()
@@ -137,8 +142,9 @@ class grille(wx.Panel) :
         Appelé pour le mot du Top pour permettre de le repérer (status = PREPOSE)
         Appelé depuis la box des propositions (status = TEMP)
         """
+        t = self.app.frame.tirage
         for l in mot :
-            j = self.app.frame.tirage.move_from(self.case_coord(coo), status, l)
+            t.move_from(self.case_coord(coo), status, l)
             coo = coo.next()
         
 # Traitement evt clavier, appelé depuis app.OnKey
@@ -148,7 +154,7 @@ class grille(wx.Panel) :
 
         Prend le jeton dans le tirage, le pose et fait avancer la flèche
         """
-        if (self.entry == False) :          # si pas de saisie en cours
+        if not self.entry :          # si pas de saisie en cours
             self.coord_cur = self.coord_ini # coord_cur=coord_ini=coord de la case cliquée 
                                             # sinon, la coord courante existe
         if not self.coord_cur.isOK() :      # si coord incorrecte, on sort
@@ -172,7 +178,7 @@ class grille(wx.Panel) :
     def recule_case(self) :
         """ Gestion de la touche Backspace (depuis OnKey)
         """
-        if self.entry == False : #Pas de saisie en cours
+        if not self.entry : #Pas de saisie en cours
             return
 
         if not self.coord_cur.isOK() : # Coord incorrecte, on sort
@@ -208,7 +214,7 @@ class grille(wx.Panel) :
         self.reinit_saisie()
         r = self.app.reliquat
         # remet les jetons dans le reliquat
-        for case in self.cases.itervalues() :
+        for case in self :
             r.move_to(case)
         # prend les jetons dans le reliquat
         # et les pose sur la grille
