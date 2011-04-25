@@ -17,6 +17,9 @@ import utils
 import reliquat
 import jeton
 import msg
+import net
+
+from twisted.internet import reactor
 
 class App(wx.App):
     def OnInit(self) :
@@ -37,13 +40,17 @@ class App(wx.App):
         self.d.Show()
         self.d.MakeModal(True)
         self.reliquat = reliquat.reliquat()
+        self.onExit = False
         return True
 
     def lance_net(self) :
         # Appelé en sortie de la dlgconn
-        self.net  = net.net(self, self.host, self.port)
-        self.t1.Start(100)
-        self.Bind(wx.EVT_TIMER, self.net.watchnet)
+        self.net = net.ScrabbleFactory(self, self.nick)
+        reactor.connectTCP(self.host, self.port, self.net)
+
+    def OnExit(self) :
+        self.onExit = True
+        reactor.stop()
 
 ## Gestion des évenements clavier
     def OnKey(self, e) :

@@ -2,10 +2,6 @@
 import sys
 sys.path.append('../common')
 
-import optparse
-import sys
-import threading
-import asyncore
 import xml.etree.cElementTree as ET
 import time
 
@@ -16,7 +12,6 @@ import joueur
 import logger
 import msg
 import grille
-import net
 import tirage
 
 class Stop(Exception) :
@@ -28,11 +23,9 @@ class Restart(Exception) :
 class Next(Exception) :
     pass
 
-class main(threading.Thread):
+class main():
     def __init__(self, options) :
-        threading.Thread.__init__(self)
         self.options = options
-        self.net = net.net(self)
         self.dic = dico.dico(self.options.dico)
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
@@ -42,14 +35,8 @@ class main(threading.Thread):
         self.categ_vote = ('restart', 'next', 'stopchrono')
         self.votes = {}
         self.votants = {}
-        self.lock_vote = threading.Lock()
-        # protège chrono et tour_on
-        self.lock_main = threading.Lock()
         self.init_vote()
         self.stop = False
-
-    def run(self, f_attente=True) :
-        self.boucle_game()
 
     def boucle_game(self, f_attente=True) :
         while True :
@@ -67,7 +54,6 @@ class main(threading.Thread):
                 print "-"*20, self.pa.get_nom_partie(),"-"*20
                 print self.options
                 tour = 0
-                time.sleep(1)
                 for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
                     tour +=1
                     if self.options.tour is not None and tour < self.options.tour :
@@ -108,8 +94,6 @@ class main(threading.Thread):
             self.info("Le chrono est reparti")
 
     def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour, chrono_total) :
-        # prend le lock à l'initialisation du tour
-        self.lock_main.acquire()
         self.jo.score_tour_zero()
         self.info("------------------------")
         self.info("Tour n°%d" % num_tour)
@@ -123,21 +107,14 @@ class main(threading.Thread):
         self.chrono = chrono_total
         self.init_vote()
         on = (self.chrono >= 0)
-        self.lock_main.release()
         while on :
             self.jo.envoi_all(msg.msg("chrono", self.chrono))
             try :
                 self.attente(1)
             except Next :
-                self.lock_main.acquire()
                 self.chrono = 1
-                self.lock_main.release()
-            self.lock_main.acquire()
             self.chrono -= 1
             on = (self.chrono >= 0)
-            if on :
-                self.lock_main.release()
-        # le lock est gardé pour la fin du tour
         self.tour_on = False
         self.jo.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (coord_mot_top, mot_top, pts_mot_top))
@@ -148,7 +125,6 @@ class main(threading.Thread):
         if message != "" :
             self.info(message)
         self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
-        self.lock_main.release()
         return False
 
     def traite(self, channel, mm) :
@@ -211,11 +187,8 @@ class main(threading.Thread):
                 m = msg.msg("infojoueur", (score, top, pct, txt))
             channel.envoi(m)
         elif c == 'asktirage' :
-            self.lock_main.acquire()
             channel.envoi(msg.msg("tirage",self.tirage.get_mot()))
-            self.lock_main.release()
         elif c == 'askall' :
-            self.lock_main.acquire()
             tree = ET.Element("all")
             elt = ET.SubElement(tree, "grille")
             elt.text = str(self.gr)
@@ -226,7 +199,6 @@ class main(threading.Thread):
                 elt.text = self.tirage.get_mot()
             elt = ET.SubElement(tree, "points_top")
             elt.text = str(self.points_top)
-            self.lock_main.release()
             xml = ET.tostring(tree)
             channel.envoi(msg.msg("all", xml))
         elif c == 'chat' :
@@ -239,13 +211,9 @@ class main(threading.Thread):
         elif c == "stopchrono" :
             self.vote("stopchrono", channel)
         elif c == 'askgrille' :
-            self.lock_main.acquire()
             channel.envoi(msg.msg("grille", str(self.gr)))
-            self.lock_main.release()
         elif c == 'asktour' :
-            self.lock_main.acquire()
             channel.envoi(msg.msg("tour", self.tour_on))
-            self.lock_main.release()
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
@@ -258,13 +226,11 @@ class main(threading.Thread):
 
     def vote(self, categ, channel) :
         if categ in self.categ_vote :
-            self.lock_vote.acquire()
             if channel not in self.votants[categ] :
                 self.votes[categ] += 1
                 self.votants[categ].append(channel)
                 m = msg.msg("ok%s" % categ, self.votes[categ])
                 self.jo.envoi_all(m)
-            self.lock_vote.release()
 
     def init_vote(self) :
         for categ in self.categ_vote :
@@ -272,45 +238,7 @@ class main(threading.Thread):
 
     def raz_vote(self, categ) :
         if categ in self.categ_vote :
-            self.lock_vote.acquire()
             self.votes[categ] = 0
             self.votants[categ] = []
             m = msg.msg("ok%s" % categ, self.votes[categ])
-            self.lock_vote.release()
             self.jo.envoi_all(m)
-
-if __name__ == '__main__' :
-    usage = "usage: %prog [options] [fichier_partie]"
-    parser = optparse.OptionParser(usage=usage)
-    parser.add_option("-g", "--game", dest="game", default=None,
-                      help="indique le fichier partie (defaut partie generee)")
-    parser.add_option("-t", "--tour", dest="tour", type="int", default=None,
-                      help="indique tour de debut si -g actif")
-    parser.add_option("-d", "--dico", dest="dico", default="../dic/ods5.dawg",
-                      help="indique le fichier dictionnaire (defaut ../dic/ods5.dawg)")
-    parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
-                      help="indique le temps par tour en secondes (defaut 120, soit 2mn)")
-    parser.add_option("-i", "--inter", dest="inter", type="int", default=15,
-                      help="indique le temps entre chaque tour en secondes (defaut 15s)")
-    parser.add_option("-p", "--port", dest="port", type="int", default=1989,
-                      help="indique le port du serveur (defaut 1989)")
-    parser.add_option("-a", "--attente", dest="attente", type="int", default=30,
-                      help="temps attente pour debut de partie (defaut 30s)")
-    parser.add_option("-o", "--topping", dest="topping", action="store_true",
-                      help="indique le score du top au debut du tour")
-    parser.add_option("-v", "--verbose", dest="verbose",  \
-            action="store_true", help="sortie des echanges reseau")
-    (options, args) = parser.parse_args()
-    print options
-    g = main(options)
-    g.start()
-    delai = 0.1
-    while not g.stop :
-        try :
-            g.net.lock.acquire()
-            asyncore.poll()
-            g.net.lock.release()
-            time.sleep(delai)
-        except KeyboardInterrupt:
-            g.stop = True
-            print "Sortie main asyncore.loop"

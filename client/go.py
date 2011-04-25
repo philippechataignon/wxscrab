@@ -6,6 +6,11 @@ reload(sys)
 sys.setdefaultencoding("utf8")
 import wx
 wx.SetDefaultPyEncoding("utf8")
+from twisted.internet import wxreactor
+wxreactor.install()
+from twisted.internet import reactor
 import wxscrab
 app = wxscrab.App()
-app.MainLoop()
+reactor.registerWxApp(app)
+#app.MainLoop()
+reactor.run()

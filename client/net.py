@@ -1,54 +1,47 @@
-﻿#! /usr/bin/env python
+#! /usr/bin/env python2
 # -*- coding: utf-8 -*-
-
-import sys
-sys.path.append('../common')
-
-import utils
-import asyncore, asynchat
-import socket
-import msg
+from twisted.internet import reactor
+from twisted.internet.protocol import ClientFactory, Protocol
+from twisted.internet.protocol import Protocol, Factory
+from twisted.protocols import basic
 import cPickle as pickle
+import msg
+import utils
 
-class net(asynchat.async_chat) :
-    term = "\r\n\r\n"
-    def __init__(self, app, host, port) :
-        asynchat.async_chat.__init__(self)
-        self.app = app
-        self.buffer = []
-        self.set_terminator(net.term)
-        self.debug = False
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        try :
-            self.connect((host, port))
-        except socket.error, (errno, errmsg) :
-            utils.errordlg(errmsg, "Erreur de connexion")
-
-    def handle_connect(self):
+class ScrabbleProtocol(basic.LineReceiver):
+    delimiter = '\r\n\r\n'
+    def connectionMade(self):
+        #print "Connect %s" % self.transport.getPeer()
+        self.factory.channel = self
         protocol = 2
-        m = msg.msg("joueur", (protocol, self.app.email), self.app.nick)
-        self.envoi_net(m)
+        m = msg.msg("joueur", (protocol, self.factory.app.email), self.factory.app.nick)
+        self.envoi(m)
 
-    def collect_incoming_data(self, data):
-        self.buffer.append(data)
+    def lineReceived(self, line):
+        #print "Received : %s" % line
+        mm = pickle.loads(line)
+        self.factory.app.traite(mm)
 
-    def found_terminator(self) :
-        txt = "".join(self.buffer)
-        self.buffer = []
-        m = pickle.loads(txt)
-        if self.debug == True :
-            print "<- %s" % m 
-        self.app.traite(m)
+    def envoi(self, mm):
+        #print "Send : %s" % mm
+        msg = pickle.dumps(mm)
+        self.sendLine(msg)
 
-    def handle_close(self) :
-        self.close()
-        utils.errordlg("Serveur déconnecté","Erreur Socket")
-        self.app.frame.Close()
+class ScrabbleFactory(ClientFactory):
+    protocol = ScrabbleProtocol
+    def __init__(self, app, nick):
+        self.nick = nick
+        self.app = app
+        self.channel = None
 
-    def envoi_net(self, m):
-        if self.debug == True :
-            print "-> %s" % m 
-        self.push(pickle.dumps(m, pickle.HIGHEST_PROTOCOL) + net.term)
+    def clientConnectionFailed(self, connector, reason):
+        utils.errordlg(reason.getErrorMessage(), "Connexion impossible")
+        reactor.stop()
 
-    def watchnet(self, e) :
-        asyncore.poll()
+    def clientConnectionLost(self, connector, reason):
+        if not self.app.onExit :
+            utils.errordlg(reason.getErrorMessage(), "Connexion perdue")
+
+    def envoi_net(self, mm) :
+        if self.channel is not None :
+            self.channel.envoi(mm)

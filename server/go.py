@@ -2,8 +2,19 @@
 # -*- coding: utf-8 -*-
 import pyscrabse
 import optparse
-import asyncore
 import time
+import signal
+from twisted.internet import reactor
+import net
+
+def sayBye():
+    print "Reactor stopped. Wait for game thread."
+
+def customHandler(signum, stackframe):
+    print "Got signal: %s" % signum
+    g.stop = True                        # stop thread partie
+    reactor.callFromThread(reactor.stop) # stop reactor loop
+
 
 usage = "usage: %prog [options] [fichier_partie]"
 parser = optparse.OptionParser(usage=usage)
@@ -28,14 +39,10 @@ parser.add_option("-v", "--verbose", dest="verbose",  \
 (options, args) = parser.parse_args()
 print options
 g = pyscrabse.main(options)
-g.start()
-delai = 0.1
-while not g.stop :
-    try :
-        g.net.lock.acquire()
-        asyncore.poll()
-        g.net.lock.release()
-        time.sleep(delai)
-    except KeyboardInterrupt:
-        g.stop = True
-        print "KeyboardInterrupt"
+signal.signal(signal.SIGINT, customHandler)
+factory = net.ScrabbleFactory(g)
+factory.protocol = net.ScrabbleProtocol
+reactor.addSystemEventTrigger('during', 'shutdown', sayBye)
+reactor.callInThread(g.boucle_game)
+reactor.listenTCP(options.port, factory)
+reactor.run()
