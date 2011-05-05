@@ -23,7 +23,8 @@ class ScrabbleProtocol(basic.LineReceiver):
     def envoi(self, mm):
         #print "Send : %s" % mm
         msg = pickle.dumps(mm)
-        reactor.callFromThread(self.sendLine, msg)
+        #reactor.callLater(0, self.sendLine, msg)
+        self.sendLine(msg)
 
 class ScrabbleFactory(Factory):
     protocol = ScrabbleProtocol

@@ -13,6 +13,7 @@ import logger
 import msg
 import grille
 import tirage
+from twisted.internet import reactor
 
 class Stop(Exception) :
     pass
@@ -38,95 +39,64 @@ class main():
         self.init_vote()
         self.stop = False
 
-    def boucle_game(self, f_attente=True) :
-        while True :
-            try :
-                self.pa = partie.partie(self.options)
-                self.options.game = None
-                self.log = logger.logger(self.pa.get_nom_partie())
-                self.gr = grille.grille()
-                self.points_top = 0
-                self.jo.score_raz()
-                if f_attente :
-                    self.info("Prochaine partie dans %d secondes" % self.options.attente)
-                    self.attente(self.options.attente)
-                self.jo.envoi_all(msg.msg("new"))
-                print "-"*20, self.pa.get_nom_partie(),"-"*20
-                print self.options
-                tour = 0
-                for self.tirage, coord_mot_top, mot_top, pts_mot_top, num_tour in self.pa.liste :
-                    tour +=1
-                    if self.options.tour is not None and tour < self.options.tour :
-                        self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour, 1)
-                    else :
-                        self.debut_tour(coord_mot_top, mot_top, pts_mot_top, num_tour, self.options.chrono)
-                        self.attente(self.options.inter)
-                self.info("Fin de la partie")
-                self.log.fin_partie()
-                self.options.tour = None        # tour ne s'applique qu'au premier lancement
-            except Restart :
-                f_attente = False
-            except Next :
-                pass
-            except Stop :
-                print "Sortie thread partie (loop)"
-                break
-            else :
-                f_attente = True
+    def debut_game(self, f_attente=True) :
+        self.pa = partie.partie(self.options)
+        self.options.game = None
+        #self.log = logger.logger(self.pa.get_nom_partie())
+        self.gr = grille.grille()
+        self.points_top = 0
+        self.jo.score_raz()
+        if f_attente :
+            self.info("Prochaine partie dans %d secondes" % self.options.attente)
+            reactor.callLater(self.options.attente, self.debut_tour)
+        else :
+            self.debut_tour()
 
-    def attente(self, tps) :
-        if self.stop :
-            raise Stop
-        if len(self.jo)>= 1 :
-            if self.votes['restart'] == len(self.jo) :
-                self.raz_vote('restart')
-                raise Restart
-            elif self.votes['next'] == len(self.jo) and self.tour_on :
-                self.raz_vote('next')
-                raise Next
-        time.sleep(tps)
-        if self.votes['stopchrono'] > 0 :
-            self.raz_vote('stopchrono')
-            self.info("Le chrono est stoppé")
-            while (self.votes['stopchrono'] == 0) :
-                time.sleep(0.5)
-            self.raz_vote('stopchrono')
-            self.info("Le chrono est reparti")
+    def debut_tour(self) :
+        if self.pa.liste :
+            self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste[0]
+        else :
+            self.debut_game(f_attente = False)
 
-    def debut_tour(self, coord_mot_top, mot_top, pts_mot_top, num_tour, chrono_total) :
+        del self.pa.liste[0]
+        if self.num_tour == 1 :
+            self.jo.envoi_all(msg.msg("new"))
+            print "-"*20, self.pa.get_nom_partie(),"-"*20
+            print self.options
         self.jo.score_tour_zero()
         self.info("------------------------")
-        self.info("Tour n°%d" % num_tour)
+        self.info("Tour n°%d" % self.num_tour)
         if self.options.topping :
-            self.info("Le top fait %d points" % pts_mot_top)
-            self.points_top = pts_mot_top
-        self.log.debut_tour(num_tour)
+            self.info("Le top fait %d points" % self.pts_mot_top)
+            self.points_top = self.pts_mot_top
+        #self.log.debut_tour(self.num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.jo.envoi_all(m)
         self.tour_on = True
-        self.chrono = chrono_total
         self.init_vote()
-        on = (self.chrono >= 0)
-        while on :
-            self.jo.envoi_all(msg.msg("chrono", self.chrono))
-            try :
-                self.attente(1)
-            except Next :
-                self.chrono = 1
-            self.chrono -= 1
-            on = (self.chrono >= 0)
+        self.decr_chrono(self.options.chrono)
+
+    def fin_tour(self) :
         self.tour_on = False
-        self.jo.envoi_all(msg.msg("mot_top",(coord_mot_top, mot_top)))
-        self.info("Top retenu : %s-%s (%d pts)" % (coord_mot_top, mot_top, pts_mot_top))
-        self.log.fin_tour(coord_mot_top, mot_top, pts_mot_top)
-        print("%s - %s" % (coord_mot_top, mot_top))
-        self.gr.pose(coord_mot_top, mot_top)
-        message = self.jo.score_fin_tour(pts_mot_top)
+        self.jo.envoi_all(msg.msg("mot_top",(self.coord_mot_top, self.mot_top)))
+        self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
+        #self.log.fin_tour(coord_mot_top, mot_top, pts_mot_top)
+        print("%s - %s" % (self.coord_mot_top, self.mot_top))
+        self.gr.pose(self.coord_mot_top, self.mot_top)
+        message = self.jo.score_fin_tour(self.pts_mot_top)
         if message != "" :
             self.info(message)
         self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
-        return False
+        reactor.callLater(self.options.inter, self.debut_tour)
 
+    def decr_chrono(self, chrono) :
+        self.jo.envoi_all(msg.msg("chrono", chrono))
+        self.chrono = chrono -1
+        if self.chrono >= 0 :
+            reactor.callLater(1, self.decr_chrono, self.chrono)
+        else :
+            self.fin_tour()
+            
     def traite(self, channel, mm) :
         c = mm.cmd
         nick  = mm.id
@@ -170,7 +140,7 @@ class main():
                 m = msg.msg("valid",(coo, mot, point))
                 channel.envoi(m)
                 self.jo.set_points_tour(nick, score)
-                self.log.add_prop(nick, coo, mot, score, self.options.chrono-self.chrono)
+                #self.log.add_prop(nick, coo, mot, score, self.options.chrono-self.chrono)
             else:
                 m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
                 channel.envoi(m)
@@ -242,3 +212,22 @@ class main():
             self.votants[categ] = []
             m = msg.msg("ok%s" % categ, self.votes[categ])
             self.jo.envoi_all(m)
+    #def attente(self, tps) :
+    #    if self.stop :
+    #        raise Stop
+    #    if len(self.jo)>= 1 :
+    #        if self.votes['restart'] == len(self.jo) :
+    #            self.raz_vote('restart')
+    #            raise Restart
+    #        elif self.votes['next'] == len(self.jo) and self.tour_on :
+    #            self.raz_vote('next')
+    #            raise Next
+    #    time.sleep(tps)
+    #    if self.votes['stopchrono'] > 0 :
+    #        self.raz_vote('stopchrono')
+    #        self.info("Le chrono est stoppé")
+    #        while (self.votes['stopchrono'] == 0) :
+    #            time.sleep(0.5)
+    #        self.raz_vote('stopchrono')
+    #        self.info("Le chrono est reparti")
+

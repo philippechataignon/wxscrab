@@ -43,6 +43,6 @@ signal.signal(signal.SIGINT, customHandler)
 factory = net.ScrabbleFactory(g)
 factory.protocol = net.ScrabbleProtocol
 reactor.addSystemEventTrigger('during', 'shutdown', sayBye)
-reactor.callInThread(g.boucle_game)
+reactor.callLater(0, g.debut_game)
 reactor.listenTCP(options.port, factory)
 reactor.run()
