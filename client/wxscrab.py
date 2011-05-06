@@ -63,7 +63,9 @@ class App(wx.App):
         self.frame.info_serv(txt, color)
 
     def debut_partie(self) :
-        # pour la grille, les jetons sont remis dans le reliquat par read_grille
+        # remet les jetons de lagrille dans le reliquat
+        g = self.frame.grille
+        g.vide_grille()
         self.envoi(msg.msg("askall"))
         self.envoi(msg.msg("askinfo"))
         self.envoi(msg.msg("askscore"))
