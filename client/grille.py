@@ -146,40 +146,8 @@ class grille(wx.Panel) :
         for l in mot :
             t.move_from(self.case_coord(coo), status, l)
             coo = coo.next()
-
-## Gestion des évenements clavier
-    def OnKey(self, e) :
-        """ Gère les événements clavier en provenance de la case_grille
-        Raccourcis clavier ou lettre
-        """
-        l = e.GetKeyCode()
-        if l is None or self.app.tour_on == False :
-            return
-        if l == wx.WXK_RETURN or l == wx.WXK_NUMPAD_ENTER :
-            self.app.envoi_mot()
-        elif l == wx.WXK_BACK :
-            self.recule_case()
-        elif l == wx.WXK_ESCAPE :
-            self.reinit_saisie()
-        elif l == wx.WXK_DELETE :
-            self.app.frame.button_pose_last(e)
-        # control
-        elif e.ControlDown() :
-            if l == 88 : # ctrl-x
-                self.app.frame.button_pose_last(e)
-            elif l == 78 : #ctrl-n
-                self.app.frame.button_next(e)
-            elif l == 65 : #crtl-a
-                self.app.frame.button_alpha(e)
-            elif l == 82 : #crtl-r
-                self.app.frame.button_random(e)
-            elif l == 83 : #crtl-s
-                self.app.frame.show_score(e)
-        elif (ord('A') <= l <= ord('Z') or ord('a') <= l <= ord('z')):
-            if e.ShiftDown() :
-                l += 32
-            self.traite_keycode(chr(l))
         
+# Traitement evt clavier, appelé depuis app.OnKey
     def traite_keycode(self, l) :
         """ Traite le cas où une lettre est demandée dans le cas
         d'une saisie en cours

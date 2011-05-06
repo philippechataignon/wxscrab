@@ -19,26 +19,20 @@ class case(wx.Window) :
         wx.Window.__init__(self, parent, size=(self.size, self.size))
         self._jeton = None
         self._fleche = None
+        self._buffer = wx.EmptyBitmap(self.size, self.size)
         self.font_jeton = wx.Font(self.settings['size_font_jeton'],
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.font_point = wx.Font(self.settings['size_font_point'],
                 wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.SetDropTarget(casedroptarget(self))
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.Bind(wx.EVT_KEY_DOWN, self.OnKey)
-
-    def OnKey(self, e) :
-        """ Gestion de l'événement onKey
-        Utile pour les cases de la grille pour intercepter les frappes sur le clavier
-        qui correspondent aux lettres posées
-        """
-        self.app.frame.grille.OnKey(e)
+        self.Bind(wx.EVT_KEY_DOWN, self.app.OnKey)
 
     def OnPaint(self, evt):
         """ Fonction gérant le dessin de la case : fond de cases, jeton ou flèche éventuel
         """
         s = self.settings
-        dc = wx.PaintDC(self)
+        dc = wx.BufferedPaintDC(self, self._buffer)
         dc.SetBrush(wx.Brush(self.col_fond))
         # trace le carré de fond
         dc.SetPen(wx.Pen(s['col_neutre'], 1, wx.SOLID))
