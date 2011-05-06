@@ -53,11 +53,7 @@ class main():
             self.debut_tour()
 
     def debut_tour(self) :
-        if self.pa.liste :
-            self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste[0]
-        else :
-            self.debut_game(f_attente = False)
-
+        self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste[0]
         del self.pa.liste[0]
         if self.num_tour == 1 :
             self.jo.envoi_all(msg.msg("new"))
@@ -87,7 +83,10 @@ class main():
         if message != "" :
             self.info(message)
         self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
-        reactor.callLater(self.options.inter, self.debut_tour)
+        if self.pa.liste :
+            reactor.callLater(self.options.inter, self.debut_tour)
+        else :
+            self.debut_game(f_attente = True)
 
     def decr_chrono(self, chrono) :
         self.jo.envoi_all(msg.msg("chrono", chrono))
@@ -95,7 +94,7 @@ class main():
         if self.chrono >= 0 :
             reactor.callLater(1, self.decr_chrono, self.chrono)
         else :
-            self.fin_tour()
+            reactor.callLater(1, self.fin_tour)
             
     def traite(self, channel, mm) :
         c = mm.cmd
