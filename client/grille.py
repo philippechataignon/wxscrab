@@ -208,16 +208,20 @@ class grille(wx.Panel) :
         c.set_fleche(self.coord_ini.dir())
 
 ## Initialisation de la grille
-    def read_grille(self, txt_grille) :
-        """ Initialise la grille à partir du texte renvoyé par le serveur
-        """
+    def vide_grille(self) :
         self.reinit_saisie()
         r = self.app.reliquat
         # remet les jetons dans le reliquat
         for case in self :
             r.move_to(case)
+
+    def read_grille(self, txt_grille) :
+        """ Initialise la grille à partir du texte renvoyé par le serveur
+        """
+        self.vide_grille()
         # prend les jetons dans le reliquat
         # et les pose sur la grille
+        r = self.app.reliquat
         for y, ligne in enumerate(txt_grille.split("\n")) :
             for x, lettre in enumerate(ligne) :
                 if lettre != "." :
