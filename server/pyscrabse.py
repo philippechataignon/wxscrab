@@ -3,17 +3,17 @@ import sys
 sys.path.append('../common')
 
 import xml.etree.cElementTree as ET
-import time
+
+from twisted.internet import reactor
+from twisted.internet.error import AlreadyCalled, AlreadyCancelled
 
 import dico
-
 import partie
 import joueur
 import logger
 import msg
 import grille
 import tirage
-from twisted.internet import reactor
 
 class Stop(Exception) :
     pass
@@ -33,6 +33,7 @@ class main():
         self.tirage = tirage.tirage("")
         self.tour_on = False
         self.points_top = 0
+        self.decrement = 1
         self.categ_vote = ('restart', 'next', 'stopchrono')
         self.votes = {}
         self.votants = {}
@@ -42,14 +43,15 @@ class main():
     def debut_game(self, f_attente=True) :
         self.pa = partie.partie(self.options)
         self.options.game = None
-        #self.log = logger.logger(self.pa.get_nom_partie())
+        self.log = logger.logger(self.pa.get_nom_partie())
         self.gr = grille.grille()
         self.points_top = 0
         self.jo.score_raz()
         if f_attente :
             self.info("Prochaine partie dans %d secondes" % self.options.attente)
-            reactor.callLater(self.options.attente, self.debut_tour)
+            self.current_call = reactor.callLater(self.options.attente, self.debut_tour)
         else :
+            self.info("Nouvelle partie")
             self.debut_tour()
 
     def debut_tour(self) :
@@ -65,7 +67,7 @@ class main():
         if self.options.topping :
             self.info("Le top fait %d points" % self.pts_mot_top)
             self.points_top = self.pts_mot_top
-        #self.log.debut_tour(self.num_tour)
+        self.log.debut_tour(self.num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.jo.envoi_all(m)
         self.tour_on = True
@@ -76,7 +78,7 @@ class main():
         self.tour_on = False
         self.jo.envoi_all(msg.msg("mot_top",(self.coord_mot_top, self.mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
-        #self.log.fin_tour(coord_mot_top, mot_top, pts_mot_top)
+        self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
         print("%s - %s" % (self.coord_mot_top, self.mot_top))
         self.gr.pose(self.coord_mot_top, self.mot_top)
         message = self.jo.score_fin_tour(self.pts_mot_top)
@@ -84,17 +86,19 @@ class main():
             self.info(message)
         self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
         if self.pa.liste :
-            reactor.callLater(self.options.inter, self.debut_tour)
+            self.current_call = reactor.callLater(self.options.inter, self.debut_tour)
         else :
+            self.info("Fin de la partie")
+            self.log.fin_partie()
             self.debut_game(f_attente = True)
 
     def decr_chrono(self, chrono) :
         self.jo.envoi_all(msg.msg("chrono", chrono))
-        self.chrono = chrono -1
+        self.chrono = chrono - self.decrement
         if self.chrono >= 0 :
-            reactor.callLater(1, self.decr_chrono, self.chrono)
+            self.current_call = reactor.callLater(1, self.decr_chrono, self.chrono)
         else :
-            reactor.callLater(1, self.fin_tour)
+            self.current_call = reactor.callLater(1, self.fin_tour)
             
     def traite(self, channel, mm) :
         c = mm.cmd
@@ -139,7 +143,7 @@ class main():
                 m = msg.msg("valid",(coo, mot, point))
                 channel.envoi(m)
                 self.jo.set_points_tour(nick, score)
-                #self.log.add_prop(nick, coo, mot, score, self.options.chrono-self.chrono)
+                self.log.add_prop(nick, coo, mot, score, self.options.chrono - self.chrono)
             else:
                 m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
                 channel.envoi(m)
@@ -187,7 +191,7 @@ class main():
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
         if nick is not None :
-            self.info("Deconnexion de %s" % nick)
+            self.info("Déconnexion de %s" % nick)
 
     def info(self, txt) :
         m = msg.msg("info", txt)
@@ -200,6 +204,29 @@ class main():
                 self.votants[categ].append(channel)
                 m = msg.msg("ok%s" % categ, self.votes[categ])
                 self.jo.envoi_all(m)
+        if len(self.jo)>= 1 and self.votes['restart'] == len(self.jo) :
+            # vote restart accepté
+            self.cancel_call()
+            self.debut_game(f_attente = False)
+        if len(self.jo)>= 1 and self.votes['next'] == len(self.jo) :
+            # vote next accepté
+            self.cancel_call()
+            self.jo.envoi_all(msg.msg("chrono", 0))
+            self.fin_tour()
+        if self.votes['stopchrono'] >= 1:
+            self.decrement = 1 - self.decrement
+            if self.decrement == 0 :
+                self.info("Chrono arrété")
+            else :
+                self.info("Chrono reparti")
+            self.raz_vote('stopchrono')
+
+    def cancel_call(self) :
+        # annule le callLater en cours
+        try :
+            self.current_call.cancel()
+        except (AlreadyCalled, AlreadyCancelled) :
+            pass
 
     def init_vote(self) :
         for categ in self.categ_vote :
@@ -211,22 +238,3 @@ class main():
             self.votants[categ] = []
             m = msg.msg("ok%s" % categ, self.votes[categ])
             self.jo.envoi_all(m)
-    #def attente(self, tps) :
-    #    if self.stop :
-    #        raise Stop
-    #    if len(self.jo)>= 1 :
-    #        if self.votes['restart'] == len(self.jo) :
-    #            self.raz_vote('restart')
-    #            raise Restart
-    #        elif self.votes['next'] == len(self.jo) and self.tour_on :
-    #            self.raz_vote('next')
-    #            raise Next
-    #    time.sleep(tps)
-    #    if self.votes['stopchrono'] > 0 :
-    #        self.raz_vote('stopchrono')
-    #        self.info("Le chrono est stoppé")
-    #        while (self.votes['stopchrono'] == 0) :
-    #            time.sleep(0.5)
-    #        self.raz_vote('stopchrono')
-    #        self.info("Le chrono est reparti")
-

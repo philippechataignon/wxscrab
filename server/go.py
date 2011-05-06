@@ -39,10 +39,8 @@ parser.add_option("-v", "--verbose", dest="verbose",  \
 (options, args) = parser.parse_args()
 print options
 g = pyscrabse.main(options)
-signal.signal(signal.SIGINT, customHandler)
 factory = net.ScrabbleFactory(g)
 factory.protocol = net.ScrabbleProtocol
-reactor.addSystemEventTrigger('during', 'shutdown', sayBye)
 reactor.callLater(0, g.debut_game)
 reactor.listenTCP(options.port, factory)
 reactor.run()
