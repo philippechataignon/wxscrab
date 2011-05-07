@@ -55,8 +55,8 @@ class dlgconnframe(wx.Frame):
         self.Show()
 
     def click_button_ok(self, evt) :
-        nick = str(self.txtnom.GetValue()).strip()
-        host = str(self.txtaddr.GetValue()).strip()
+        nick = self.txtnom.GetValue().strip()
+        host = self.txtaddr.GetValue().strip()
         email = ""
         porterror = False
         try:
@@ -67,7 +67,7 @@ class dlgconnframe(wx.Frame):
 
         if porterror :
             pass
-        elif nick == "" :
+        elif len(nick) == 0 :
             utils.errordlg("Vous n'avez pas reglé de pseudo", "Erreur")
         elif len(nick) > 20 :
             utils.errordlg("Pas plus de 20 caractères pour le pseudo", "Erreur")

@@ -16,11 +16,11 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         self.envoi(m)
 
     def stringReceived(self, mm):
-        #print "<- : %s" % mm
+        # print "<- %s" % mm
         self.factory.app.traite(mm)
 
     def envoi(self, mm):
-        #print "-> : %s" % mm
+        #print "-> %s" % mm
         self.sendString(mm.dump())
 
 class ScrabbleFactory(ClientFactory):

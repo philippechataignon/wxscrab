@@ -1,6 +1,9 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 import optparse
+import sys
+reload(sys)
+sys.setdefaultencoding("utf8")
 
 from twisted.internet import reactor
 

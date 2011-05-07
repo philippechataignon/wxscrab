@@ -14,11 +14,11 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         print "Deconnect %s" % self.transport.getPeer()
 
     def stringReceived(self, mm):
-        #print "<- : %s" % mm
+        # print "<- %s" % mm
         self.factory.parent.traite(self, mm)
 
     def envoi(self, mm):
-        #print "-> : %s" % mm
+        # print "-> %s" % mm
         self.sendString(mm.dump())
 
 class ScrabbleFactory(Factory):

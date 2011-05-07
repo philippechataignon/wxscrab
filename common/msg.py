@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import yaml
+import json
 
 list_cmd = ("propo", "joueur", "chat", "tick", 
     "askscore", "askinfo",
@@ -20,7 +20,7 @@ class msg :
             self.id = id
             self.param = param
         else :
-            self.cmd, self.param, self.id = yaml.load(dump)
+            self.cmd, self.param, self.id = json.loads(dump)
 
     def __str__(self) :
         return " - ".join((self.cmd, repr(self.param), repr(self.id)))
@@ -29,7 +29,7 @@ class msg :
         self.id = id
 
     def dump(self) :
-        return yaml.dump([self.cmd, self.param, self.id])
+        return json.dumps([self.cmd, self.param, self.id])
 
 if __name__ == '__main__' :
     m = msg("chat", [0, 2], "philippe")
