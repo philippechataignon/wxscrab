@@ -176,15 +176,15 @@ class frame(wx.Frame):
 
 # Gestionnaires evenement
     def button_restart(self, e) :
-        m = msg.msg("restart")
+        m = msg.msg("vote",["restart"])
         self.app.envoi(m)
 
     def button_next(self, e) :
-        m = msg.msg("next")
+        m = msg.msg("vote", ["next"])
         self.app.envoi(m)
 
     def button_chrono(self, e) :
-        m = msg.msg("stopchrono")
+        m = msg.msg("vote", ["chrono"])
         self.app.envoi(m)
 
     def button_alpha(self, e) :

@@ -4,7 +4,7 @@ list_cmd = ("propo", "joueur", "chat", "tick",
     "askscore", "askinfo",
     "connect", "error", "chrono", "mot_top", 
     "new", "score", "tirage", "valid", "info", "infojoueur",
-    "next", "restart", "oknext", "okrestart", "stopchrono", "okstopchrono",
+    "vote", "okvote",
     "askall", "all",
     )
 
@@ -13,7 +13,7 @@ class msg :
         if cmd in list_cmd :
             self.cmd = cmd
         else :
-            raise TypeError
+            raise TypeError(cmd)
         self.id = id
         self.param = param
 

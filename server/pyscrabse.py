@@ -34,7 +34,7 @@ class main():
         self.tour_on = False
         self.points_top = 0
         self.decrement = 1
-        self.categ_vote = ('restart', 'next', 'stopchrono')
+        self.categ_vote = ('restart', 'next', 'chrono')
         self.votes = {}
         self.votants = {}
         self.init_vote()
@@ -105,7 +105,7 @@ class main():
         nick  = mm.id
         # print "Traite %s %s %s" % (mm.cmd, mm.param, mm.id)
         if c == 'joueur' :
-            proto_serv = 2
+            proto_serv = 3
             proto_client = mm.param[0]
             ret = self.jo.add_joueur(nick, proto_client, channel)
             if ret == 1 :
@@ -175,12 +175,9 @@ class main():
         elif c == 'chat' :
             m = msg.msg("info", mm.param, nick)
             self.jo.envoi_all(m)
-        elif c == "restart" :
-            self.vote("restart", channel)
-        elif c == "next" :
-            self.vote("next", channel)
-        elif c == "stopchrono" :
-            self.vote("stopchrono", channel)
+        elif c == "vote" :
+            categ = mm.param[0]
+            self.vote(categ, channel)
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
@@ -196,7 +193,7 @@ class main():
             if channel not in self.votants[categ] :
                 self.votes[categ] += 1
                 self.votants[categ].append(channel)
-                m = msg.msg("ok%s" % categ, self.votes[categ])
+                m = msg.msg("okvote", (categ, self.votes[categ]))
                 self.jo.envoi_all(m)
         if len(self.jo)>= 1 and self.votes['restart'] == len(self.jo) :
             # vote restart accepté
@@ -207,7 +204,7 @@ class main():
             self.cancel_call()
             self.jo.envoi_all(msg.msg("chrono", 0))
             self.fin_tour()
-        if self.votes['stopchrono'] >= 1:
+        if self.votes['chrono'] >= 1:
             self.decrement = 1 - self.decrement
             if self.decrement == 0 :
                 self.info("Chrono arrété")
@@ -230,5 +227,5 @@ class main():
         if categ in self.categ_vote :
             self.votes[categ] = 0
             self.votants[categ] = []
-            m = msg.msg("ok%s" % categ, self.votes[categ])
+            m = msg.msg("okvote", (categ, self.votes[categ]))
             self.jo.envoi_all(m)

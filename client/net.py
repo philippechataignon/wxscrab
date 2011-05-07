@@ -13,7 +13,7 @@ class ScrabbleProtocol(basic.LineReceiver):
     def connectionMade(self):
         #print "Connect %s" % self.transport.getPeer()
         self.factory.channel = self
-        protocol = 2
+        protocol = 3
         m = msg.msg("joueur", (protocol, self.factory.app.email), self.factory.app.nick)
         self.envoi(m)
 

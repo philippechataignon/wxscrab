@@ -190,10 +190,12 @@ class App(wx.App):
            f.score.SetLabel("%s/%s - %5.1f%%" % (total, top, prc))
            for m in  mess :
                self.info_serv("Mot non existant : %s" % m, wx.RED)
-        elif m.cmd == "oknext" :
-            f.set_status_next(int(m.param))
-        elif m.cmd == "okrestart" :
-            f.set_status_restart(int(m.param))
+        elif m.cmd == "okvote" :
+            categ, num = m.param
+            if categ  == "next" :
+                f.set_status_next(num)
+            elif categ == "restart" :
+                f.set_status_restart(num)
         elif m.cmd == "all" :
             # vide tirage pour mettre jeton dans reliquat
             t.vide_tirage()
