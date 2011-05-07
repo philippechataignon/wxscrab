@@ -104,13 +104,6 @@ class App(wx.App):
     def info_serv(self, txt, color = wx.BLACK) :
         self.frame.info_serv(txt, color)
 
-    def debut_partie(self) :
-        # remet les jetons de lagrille dans le reliquat
-        g = self.frame.grille
-        g.vide_grille()
-        self.envoi(msg.msg("askall"))
-        self.envoi(msg.msg("askinfo"))
-        self.envoi(msg.msg("askscore"))
 
 ## Traitement des messages reçus
     def traite(self, m) :
@@ -128,7 +121,9 @@ class App(wx.App):
                 self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
             self.settings.write()
             self.connected = True
-            self.debut_partie()
+            self.envoi(msg.msg("askall"))
+            self.envoi(msg.msg("askinfo"))
+            self.envoi(msg.msg("askscore"))
 
         # pas d'analyse des commandes si non connecté (sauf connect)
         if not self.connected :
@@ -175,7 +170,10 @@ class App(wx.App):
             self.info_serv("="*20, wx.NamedColor("DARK GREEN"))
             self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
             self.score.Show(False)
-            self.debut_partie()
+            g.vide_grille()
+            self.envoi(msg.msg("askinfo"))
+            self.envoi(msg.msg("askscore"))
+
         elif m.cmd == 'score' :
             self.score.Destroy()
             self.score = frame_score.frame_score(f, m.param)

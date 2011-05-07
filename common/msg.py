@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 list_cmd = ("propo", "joueur", "chat", "tick", 
-    "askgrille", "asktour", "askscore", "asktirage", "askinfo",
-    "connect", "error", "grille", "chrono", "mot_top", 
-    "new", "tour", "score", "tirage", "valid", "info", "infojoueur",
+    "askscore", "askinfo",
+    "connect", "error", "chrono", "mot_top", 
+    "new", "score", "tirage", "valid", "info", "infojoueur",
     "next", "restart", "oknext", "okrestart", "stopchrono", "okstopchrono",
     "askall", "all",
     )

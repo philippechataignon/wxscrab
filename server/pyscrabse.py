@@ -51,7 +51,7 @@ class main():
             self.info("Prochaine partie dans %d secondes" % self.options.attente)
             self.current_call = reactor.callLater(self.options.attente, self.debut_tour)
         else :
-            self.info("Nouvelle partie")
+            self.info("Restart")
             self.debut_tour()
 
     def debut_tour(self) :
@@ -159,8 +159,6 @@ class main():
                 txt = message[0] if len(message) > 0 else ""
                 m = msg.msg("infojoueur", (score, top, pct, txt))
             channel.envoi(m)
-        elif c == 'asktirage' :
-            channel.envoi(msg.msg("tirage",self.tirage.get_mot()))
         elif c == 'askall' :
             tree = ET.Element("all")
             elt = ET.SubElement(tree, "grille")
@@ -183,10 +181,6 @@ class main():
             self.vote("next", channel)
         elif c == "stopchrono" :
             self.vote("stopchrono", channel)
-        elif c == 'askgrille' :
-            channel.envoi(msg.msg("grille", str(self.gr)))
-        elif c == 'asktour' :
-            channel.envoi(msg.msg("tour", self.tour_on))
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)

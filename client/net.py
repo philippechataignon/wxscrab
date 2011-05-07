@@ -18,12 +18,12 @@ class ScrabbleProtocol(basic.LineReceiver):
         self.envoi(m)
 
     def lineReceived(self, line):
-        #print "Received : %s" % line
         mm = pickle.loads(line)
+        # print "Received : %s" % mm
         self.factory.app.traite(mm)
 
     def envoi(self, mm):
-        #print "Send : %s" % mm
+        # print "Send : %s" % mm
         msg = pickle.dumps(mm)
         self.sendLine(msg)
 

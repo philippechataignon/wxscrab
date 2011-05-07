@@ -1,20 +1,11 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
-import pyscrabse
 import optparse
-import time
-import signal
+
 from twisted.internet import reactor
+
+import pyscrabse
 import net
-
-def sayBye():
-    print "Reactor stopped. Wait for game thread."
-
-def customHandler(signum, stackframe):
-    print "Got signal: %s" % signum
-    g.stop = True                        # stop thread partie
-    reactor.callFromThread(reactor.stop) # stop reactor loop
-
 
 usage = "usage: %prog [options] [fichier_partie]"
 parser = optparse.OptionParser(usage=usage)
@@ -37,10 +28,11 @@ parser.add_option("-o", "--topping", dest="topping", action="store_true",
 parser.add_option("-v", "--verbose", dest="verbose",  \
         action="store_true", help="sortie des echanges reseau")
 (options, args) = parser.parse_args()
-print options
+
 g = pyscrabse.main(options)
 factory = net.ScrabbleFactory(g)
 factory.protocol = net.ScrabbleProtocol
 reactor.callLater(0, g.debut_game)
 reactor.listenTCP(options.port, factory)
+print "Lancement reactor"
 reactor.run()
