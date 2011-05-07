@@ -101,7 +101,8 @@ class main():
         else :
             self.current_call = reactor.callLater(1, self.fin_tour)
             
-    def traite(self, channel, mm) :
+    def traite(self, channel, dump) :
+        mm = msg.msg(dump=dump)
         c = mm.cmd
         nick  = mm.id
         # print "Traite %s %s %s" % (mm.cmd, mm.param, mm.id)

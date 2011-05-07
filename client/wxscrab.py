@@ -106,7 +106,8 @@ class App(wx.App):
 
 
 ## Traitement des messages reçus
-    def traite(self, m) :
+    def traite(self, dump) :
+        m = msg.msg(dump=dump)
         # print "Traite %s %s %s" % (m.cmd, m.param, m.id)
         f = self.frame
         g = f.grille

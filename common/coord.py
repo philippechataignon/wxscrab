@@ -81,7 +81,6 @@ class coord :
         self._dir = dir
 
     def fromstr(self, coo_str) :
-        print "fromstr : %s" % coo_str
         "Affecte une coordonnée à partir d'une référence alphanumérique"
         coo_str = coo_str.replace(' ','').upper()
         l = len(coo_str)
