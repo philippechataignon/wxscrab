@@ -6,8 +6,7 @@ from twisted.internet.protocol import Protocol, Factory
 from twisted.protocols import basic
 import cPickle as pickle
 
-class ScrabbleProtocol(basic.LineReceiver):
-    delimiter = '\r\n\r\n'
+class ScrabbleProtocol(basic.NetstringReceiver):
     def connectionMade(self):
         print "Connect %s" % self.transport.getPeer()
 
@@ -15,16 +14,15 @@ class ScrabbleProtocol(basic.LineReceiver):
         self.factory.parent.deconnect(self)
         print "Deconnect %s" % self.transport.getPeer()
 
-    def lineReceived(self, line):
-        #print "Received : %s" % line
+    def stringReceived(self, line):
+        print "<- : %s" % line
         mm = pickle.loads(line)
         self.factory.parent.traite(self, mm)
 
     def envoi(self, mm):
-        #print "Send : %s" % mm
+        print "-> : %s" % mm
         msg = pickle.dumps(mm)
-        #reactor.callLater(0, self.sendLine, msg)
-        self.sendLine(msg)
+        self.sendString(msg)
 
 class ScrabbleFactory(Factory):
     protocol = ScrabbleProtocol

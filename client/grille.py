@@ -137,11 +137,13 @@ class grille(wx.Panel) :
         self.app.frame.set_status_coo("")
         self.coord_ini = coord.coord()
 
-    def pose_mot(self, coo, mot, status) :
+    def pose_mot(self, coo_str, mot, status) :
         """ Pose un mot sur la grille 
+        La coordonnée est en texte
         Appelé pour le mot du Top pour permettre de le repérer (status = PREPOSE)
         Appelé depuis la box des propositions (status = TEMP)
         """
+        coo = coord.coord(coo_str=coo_str)
         t = self.app.frame.tirage
         for l in mot :
             t.move_from(self.case_coord(coo), status, l)

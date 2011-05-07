@@ -8,8 +8,7 @@ import cPickle as pickle
 import msg
 import utils
 
-class ScrabbleProtocol(basic.LineReceiver):
-    delimiter = '\r\n\r\n'
+class ScrabbleProtocol(basic.NetstringReceiver):
     def connectionMade(self):
         #print "Connect %s" % self.transport.getPeer()
         self.factory.channel = self
@@ -17,15 +16,15 @@ class ScrabbleProtocol(basic.LineReceiver):
         m = msg.msg("joueur", (protocol, self.factory.app.email), self.factory.app.nick)
         self.envoi(m)
 
-    def lineReceived(self, line):
+    def stringReceived(self, line):
         mm = pickle.loads(line)
-        # print "Received : %s" % mm
+        print "<- : %s" % mm
         self.factory.app.traite(mm)
 
     def envoi(self, mm):
-        # print "Send : %s" % mm
+        print "-> : %s" % mm
         msg = pickle.dumps(mm)
-        self.sendLine(msg)
+        self.sendString(msg)
 
 class ScrabbleFactory(ClientFactory):
     protocol = ScrabbleProtocol

@@ -14,6 +14,7 @@ import logger
 import msg
 import grille
 import tirage
+import coord
 
 class Stop(Exception) :
     pass
@@ -76,7 +77,7 @@ class main():
 
     def fin_tour(self) :
         self.tour_on = False
-        self.jo.envoi_all(msg.msg("mot_top",(self.coord_mot_top, self.mot_top)))
+        self.jo.envoi_all(msg.msg("mot_top",(str(self.coord_mot_top), self.mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
         print("%s - %s" % (self.coord_mot_top, self.mot_top))
@@ -129,9 +130,10 @@ class main():
                 channel.envoi(m)
                 self.info("Reconnexion de %s" % nick)
         elif c == 'propo' and self.tour_on :
-            coo = mm.param[0]
+            coo_str = mm.param[0]
             mot = mm.param[1]
             tir = self.tirage
+            coo = coord.coord(coo_str=coo_str)
             controle, scrab = self.gr.controle(coo, mot, tir)
             if controle == 0 :
                 point, mot_nonex  = self.gr.point(coo, mot, scrab, self.dic)
@@ -140,7 +142,7 @@ class main():
                 if len(mot_nonex) > 0 :
                     # met le score a 0 si non existant
                     score = 0
-                m = msg.msg("valid",(coo, mot, point))
+                m = msg.msg("valid",(str(coo), mot, point))
                 channel.envoi(m)
                 self.jo.set_points_tour(nick, score)
                 self.log.add_prop(nick, coo, mot, score, self.options.chrono - self.chrono)

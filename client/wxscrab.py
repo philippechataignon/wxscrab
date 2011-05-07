@@ -97,7 +97,7 @@ class App(wx.App):
         g = self.frame.grille
         debut, mot = g.get_mot_temp()
         if mot is not None :
-            m = msg.msg("propo", (debut, mot, 0))
+            m = msg.msg("propo", (str(debut), mot, 0))
             self.envoi(m)
         g.reinit_saisie()
         
@@ -162,8 +162,8 @@ class App(wx.App):
             f.buttonpose.Enable(False)
             g.reinit_saisie()
             self.son.play("fin_tour")
-            coord, mot = m.param
-            g.pose_mot(coord, mot, status=jeton.PREPOSE)
+            coo, mot = m.param
+            g.pose_mot(coo, mot, status=jeton.PREPOSE)
             #Questionner serveur pour pts et message mot
             self.envoi(msg.msg("askinfo"))
         elif m.cmd == 'new' :

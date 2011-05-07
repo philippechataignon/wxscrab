@@ -17,14 +17,17 @@ class coord :
     Utilisé dans : grille, case, partie
     """
 
-    def __init__(self, x = -1, y = -1, dir=HOR ) :
-        if 0<=x<=14 and 0<=y<=14 and dir in [HOR, VER] :
-            self._x = x
-            self._y = y
-            self._dir = dir
-            self._error = False
+    def __init__(self, x = -1, y = -1, dir=HOR, coo_str = None ) :
+        if coo_str is None :
+            if 0<=x<=14 and 0<=y<=14 and dir in [HOR, VER] :
+                self._x = x
+                self._y = y
+                self._dir = dir
+                self._error = False
+            else :
+                self.set_error()
         else :
-            self.set_error()
+            self.fromstr(coo_str)
 
     def __str__(self):
         "Sortie alphanumérique de la coordonnée. Ex : 8H"
@@ -77,37 +80,38 @@ class coord :
     def set_dir(self, dir) :
         self._dir = dir
 
-    def fromstr(self, strcoo) :
+    def fromstr(self, coo_str) :
+        print "fromstr : %s" % coo_str
         "Affecte une coordonnée à partir d'une référence alphanumérique"
-        strcoo = strcoo.replace(' ','').upper()
-        l = len(strcoo)
+        coo_str = coo_str.replace(' ','').upper()
+        l = len(coo_str)
         if l == 2 :
-            if "A" <= strcoo[0] <= "O" :
-                if '1' <= strcoo[1] <= '9' :
-                    self._x = int(strcoo[1])-1
-                    self._y = ord(strcoo[0])-65
+            if "A" <= coo_str[0] <= "O" :
+                if '1' <= coo_str[1] <= '9' :
+                    self._x = int(coo_str[1])-1
+                    self._y = ord(coo_str[0])-65
                     self._dir = HOR
                     self._error = False
                 else :
                     self.set_error()
 
-            if "1" <= strcoo[0] <= "9" :
-                if 'A' <= strcoo[1] <= 'O' :
-                    self._x = int(strcoo[0])-1
-                    self._y = ord(strcoo[1])-65
+            if "1" <= coo_str[0] <= "9" :
+                if 'A' <= coo_str[1] <= 'O' :
+                    self._x = int(coo_str[0])-1
+                    self._y = ord(coo_str[1])-65
                     self._dir = VER
                     self._error = False
                 else :
                     self.set_error()
         elif l == 3 :
-            if strcoo[0] == '1' and '0' <= strcoo[1] <= '5' and 'A' <= strcoo[2] <= 'O' :
-                self._y = ord(strcoo[2])-65
-                self._x = int(strcoo[0:2])-1
+            if coo_str[0] == '1' and '0' <= coo_str[1] <= '5' and 'A' <= coo_str[2] <= 'O' :
+                self._y = ord(coo_str[2])-65
+                self._x = int(coo_str[0:2])-1
                 self._dir = VER
                 self._error = False
-            elif 'A' <= strcoo[0] <= 'O' and strcoo[1] == '1' and '0' <= strcoo[2] <= '5' :
-                self._y = ord(strcoo[0])-65
-                self._x = int(strcoo[1:3])-1
+            elif 'A' <= coo_str[0] <= 'O' and coo_str[1] == '1' and '0' <= coo_str[2] <= '5' :
+                self._y = ord(coo_str[0])-65
+                self._x = int(coo_str[1:3])-1
                 self._dir = HOR
                 self._error = False
             else :
@@ -135,7 +139,6 @@ class coord :
             return coord(self._x , self._y -1, self._dir)
         else :
             return coord(self._x - 1, self._y, self._dir)
-
     def bas(self) :
         "Coordonnée au-dessous selon direction"
         if self._dir == HOR :
@@ -144,42 +147,41 @@ class coord :
             return coord(self._x + 1, self._y, self._dir)
 
 if __name__ == '__main__' :
-    c = coord()
-    e = coord()
-    c.fromstr(" h    8")
-    print c
-    e.fromstr("8H")
-    print e
-    print c==e
-    c.fromstr("E10")
-    print c
-    c.fromstr("O16")
-    print c
-    c.fromstr("10A")
-    print c
-    c.fromstr("18A")
-    print c
-    c.fromstr("9Z")
-    print c
-    c.fromstr("Z9")
-    print c
-    c.fromstr("A0")
-    print c
-    c.fromstr("A1")
-    print c
-    c.fromstr("A1989")
-    print c
-    c = coord(14,14)
-    print c
-    d = c
-    print d
-    print type(c), type(d)
-    print c,d
-    d = d.next()
-    print c,d
-    c.change_dir()
-    print c
-    c.fromstr("H8")
-    print c,c.next(),c.prev(),c.haut(),c.bas()
-    c.fromstr("H15")
-    print c,c.next(),c.prev(),c.haut(),c.bas()
+    e = coord(1,1)
+    c = coord(coo_str=" h    8")
+    print e,c
+    #e.fromstr("8H")
+    #print e
+    #print c==e
+    #c.fromstr("E10")
+    #print c
+    #c.fromstr("O16")
+    #print c
+    #c.fromstr("10A")
+    #print c
+    #c.fromstr("18A")
+    #print c
+    #c.fromstr("9Z")
+    #print c
+    #c.fromstr("Z9")
+    #print c
+    #c.fromstr("A0")
+    #print c
+    #c.fromstr("A1")
+    #print c
+    #c.fromstr("A1989")
+    #print c
+    #c = coord(14,14)
+    #print c
+    #d = c
+    #print d
+    #print type(c), type(d)
+    #print c,d
+    #d = d.next()
+    #print c,d
+    #c.change_dir()
+    #print c
+    #c.fromstr("H8")
+    #print c,c.next(),c.prev(),c.haut(),c.bas()
+    #c.fromstr("H15")
+    #print c,c.next(),c.prev(),c.haut(),c.bas()
