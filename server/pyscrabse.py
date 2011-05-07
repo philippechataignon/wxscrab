@@ -213,7 +213,7 @@ class main():
                 self.info("Chrono arrété")
             else :
                 self.info("Chrono reparti")
-            self.raz_vote('stopchrono')
+            self.raz_vote('chrono')
 
     def cancel_call(self) :
         # annule le callLater en cours
