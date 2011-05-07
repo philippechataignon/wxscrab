@@ -36,7 +36,7 @@ class joueurs :
         return len(self.liste_actif())
 
     def liste_actif(self) :
-        return [j for j in self.liste.itervalues() if j.connect]
+        return [j for j in self.liste.itervalues() if j.channel is not None and j.connect]
 
     def envoi_all(self, mm) :
         for j in self.liste_actif() :
@@ -127,10 +127,9 @@ class joueurs :
             if j.points_tour == score_top :
                 j.nb_top += 1
                 liste_top.append(j)
-            if j.connect :
-                m = msg.msg("info", \
-                        "Score : %d - Ecart : %d - Rang : %d/%d" \
-                        % (j.points_tour, j.points_tour-score_top, j.rang, len(l)), "")
+            if j.channel is not None and j.connect :
+                m = msg.msg("info", "Score : %d - Ecart : %d - Rang : %d/%d" %
+                    (j.points_tour, j.points_tour-score_top, j.rang, len(l)))
                 j.channel.envoi(m)
 
         if len(l) <= 1 :
