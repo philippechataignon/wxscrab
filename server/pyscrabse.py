@@ -192,10 +192,13 @@ class main():
         self.jo.envoi_all(m)
 
     def vote(self, categ, channel) :
+        if not self.tour_on :
+            # vote inactif hors des tours de jeu
+            return
         if categ in self.categ_vote :
             if channel not in self.votants[categ] :
                 self.votes[categ] += 1
-                self.votants[categ].append(channel)
+                self.votants[categ].add(channel)
                 m = msg.msg("okvote", (categ, self.votes[categ]))
                 self.jo.envoi_all(m)
         if len(self.jo)>= 1 and self.votes['restart'] == len(self.jo) :
@@ -229,6 +232,6 @@ class main():
     def raz_vote(self, categ) :
         if categ in self.categ_vote :
             self.votes[categ] = 0
-            self.votants[categ] = []
+            self.votants[categ] = set()
             m = msg.msg("okvote", (categ, self.votes[categ]))
             self.jo.envoi_all(m)

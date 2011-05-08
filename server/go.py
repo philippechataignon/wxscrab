@@ -5,6 +5,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf8")
 
+from twisted.internet import epollreactor
+epollreactor.install()
+
 from twisted.internet import reactor
 
 import pyscrabse

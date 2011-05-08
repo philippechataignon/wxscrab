@@ -40,3 +40,5 @@ col_fleche: forest green
 
 jeton_carre: false
 max_props: 8
+
+debug_net: false

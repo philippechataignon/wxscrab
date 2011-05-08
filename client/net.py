@@ -9,18 +9,19 @@ import utils
 
 class ScrabbleProtocol(basic.NetstringReceiver):
     def connectionMade(self):
-        #print "Connect %s" % self.transport.getPeer()
         self.factory.channel = self
         protocol = 3
         m = msg.msg("joueur", (protocol, self.factory.app.email), self.factory.app.nick)
         self.envoi(m)
 
     def stringReceived(self, mm):
-        # print "<- %s" % mm
+        if self.factory.app.settings['debug_net'] :
+            print "<- %s" % mm
         self.factory.app.traite(mm)
 
     def envoi(self, mm):
-        # print "-> %s" % mm
+        if self.factory.app.settings['debug_net'] :
+            print "-> %s" % mm
         self.sendString(mm.dump())
 
 class ScrabbleFactory(ClientFactory):
