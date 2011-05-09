@@ -115,15 +115,6 @@ class case(wx.Window) :
         self.Refresh()
         return j
 
-    def swap(self, other) :
-        """ Echange les jetons (éventuels) de deux cases (différentes)
-        """
-        if self is not other :
-            mon_j = self.prend()
-            son_j = other.prend()
-            other.pose(mon_j)
-            self.pose(son_j)
-
 class casedroptarget(wx.PyDropTarget) :
     def __init__(self, case) :
         wx.PyDropTarget.__init__(self)

@@ -51,8 +51,11 @@ class case_tirage(case.case) :
         self.Unbind(wx.EVT_LEFT_DOWN)
         return j
 
-    def traite_drop(self, dep) :
+    def traite_drop(self, other) :
         """ Appelé quand on drop sur la case
         """
-        self.swap(dep)
-
+        if self is not other :
+            mon_j = self.prend()
+            son_j = other.prend()
+            other.pose(mon_j)
+            self.pose(son_j)
