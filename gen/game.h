@@ -131,8 +131,7 @@ int  Game_getpoints           (Game);
 #define RACK_MAX 7
 typedef enum {RACK_ALL, RACK_NEW} set_rack_mode;
 
-int  Game_setrack_random       (Game,unsigned short int etat[3]);
-int  Game_setrack_random_p     (Game,Playedrack,unsigned short int etat[3]);
+int  Game_setrack_random       (Game,unsigned short int etat[3], int force_vide);
 int  Game_setrack_random_aux   (Game,Playedrack,set_rack_mode,unsigned short int etat[3]);
 
   /*************************

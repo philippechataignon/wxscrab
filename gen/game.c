@@ -292,21 +292,20 @@ Game_getcalc_scrab(Game g)
 }
 
 int 
-Game_setrack_random(Game game, unsigned short int etat[3]) 
-{
-    return Game_setrack_random_p(game,game->playedracks[game->nrounds],etat) ;
-}
-
-int 
-Game_setrack_random_p(Game game, Playedrack p, unsigned short int etat[3]) 
+Game_setrack_random(Game game, unsigned short int etat[3], int force_vide) 
 {
     // retour :
     // -1 si sac vide
     // 0 si OK
     // 1 si retirage
     //
+    Playedrack p = game->playedracks[game->nrounds] ;
     int retour = 0 ;
-    int res = Game_setrack_random_aux(game,p,RACK_NEW,etat) ;
+    int res ;
+    if (force_vide)  
+        res = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
+    else
+        res = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
     if (res == 0) {
         retour = 1 ;
         while ((res = Game_setrack_random_aux(game,p,RACK_ALL,etat)) == 0) ;
@@ -333,8 +332,6 @@ Game_setrack_random_aux(Game game, Playedrack p, set_rack_mode mode, unsigned sh
     b = Bag_create();
     Bag_copy(b,game->bag);
 
-    // printf ("BAG %d %d %d %d\n",Game_getnrounds(game),Bag_ntiles(b),Bag_nvowels(b),Bag_nconsonants(b)) ;
-    
     /* si le sac est vide */
     if (Bag_ntiles(b) == 0) {
         Bag_destroy(b);

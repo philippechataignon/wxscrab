@@ -230,7 +230,7 @@ traite_best(Game game, int num, unsigned short int state[3])
     /* joue le round num dans la copie de game */
     Game_play_round(g,Results_get(game->searchresults,num)) ;
     // tir vaut 1 si retirage ; -1 si vide et 0 sinon
-    tir=Game_setrack_random(g,state) ;
+    tir=Game_setrack_random(g, state, 0) ;
     sscore.retir = 2 - (tir == 1) ;
     if ( tir == -1) {
         sscore.pts = 0 ;
@@ -294,12 +294,10 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
         int i,res;
         int joue;
         score w_score ;
-        //memset(&w_score, 0, sizeof(score));
         score t_score ;
         int change_tirage = 0 ;
-        res = Game_setrack_random(game,state) ;
+        res = Game_setrack_random(game, state, 0) ;
         if (res == -1) {
-            // puts ("# Plus de consonnes ou de voyelles") ;
             fin_partie(game,noprint,nbscrab,maxisotop) ;
             return 0 ;
         }
@@ -317,7 +315,7 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
                 Game_getplayedrack(game,Game_getnrounds(game),tirage) ;
                 printf ("<essai_tirage>%s</essai_tirage>\n",tirage) ;
             }
-            Game_setrack_random(game,state) ;
+            Game_setrack_random(game, state, 1) ;
             Game_search(game);
         }
         
