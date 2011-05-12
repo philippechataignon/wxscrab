@@ -84,14 +84,15 @@ class frame(wx.Frame):
         # cadres boutons 
         bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
         #box = wx.StaticBox(self.panel, label = "Commandes")
-        boutons = [ ("Alpha", self.button_alpha),
-                    ("Random", self.button_random),
+        boutons = [ 
                     ("Restart", self.button_restart),
+                    ("Alpha", self.button_alpha),
+                    ("Random", self.button_random),
                     ("Next", self.button_next),
                     ("Précédent", self.button_pose_last),
                 ]
         if s["user_admin"] :
-            boutons.insert(2, ("Chrono", self.button_chrono))
+            boutons.insert(3, ("Chrono", self.button_chrono))
         bouton_in_sizer = wx.GridSizer(rows=1, cols=len(boutons), hgap=fill, vgap=fill)
         for label, handler in boutons :
             bouton = wx.Button(self.panel, label=label, size=app.settings["size_button"])

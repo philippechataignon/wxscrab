@@ -44,54 +44,44 @@ class main():
     def debut_game(self, f_attente=True) :
         self.pa = partie.partie(self.options)
         self.options.game = None
-        self.log = logger.logger(self.pa.get_nom_partie())
+        if self.options.log :
+            self.log = logger.logger(self.pa.get_nom_partie())
         self.gr = grille.grille()
         self.points_top = 0
         self.jo.score_raz()
         if f_attente :
             self.info("Prochaine partie dans %d secondes" % self.options.attente)
-            self.current_call = reactor.callLater(self.options.attente, self.debut_tour)
+            attente = self.options.attente
         else :
             self.info("Restart")
-            self.debut_tour()
+            attente = 0
+        self.current_call = reactor.callLater(attente, self.first_tour)
+
+    def first_tour(self) :
+        self.jo.envoi_all(msg.msg("new"))
+        print "-"*20, self.pa.get_nom_partie(),"-"*20
+        print self.options
+        self.current_call = reactor.callLater(0, self.debut_tour)
 
     def debut_tour(self) :
-        self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste[0]
-        del self.pa.liste[0]
-        if self.num_tour == 1 :
-            self.jo.envoi_all(msg.msg("new"))
-            print "-"*20, self.pa.get_nom_partie(),"-"*20
-            print self.options
+        if self.pa.liste :
+            self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste[0]
+            del self.pa.liste[0]
+        else :
+            self.fin_partie()
         self.jo.score_tour_zero()
         self.info("------------------------")
         self.info("Tour n°%d" % self.num_tour)
         if self.options.topping :
             self.info("Le top fait %d points" % self.pts_mot_top)
             self.points_top = self.pts_mot_top
-        self.log.debut_tour(self.num_tour)
+        if self.options.log :
+            self.log.debut_tour(self.num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.jo.envoi_all(m)
         self.tour_on = True
         self.init_vote()
-        self.decr_chrono(self.options.chrono)
-
-    def fin_tour(self) :
-        self.tour_on = False
-        self.jo.envoi_all(msg.msg("mot_top",(str(self.coord_mot_top), self.mot_top)))
-        self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
-        self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
-        print("%s - %s" % (self.coord_mot_top, self.mot_top))
-        self.gr.pose(self.coord_mot_top, self.mot_top)
-        message = self.jo.score_fin_tour(self.pts_mot_top)
-        if message != "" :
-            self.info(message)
-        self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
-        if self.pa.liste :
-            self.current_call = reactor.callLater(self.options.inter, self.debut_tour)
-        else :
-            self.info("Fin de la partie")
-            self.log.fin_partie()
-            self.debut_game(f_attente = True)
+        self.current_call = reactor.callLater(0, self.decr_chrono, self.options.chrono)
 
     def decr_chrono(self, chrono) :
         self.jo.envoi_all(msg.msg("chrono", chrono))
@@ -101,6 +91,29 @@ class main():
         else :
             self.current_call = reactor.callLater(1, self.fin_tour)
             
+    def fin_tour(self) :
+        self.tour_on = False
+        self.jo.envoi_all(msg.msg("mot_top",(str(self.coord_mot_top), self.mot_top)))
+        self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
+        if self.options.log :
+            self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
+        print("%s - %s" % (self.coord_mot_top, self.mot_top))
+        self.gr.pose(self.coord_mot_top, self.mot_top)
+        message = self.jo.score_fin_tour(self.pts_mot_top)
+        if message != "" :
+            self.info(message)
+        self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
+        if self.pa.liste :
+            self.current_call = reactor.callLater(self.options.inter, self.debut_tour)
+        else :
+            self.current_call = reactor.callLater(0, self.fin_partie)
+
+    def fin_partie(self) :
+        self.info("Fin de la partie")
+        if self.options.log :
+            self.log.fin_partie()
+        self.current_call = reactor.callLater(1, self.debut_game, f_attente = True)
+
     def traite(self, channel, dump) :
         mm = msg.msg(dump=dump)
         c = mm.cmd
@@ -146,7 +159,8 @@ class main():
                 m = msg.msg("valid",(str(coo), mot, point))
                 channel.envoi(m)
                 self.jo.set_points_tour(nick, score)
-                self.log.add_prop(nick, coo, mot, score, self.options.chrono - self.chrono)
+                if self.options.log :
+                    self.log.add_prop(nick, coo, mot, score, self.options.chrono - self.chrono)
             else:
                 m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
                 channel.envoi(m)
