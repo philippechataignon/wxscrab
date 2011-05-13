@@ -41,7 +41,7 @@ class main():
         self.init_vote()
         self.stop = False
 
-    def debut_game(self, f_attente=True) :
+    def debut_game(self, attente=2) :
         self.pa = partie.partie(self.options)
         self.options.game = None
         if self.options.log :
@@ -49,12 +49,7 @@ class main():
         self.gr = grille.grille()
         self.points_top = 0
         self.jo.score_raz()
-        if f_attente :
-            self.info("Prochaine partie dans %d secondes" % self.options.attente)
-            attente = self.options.attente
-        else :
-            self.info("Restart")
-            attente = 0
+        self.info("Prochaine partie dans %d secondes" % attente)
         self.current_call = reactor.callLater(attente, self.first_tour)
 
     def first_tour(self) :
@@ -112,7 +107,10 @@ class main():
         self.info("Fin de la partie")
         if self.options.log :
             self.log.fin_partie()
-        self.current_call = reactor.callLater(1, self.debut_game, f_attente = True)
+        if self.jo.nb_actifs() > 0  :
+            self.current_call = reactor.callLater(1, self.debut_game, self.options.attente)
+        else :
+            print "En attente"
 
     def traite(self, channel, dump) :
         mm = msg.msg(dump=dump)
@@ -123,6 +121,8 @@ class main():
             proto_serv = 3
             proto_client = mm.param[0]
             ret = self.jo.add_joueur(nick, proto_client, channel)
+            if self.jo.nb_actifs() :
+                self.current_call = reactor.callLater(1, self.debut_game, self.options.attente)
             if ret == 1 :
                 m = msg.msg("connect",(1,"Connexion OK", proto_serv))
                 channel.envoi(m)
@@ -215,15 +215,15 @@ class main():
                 self.votants[categ].add(channel)
                 m = msg.msg("okvote", (categ, self.votes[categ]))
                 self.jo.envoi_all(m)
-        if len(self.jo)>= 1 and self.votes['restart'] == len(self.jo) :
+        if self.jo.nb_actifs() >= 1 and self.votes['restart'] == len(self.jo) :
             # vote restart accepté
             self.cancel_call()
-            self.debut_game(f_attente = False)
-        if len(self.jo)>= 1 and self.votes['next'] == len(self.jo) :
+            self.current_call = reactor.callLater(0, self.debut_game)
+        if self.jo.nb_actifs() >= 1 and self.votes['next'] == len(self.jo) :
             # vote next accepté
             self.cancel_call()
             self.jo.envoi_all(msg.msg("chrono", 0))
-            self.fin_tour()
+            self.current_call = reactor.callLater(0, self.fin_tour)
         if self.votes['chrono'] >= 1:
             self.decrement = 1 - self.decrement
             if self.decrement == 0 :

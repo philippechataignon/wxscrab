@@ -35,8 +35,13 @@ class joueurs :
     def __len__(self) :
         return len(self.liste_actif())
 
+    nb_actifs = __len__
+
     def liste_actif(self) :
         return [j for j in self.liste.itervalues() if j.channel is not None and j.connect]
+
+    def nb_joueurs(self) :
+        return len(self.liste)
 
     def envoi_all(self, mm) :
         for j in self.liste_actif() :
