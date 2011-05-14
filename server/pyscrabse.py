@@ -29,19 +29,23 @@ class main():
     def __init__(self, options) :
         self.options = options
         self.dic = dico.dico(self.options.dico)
+        self.categ_vote = ('restart', 'next', 'chrono')
+        self.init_game()
+
+    def init_game(self) :
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
         self.tirage = tirage.tirage("")
         self.tour_on = False
+        self.partie_on = False
         self.points_top = 0
         self.decrement = 1
-        self.categ_vote = ('restart', 'next', 'chrono')
         self.votes = {}
         self.votants = {}
         self.init_vote()
-        self.stop = False
 
     def debut_game(self, attente=2) :
+        self.partie_on = True
         self.pa = partie.partie(self.options)
         self.options.game = None
         if self.options.log :
@@ -92,7 +96,7 @@ class main():
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         if self.options.log :
             self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
-        print("%s - %s" % (self.coord_mot_top, self.mot_top))
+        print("%d/%d : %s - %s" % (self.jo.nb_actifs(), self.jo.nb_joueurs(), self.coord_mot_top, self.mot_top))
         self.gr.pose(self.coord_mot_top, self.mot_top)
         message = self.jo.score_fin_tour(self.pts_mot_top)
         if message != "" :
@@ -110,6 +114,7 @@ class main():
         if self.jo.nb_actifs() > 0  :
             self.current_call = reactor.callLater(1, self.debut_game, self.options.attente)
         else :
+            self.init_game()
             print "En attente"
 
     def traite(self, channel, dump) :
@@ -121,8 +126,9 @@ class main():
             proto_serv = 3
             proto_client = mm.param[0]
             ret = self.jo.add_joueur(nick, proto_client, channel)
-            if self.jo.nb_actifs() :
-                self.current_call = reactor.callLater(1, self.debut_game, self.options.attente)
+            if self.jo.nb_actifs() == 1 and self.partie_on == False :
+                self.cancel_call()
+                self.current_call = reactor.callLater(0, self.debut_game, self.options.inter)
             if ret == 1 :
                 m = msg.msg("connect",(1,"Connexion OK", proto_serv))
                 channel.envoi(m)
@@ -182,6 +188,8 @@ class main():
             elt.text = str(self.gr)
             elt = ET.SubElement(tree, "tour_on")
             elt.text = str(self.tour_on)
+            elt = ET.SubElement(tree, "partie_on")
+            elt.text = str(self.partie_on)
             elt = ET.SubElement(tree, "tirage")
             if self.tour_on :
                 elt.text = self.tirage.get_mot()
