@@ -19,7 +19,7 @@ import jeton
 import msg
 import net
 
-from twisted.internet import reactor
+from twisted.internet import reactor, _threadedselect
 
 class App(wx.App):
     def OnInit(self) :
@@ -48,9 +48,11 @@ class App(wx.App):
         self.net = net.ScrabbleFactory(self, self.nick)
         reactor.connectTCP(self.host, self.port, self.net)
 
-    def OnExit(self) :
+    def exit(self, event) :
         self.onExit = True
-        reactor.stop()
+        reactor._stopping = True
+        reactor.callFromThread(_threadedselect.ThreadedSelectReactor.stop, reactor)
+
 
 ## Gestion des évenements clavier
     def OnKey(self, e) :

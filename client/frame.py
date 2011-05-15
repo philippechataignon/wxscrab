@@ -27,7 +27,7 @@ class frame(wx.Frame):
         self.max_props = app.settings["max_props"]
         self.tour = 0
         fill = s["size_fill"]
-        self.Bind(wx.EVT_CLOSE, self.quit)
+        self.Bind(wx.EVT_CLOSE, self.app.exit)
 
         #Creation et dessin du timer
         timer_sizer  = self.cree_box_sizer("Temps")
@@ -106,7 +106,7 @@ class frame(wx.Frame):
 
             menu1 = wx.Menu()
             menu1.Append(101,"Quitter\tCtrl-Q")
-            self.Bind(wx.EVT_MENU, self.quit, id=101)
+            self.Bind(wx.EVT_MENU, self.app.exit, id=101)
 
             menubar.Append(menu1,"Fichier")
             menupol = wx.Menu()
@@ -255,9 +255,6 @@ class frame(wx.Frame):
             license = f.read()
         info.License = license
         wx.AboutBox(info)
-
-    def quit(self,e) :
-        self.app.OnExit()
 
 # Fonctions accés
 
