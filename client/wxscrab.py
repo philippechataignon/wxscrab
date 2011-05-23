@@ -90,9 +90,9 @@ class App(wx.App):
             g.traite_keycode(chr(l))
 
 ## Fonctions basiques
-    def envoi(self, txt) :
-        txt.set_id(self.nick)
-        self.net.envoi_net(txt)
+    def envoi(self, msg) :
+        msg.set_nick(self.nick)
+        self.net.envoi_net(msg)
 
     def envoi_mot(self) :
         "Envoie le mot courant au serveur"
@@ -110,7 +110,6 @@ class App(wx.App):
 ## Traitement des messages reçus
     def traite(self, dump) :
         m = msg.msg(dump=dump)
-        # print "Traite %s %s %s" % (m.cmd, m.param, m.id)
         f = self.frame
         g = f.grille
         t = f.tirage
@@ -134,13 +133,13 @@ class App(wx.App):
 
         if m.cmd == 'info' :
             txt = m.param
-            id  = m.id
-            if id is None :
+            nick  = m.nick
+            if nick is None :
                 self.info_serv(txt)
-            elif id == "" :
+            elif nick == "" :
                 self.info_serv(txt, wx.BLUE)
             else :
-                self.info_serv("[%s] %s" % (id, txt), wx.NamedColor("DARK GREEN"))
+                self.info_serv("[%s] %s" % (nick, txt), wx.NamedColor("DARK GREEN"))
         elif m.cmd == 'tirage' :
             self.score.Show(False)
             self.son.play("debut")

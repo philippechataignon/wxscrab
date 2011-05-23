@@ -8,28 +8,27 @@ list_cmd = ("propo", "joueur", "chat", "tick",
     "new", "score", "tirage", "valid", "info", "infojoueur",
     "vote", "okvote",
     "askall", "all",
+    "serverok",
     )
 
 class msg :
-    def __init__(self, cmd = None, param=None, id=None, dump=None) :
+    def __init__(self, cmd = None, param=None, nick=None, dump=None) :
         if dump is None :
-            if cmd in list_cmd :
-                self.cmd = cmd
-            else :
-                raise TypeError(cmd)
-            self.id = id
+            #assert cmd in list_cmd, "Msg cmd hors liste"
+            self.cmd = cmd
+            self.nick = nick
             self.param = param
         else :
-            self.cmd, self.param, self.id = json.loads(dump)
+            self.cmd, self.param, self.nick = json.loads(dump)
 
     def __str__(self) :
-        return " - ".join((self.cmd, repr(self.param), repr(self.id)))
+        return " - ".join((self.cmd, repr(self.param), repr(self.nick)))
 
-    def set_id(self, id) :
-        self.id = id
+    def set_nick(self, nick) :
+        self.nick = nick
 
     def dump(self) :
-        return json.dumps([self.cmd, self.param, self.id])
+        return json.dumps([self.cmd, self.param, self.nick])
 
 if __name__ == '__main__' :
     m = msg("chat", [0, 2], "philippe")

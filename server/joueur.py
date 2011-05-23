@@ -159,28 +159,26 @@ class joueurs :
             last_points, last_rang = j.points_total, j.rang_total 
             rg += 1
 
+        l_msg = []
         if len(liste_top) == 0 :
             if len(liste_best) > 0 :
-                txt += "Meilleur score (%d points) : " % liste_best[0].points_tour
-                for j in liste_best :
-                    txt += "%s, " % j.nick
-                txt = txt[:-2]+"\n"
+                txt = "Meilleur score (%d points) : %s" % (liste_best[0].points_tour, 
+                        self.l_comma(liste_best))
+                l_msg.append(txt)
         elif len(liste_top) == 1 :
             liste_top[0].nb_solo += 1
-            txt += "%s a fait un solo\n" % liste_top[0].nick 
+            txt = "%s a fait un solo" % liste_top[0].nick 
+            l_msg.append(txt)
         elif len(liste_top) > 0 :
-            txt += "Top réalisé par : "
-            for j in liste_top :
-                txt += "%s, " % j.nick
-            txt = txt[:-2]+"\n"
-
+            txt = "Top réalisé par : %s " % self.l_comma(liste_top)
+            l_msg.append(txt)
         if len(liste_bulle) >= 1 :
-            txt += "Bulle pour : "
-            for j in liste_bulle :
-                txt += "%s, " % j.nick
-            txt = txt[:-2]+"\n"
+            txt = "Bulle pour : %s" % self.l_comma(liste_bulle)
+            l_msg.append(txt)
+        return "\n".join(l_msg)
 
-        return txt
+    def l_comma(self, liste) :
+        return ", ".join(sorted([j.nick for j in liste]))
 
     def tableau_score(self) :
         tree = ET.Element("score")

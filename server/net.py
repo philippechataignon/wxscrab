@@ -4,10 +4,15 @@ from twisted.internet import reactor
 from twisted.internet.protocol import ServerFactory, Protocol
 from twisted.internet.protocol import Protocol, Factory
 from twisted.protocols import basic
+import msg
+
+PROTOCOL = 3
 
 class ScrabbleProtocol(basic.NetstringReceiver):
     def connectionMade(self):
         print "Connect %s" % self.transport.getPeer()
+        m = msg.msg("serverok", (PROTOCOL,))
+        self.envoi(m)
 
     def connectionLost(self, reason):
         self.factory.parent.deconnect(self)

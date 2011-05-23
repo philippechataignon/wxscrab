@@ -15,6 +15,7 @@ import msg
 import grille
 import tirage
 import coord
+import net
 
 class Stop(Exception) :
     pass
@@ -120,10 +121,9 @@ class main():
     def traite(self, channel, dump) :
         mm = msg.msg(dump=dump)
         c = mm.cmd
-        nick  = mm.id
-        # print "Traite %s %s %s" % (mm.cmd, mm.param, mm.id)
+        nick  = mm.nick
         if c == 'joueur' :
-            proto_serv = 3
+            proto_serv = net.PROTOCOL
             proto_client = mm.param[0]
             ret = self.jo.add_joueur(nick, proto_client, channel)
             if self.jo.nb_actifs() == 1 and self.partie_on == False :
