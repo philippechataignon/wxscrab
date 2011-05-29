@@ -40,7 +40,8 @@ class net(asyncore.dispatcher):
             for packet in self.decoder.feed(data):
                 if self.app.settings['debug_net'] :
                     print "<- %s" % packet
-                self.app.traite(packet)
+                m = msg.msg(dump=packet)
+                self.app.traite(m)
 
     def writable(self):
         return len(self.send_list) > 0
@@ -64,7 +65,7 @@ class net(asyncore.dispatcher):
 
     def envoi(self, m):
         txt = netstring.encode(m.dump())
-        self.send_list.append(netstring.encode(m.dump()))
+        self.send_list.append(txt)
 
     def watchnet(self, e) :
         asyncore.poll()
