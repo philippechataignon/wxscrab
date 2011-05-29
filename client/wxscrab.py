@@ -19,8 +19,6 @@ import jeton
 import msg
 import net
 
-from twisted.internet import reactor, _threadedselect
-
 class App(wx.App):
     def OnInit(self) :
         wx.InitAllImageHandlers()
@@ -45,14 +43,13 @@ class App(wx.App):
 
     def lance_net(self) :
         # Appelé en sortie de la dlgconn
-        self.net = net.ScrabbleFactory(self, self.nick)
-        reactor.connectTCP(self.host, self.port, self.net)
+        self.net  = net.net(self, self.host, self.port)
+        self.t1.Start(100)
+        self.Bind(wx.EVT_TIMER, self.net.watchnet)
 
     def exit(self, event) :
-        self.onExit = True
-        reactor._stopping = True
-        reactor.callFromThread(_threadedselect.ThreadedSelectReactor.stop, reactor)
-
+        self.t1.Stop()
+        self.frame.Destroy()
 
 ## Gestion des évenements clavier
     def OnKey(self, e) :
@@ -92,7 +89,7 @@ class App(wx.App):
 ## Fonctions basiques
     def envoi(self, txt) :
         txt.set_id(self.nick)
-        self.net.envoi_net(txt)
+        self.net.envoi(txt)
 
     def envoi_mot(self) :
         "Envoie le mot courant au serveur"
@@ -114,6 +111,8 @@ class App(wx.App):
         f = self.frame
         g = f.grille
         t = f.tirage
+        if m.cmd == 'serverok' :
+            self.info_serv("Serveur OK", wx.NamedColor("DARK GREEN"))
         if m.cmd == 'connect' :
             if m.param[0] == 0 :
                 utils.errordlg(m.param[1],"Erreur : nom existant")
