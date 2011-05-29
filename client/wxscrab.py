@@ -43,8 +43,8 @@ class App(wx.App):
 
     def lance_net(self) :
         # Appelé en sortie de la dlgconn
-        self.net  = net.net(self, self.host, self.port)
         self.t1.Start(100)
+        self.net  = net.net(self, self.host, self.port)
         self.Bind(wx.EVT_TIMER, self.net.watchnet)
 
     def exit(self, event) :

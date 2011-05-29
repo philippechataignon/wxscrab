@@ -20,15 +20,17 @@ class net(asyncore.dispatcher):
         self.decoder = netstring.Decoder()
         self.send_list = deque()
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        #try :
-        self.connect((host, port))
-        #except socket.error, (errno, errmsg) :
-        #    utils.errordlg(errmsg, "Erreur de connexion")
+        try :
+            self.connect((host, port))
+        except socket.error, (errno, errmsg) :
+            utils.errordlg(errmsg, "Erreur de connexion")
+            self.app.exit(None)
 
     def handle_connect(self):
+        self.connected = True
         if self.app.settings['debug_net'] :
-            print "connect"
-        protocol = 4
+            print "Connect"
+        protocol = 3
         m = msg.msg("joueur", (protocol, self.app.email), self.app.nick)
         self.envoi(m)
 
@@ -41,7 +43,6 @@ class net(asyncore.dispatcher):
                 self.app.traite(packet)
 
     def writable(self):
-        print len(self.send_list) > 0
         return len(self.send_list) > 0
 
     def handle_write(self):
@@ -53,12 +54,13 @@ class net(asyncore.dispatcher):
     #def handle_expt(self):
     #    self.close()
 
-    #def handle_close(self):
-    #    self.close()
+    def handle_close(self):
+        utils.errordlg("Connexion perdue", "Erreur réseau")
+        self.close()
 
     def handle_error(self):
+        utils.errordlg("Erreur socket", "Erreur réseau")
         self.close()
-        utils.errordlg("handle_error", "Erreur socket")
 
     def envoi(self, m):
         txt = netstring.encode(m.dump())
