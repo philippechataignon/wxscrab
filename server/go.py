@@ -37,7 +37,7 @@ parser.add_option("-l", "--log", dest="log", action="store_true", help="crée un
 g = pyscrabse.main(options)
 factory = net.ScrabbleFactory(g)
 factory.protocol = net.ScrabbleProtocol
-reactor.callLater(0, g.debut_game)
+reactor.callWhenRunning(g.debut_game, options.attente)
 reactor.listenTCP(options.port, factory)
 print "Lancement reactor"
 reactor.run()
