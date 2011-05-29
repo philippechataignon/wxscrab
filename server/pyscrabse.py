@@ -37,6 +37,7 @@ class main():
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
         self.tirage = tirage.tirage("")
+        self.en_attente = False
         self.tour_on = False
         self.partie_on = False
         self.points_top = 0
@@ -46,6 +47,7 @@ class main():
         self.init_vote()
 
     def debut_game(self, attente=2) :
+        self.en_attente = False
         self.partie_on = True
         self.pa = partie.partie(self.options)
         self.options.game = None
@@ -117,6 +119,7 @@ class main():
         else :
             self.init_game()
             print "En attente"
+            self.en_attente = True
 
     def traite(self, channel, dump) :
         mm = msg.msg(dump=dump)
@@ -126,9 +129,6 @@ class main():
             proto_serv = net.PROTOCOL
             proto_client = mm.param[0]
             ret = self.jo.add_joueur(nick, proto_client, channel)
-            if self.jo.nb_actifs() == 1 and self.partie_on == False :
-                self.cancel_call()
-                self.current_call = reactor.callLater(0, self.debut_game, self.options.inter)
             if ret == 1 :
                 m = msg.msg("connect",(1,"Connexion OK", proto_serv))
                 channel.envoi(m)
