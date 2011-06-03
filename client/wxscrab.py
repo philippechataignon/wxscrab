@@ -113,7 +113,9 @@ class App(wx.App):
         f = self.frame
         g = f.grille
         t = f.tirage
-        if m.cmd == 'connect' :
+        if m.cmd == 'serverok' :
+            self.info_serv("Serveur OK", wx.NamedColor("DARK GREEN"))
+        elif m.cmd == 'connect' :
             if m.param[0] == 0 :
                 utils.errordlg(m.param[1],"Erreur : nom existant")
                 f.Close()
@@ -131,7 +133,7 @@ class App(wx.App):
         if not self.connected :
             return
 
-        if m.cmd == 'info' :
+        elif m.cmd == 'info' :
             txt = m.param
             nick  = m.nick
             if nick is None :
@@ -175,7 +177,6 @@ class App(wx.App):
             g.vide_grille()
             self.envoi(msg.msg("askinfo"))
             self.envoi(msg.msg("askscore"))
-
         elif m.cmd == 'score' :
             self.score.Destroy()
             self.score = frame_score.frame_score(f, m.param)
