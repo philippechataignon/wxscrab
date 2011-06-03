@@ -1,4 +1,4 @@
-﻿#! /usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 import sys
@@ -12,6 +12,8 @@ from collections import deque
 import msg
 import netstring
 import utils
+
+PROTOCOL = 3
 
 class net(asyncore.dispatcher):
     def __init__(self, app, host, port):
@@ -30,8 +32,7 @@ class net(asyncore.dispatcher):
         self.connected = True
         if self.app.settings['debug_net'] :
             print "Connect"
-        protocol = 3
-        m = msg.msg("joueur", (protocol, self.app.email), self.app.nick)
+        m = msg.msg("joueur", (PROTOCOL, self.app.email), self.app.nick)
         self.envoi(m)
 
     def handle_read(self):
