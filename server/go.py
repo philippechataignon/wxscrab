@@ -5,8 +5,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf8")
 
-from twisted.internet import epollreactor
-epollreactor.install()
+if sys.platform[:5] == 'linux' :
+    from twisted.internet import epollreactor
+    epollreactor.install()
 
 from twisted.internet import reactor
 
