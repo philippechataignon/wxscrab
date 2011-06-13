@@ -5,12 +5,11 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf8")
 
-from twisted.internet import wxreactor
-wxreactor.install()
-from twisted.internet import reactor
+#from twisted.internet import wxreactor
+#wxreactor.install()
+#from twisted.internet import reactor
 import wx
 import wxscrab
 
 app = wxscrab.App()
-reactor.registerWxApp(app)
-reactor.run()
+app.MainLoop()
