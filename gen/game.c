@@ -540,9 +540,9 @@ Game_getsearchedfirstcoord(Game g,int num,char buff[COOR_SIZE_MAX])
     }
     r = Results_get(g->searchresults,num);
     if (Round_dir(r) == HORIZONTAL) {
-        snprintf(buff,10,"%c",Round_row(r) + 'A' - 1);
+        snprintf(buff,COOR_SIZE_MAX,"%c",Round_row(r) + 'A' - 1);
     } else {
-        snprintf(buff,10,"%d",Round_column(r));
+        snprintf(buff,COOR_SIZE_MAX,"%d",Round_column(r));
     }
 }
 
@@ -556,9 +556,9 @@ Game_getsearchedsecondcoord(Game g, int num, char buff[COOR_SIZE_MAX])
     }
     r = Results_get(g->searchresults,num);
     if (Round_dir(r) == HORIZONTAL) {
-        snprintf(buff,10,"%d",Round_column(r));
+        snprintf(buff,COOR_SIZE_MAX,"%d",Round_column(r));
     } else {
-        snprintf(buff,10,"%c",Round_row(r) + 'A' - 1);
+        snprintf(buff,COOR_SIZE_MAX,"%c",Round_row(r) + 'A' - 1);
     }
 }
 
@@ -569,7 +569,7 @@ Game_getsearchedcoord(Game g, int num, char buff[COOR_SIZE_MAX])
     char c2[COOR_SIZE_MAX];
     Game_getsearchedfirstcoord(g,num,c1);
     Game_getsearchedsecondcoord(g,num,c2);
-    snprintf(buff,10,"%2s%2s",c1,c2);
+    snprintf(buff,COOR_SIZE_MAX,"%2s%2s",c1,c2);
 }
 
 int  

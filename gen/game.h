@@ -42,7 +42,7 @@ extern "C" {
   
 #define WORD_SIZE_MAX            16
 #define RACK_SIZE_MAX            10
-#define COOR_SIZE_MAX            6
+#define COOR_SIZE_MAX            5
 
   /*************************
    * Functions to create and destroy a game
