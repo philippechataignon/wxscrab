@@ -363,7 +363,7 @@ help()
     puts ("d'après Eliot - Antoine FRABOULET - sous license GPL") ;
     puts ("");
     puts ("Utilisation : gen_part [-d dictionnaire] [-n numéro] [-s seed] [-v] [-q] [-h]") ; 
-    puts ("        -d : fichier dawg contenant le dictionnaire (par défaut : ../dic/ods5.dawg)");
+    puts ("        -d : fichier dawg contenant le dictionnaire (par défaut : ../dic/ods6.dawg)");
     puts ("        -n : numéro de la partie à générer ; par défaut, utilise time(0)");
     puts ("        -s : seed, valeur de la variante  ; par défaut, 47482");
     puts ("        -q : n'imprime que les statistiques de la partie");
@@ -379,7 +379,7 @@ main(int argc, char *argv[])
     Game game ;
     Dictionary dic ;
     unsigned short int state[3] ;
-    static char* nomdic = "../dic/ods5.dawg" ;
+    static char* nomdic = "../dic/ods6.dawg" ;
     long int seed = time(0) ;
     int noprint = 0;
     int notiret = 0;
