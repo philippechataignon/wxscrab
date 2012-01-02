@@ -1,72 +1,46 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.append('../common')
-
-import asyncore
-import socket
-import json
-from collections import deque
-
+from twisted.internet import reactor
+from twisted.internet.protocol import ClientFactory, Protocol, Factory
+from twisted.protocols import basic
 import msg
-import netstring
 import utils
 
 PROTOCOL = 3
 
-class net(asyncore.dispatcher):
-    def __init__(self, app, host, port):
-        asyncore.dispatcher.__init__(self)
-        self.app = app
-        self.decoder = netstring.Decoder()
-        self.send_list = deque()
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        try :
-            self.connect((host, port))
-        except socket.error, (errno, errmsg) :
-            utils.errordlg(errmsg, "Erreur de connexion")
-            self.app.exit(None)
-
-    def handle_connect(self):
-        self.connected = True
-        if self.app.settings['debug_net'] :
-            print "Connect"
-        m = msg.msg("joueur", (PROTOCOL, self.app.email), self.app.nick)
+class ScrabbleProtocol(basic.NetstringReceiver):
+    def connectionMade(self):
+        self.factory.channel = self
+        m = msg.msg("joueur", (PROTOCOL, self.factory.app.email), self.factory.app.nick)
         self.envoi(m)
 
-    def handle_read(self):
-        data = self.recv(4096)
-        if data :
-            for packet in self.decoder.feed(data):
-                if self.app.settings['debug_net'] :
-                    print "<- %s" % packet
-                m = msg.msg(dump=packet)
-                self.app.traite(m)
+    def stringReceived(self, mm):
+        if self.factory.app.settings['debug_net'] :
+            print "<- %s" % mm
+        m = msg.msg(dump=mm)
+        self.factory.app.traite(m)
 
-    def writable(self):
-        return len(self.send_list) > 0
+    def envoi(self, mm):
+        if self.factory.app.settings['debug_net'] :
+            print "-> %s" % mm
+        self.sendString(mm.dump())
 
-    def handle_write(self):
-        out = self.send_list.popleft()
-        if self.app.settings['debug_net'] :
-            print "-> %s" % out
-        self.sendall(out)
+class ScrabbleFactory(ClientFactory):
+    protocol = ScrabbleProtocol
+    def __init__(self, app, nick):
+        self.nick = nick
+        self.app = app
+        self.channel = None
 
-    #def handle_expt(self):
-    #    self.close()
+    def clientConnectionFailed(self, connector, reason):
+        utils.errordlg("Le serveur ne répond pas", "Connexion impossible")
+        reactor.stop()
 
-    def handle_close(self):
-        utils.errordlg("Connexion perdue", "Erreur réseau")
-        self.close()
+    #def clientConnectionLost(self, connector, reason):
+    #    if not self.app.onExit :
+    #        utils.errordlg("La connexion avec le serveur s'est interrompue", "Connexion perdue")
 
-    #def handle_error(self):
-    #    utils.errordlg("Erreur socket", "Erreur réseau")
-    #    self.close()
-
-    def envoi(self, m):
-        txt = netstring.encode(m.dump())
-        self.send_list.append(txt)
-
-    def watchnet(self, e) :
-        asyncore.poll()
+    def envoi(self, mm) :
+        if self.channel is not None :
+            self.channel.envoi(mm)

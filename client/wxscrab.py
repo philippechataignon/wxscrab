@@ -7,6 +7,8 @@ sys.path.append('../common')
 import wx
 import xml.etree.ElementTree as ET
 
+from twisted.internet import reactor
+
 import settings
 import frame
 import frame_score
@@ -18,6 +20,7 @@ import reliquat
 import jeton
 import msg
 import net
+
 
 class App(wx.App):
     def OnInit(self) :
@@ -43,13 +46,22 @@ class App(wx.App):
 
     def lance_net(self) :
         # Appelé en sortie de la dlgconn
-        self.t1.Start(100)
-        self.net  = net.net(self, self.host, self.port)
-        self.Bind(wx.EVT_TIMER, self.net.watchnet)
+        self.net = net.ScrabbleFactory(self, self.nick)
+        reactor.connectTCP(self.host, self.port, self.net)
 
-    def exit(self, event) :
-        self.t1.Stop()
+    def exit(self, evt) :
+        # reactor.stop()
         self.frame.Destroy()
+
+#    def lance_net(self) :
+#        # Appelé en sortie de la dlgconn
+#        self.t1.Start(100)
+#        self.net  = net.net(self, self.host, self.port)
+#        self.Bind(wx.EVT_TIMER, self.net.watchnet)
+#
+#    def exit(self, event) :
+#        self.t1.Stop()
+#        self.frame.Destroy()
 
 ## Gestion des évenements clavier
     def OnKey(self, e) :
