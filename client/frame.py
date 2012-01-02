@@ -27,6 +27,7 @@ class frame(wx.Frame):
         self.max_props = app.settings["max_props"]
         self.tour = 0
         fill = s["size_fill"]
+        self.Bind(wx.EVT_KEY_DOWN, self.app.OnKey)
         self.Bind(wx.EVT_CLOSE, self.app.exit)
 
         #Creation et dessin du timer
@@ -62,8 +63,9 @@ class frame(wx.Frame):
         self.buttonpose.Enable(False)
         self.buttonpose.SetDefault() # important pour Windows pour capter la touche Entrée
         props_sizer.Add(self.buttonpose, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
-        self.Bind(wx.EVT_COMBOBOX, self.props_click, self.props)
-        self.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
+        self.props.Bind(wx.EVT_COMBOBOX, self.props_click, self.props)
+        self.buttonpose.Bind(wx.EVT_BUTTON, self.pose, self.buttonpose)
+        self.buttonpose.Bind(wx.EVT_KEY_DOWN, self.app.OnKey)
 
         #Creation box score
         score_sizer = self.cree_box_sizer("Score", flag = wx.HORIZONTAL)
@@ -73,13 +75,13 @@ class frame(wx.Frame):
         score_sizer.Add(self.score, 1, wx.ALL, fill) 
         buttscore = wx.Button(self.panel, -1, "Scores", size=app.settings["size_button"])
         score_sizer.Add(buttscore, 0, wx.ALL|wx.ALIGN_RIGHT, fill) 
-        self.Bind(wx.EVT_BUTTON, self.show_score, buttscore)
+        buttscore.Bind(wx.EVT_BUTTON, self.show_score, buttscore)
 
         #Creation du chat
         chat_sizer = self.cree_box_sizer("Chat", flag = wx.HORIZONTAL)
         self.txtchatin = wx.TextCtrl(self.panel, -1, "", style=wx.TE_PROCESS_ENTER)
         chat_sizer.Add(self.txtchatin,1, wx.ALL, fill)
-        self.Bind(wx.EVT_TEXT_ENTER, self.chat_enter, self.txtchatin)
+        self.txtchatin.Bind(wx.EVT_TEXT_ENTER, self.chat_enter, self.txtchatin)
 
         # cadres boutons 
         bouton_sizer = self.cree_box_sizer("Commandes", flag = wx.HORIZONTAL)
@@ -97,7 +99,7 @@ class frame(wx.Frame):
         for label, handler in boutons :
             bouton = wx.Button(self.panel, label=label, size=app.settings["size_button"])
             bouton_in_sizer.Add(bouton, flag = wx.ALIGN_CENTER)
-            self.Bind(wx.EVT_BUTTON, handler, bouton)
+            bouton.Bind(wx.EVT_BUTTON, handler, bouton)
         bouton_sizer.Add(bouton_in_sizer, proportion=1, flag = wx.EXPAND)
 
         #Barre de menu
