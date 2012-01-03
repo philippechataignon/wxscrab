@@ -6,6 +6,7 @@ import xml.etree.cElementTree as ET
 
 from twisted.internet import reactor
 from twisted.internet.error import AlreadyCalled, AlreadyCancelled
+from twisted.internet.task import LoopingCall, deferLater
 
 import dico
 import partie
@@ -42,6 +43,7 @@ class main():
         self.partie_on = False
         self.points_top = 0
         self.decrement = 1
+        self.chrono_on = False
         self.votes = {}
         self.votants = {}
         self.init_vote()
@@ -57,13 +59,13 @@ class main():
         self.points_top = 0
         self.jo.score_raz()
         self.info("Prochaine partie dans %d secondes" % attente)
-        self.current_call = reactor.callLater(attente, self.first_tour)
+        reactor.callLater(attente, self.first_tour)
 
     def first_tour(self) :
         self.jo.envoi_all(msg.msg("new"))
         print "-"*20, self.pa.get_nom_partie(),"-"*20
         print self.options
-        self.current_call = reactor.callLater(0, self.debut_tour)
+        reactor.callWhenRunning(self.debut_tour)
 
     def debut_tour(self) :
         if self.pa.liste :
@@ -83,15 +85,17 @@ class main():
         self.jo.envoi_all(m)
         self.tour_on = True
         self.init_vote()
-        self.current_call = reactor.callLater(0, self.decr_chrono, self.options.chrono)
+        self.chrono = self.options.chrono
+        self.loop_chrono = LoopingCall(self.decr_chrono)
+        self.chrono_on = True
+        self.loop_chrono.start(1)
 
-    def decr_chrono(self, chrono) :
-        self.jo.envoi_all(msg.msg("chrono", chrono))
-        self.chrono = chrono - self.decrement
-        if self.chrono >= 0 :
-            self.current_call = reactor.callLater(1, self.decr_chrono, self.chrono)
-        else :
-            self.current_call = reactor.callLater(1, self.fin_tour)
+    def decr_chrono(self) :
+        self.jo.envoi_all(msg.msg("chrono", self.chrono))
+        self.chrono -= 1
+        if self.chrono < 0 :
+            self.loop_chrono.stop()
+            reactor.callWhenRunning(self.fin_tour)
             
     def fin_tour(self) :
         self.tour_on = False
@@ -106,16 +110,16 @@ class main():
             self.info(message)
         self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
         if self.pa.liste :
-            self.current_call = reactor.callLater(self.options.inter, self.debut_tour)
+            reactor.callLater(self.options.inter, self.debut_tour)
         else :
-            self.current_call = reactor.callLater(0, self.fin_partie)
+            reactor.callWhenRunning(self.fin_partie)
 
     def fin_partie(self) :
         self.info("Fin de la partie")
         if self.options.log :
             self.log.fin_partie()
         if self.jo.nb_actifs() > 0  :
-            self.current_call = reactor.callLater(1, self.debut_game, self.options.attente)
+            reactor.callWhenRunning(self.debut_game, self.options.attente)
         else :
             self.init_game()
             print "En attente"
@@ -225,27 +229,22 @@ class main():
                 self.jo.envoi_all(m)
         if self.jo.nb_actifs() >= 1 and self.votes['restart'] == len(self.jo) :
             # vote restart accepté
-            self.cancel_call()
-            self.current_call = reactor.callLater(0, self.debut_game)
+            self.loop_chrono.stop()
+            reactor.callWhenRunning(self.debut_game)
         if self.jo.nb_actifs() >= 1 and self.votes['next'] == len(self.jo) :
             # vote next accepté
-            self.cancel_call()
+            self.loop_chrono.stop()
             self.jo.envoi_all(msg.msg("chrono", 0))
-            self.current_call = reactor.callLater(0, self.fin_tour)
+            reactor.callWhenRunning(self.fin_tour)
         if self.votes['chrono'] >= 1:
-            self.decrement = 1 - self.decrement
-            if self.decrement == 0 :
+            if self.chrono_on :
                 self.info("Chrono arrété")
+                self.loop_chrono.stop()
             else :
                 self.info("Chrono reparti")
+                self.loop_chrono.start(1)
+            self.chrono_on = not self.chrono_on
             self.raz_vote('chrono')
-
-    def cancel_call(self) :
-        # annule le callLater en cours
-        try :
-            self.current_call.cancel()
-        except (AlreadyCalled, AlreadyCancelled) :
-            pass
 
     def init_vote(self) :
         for categ in self.categ_vote :

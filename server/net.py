@@ -15,8 +15,7 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         self.envoi(m)
         app = self.factory.parent
         if app.en_attente :
-            app.cancel_call()
-            app.current_call = reactor.callLater(0, app.debut_game, app.options.inter)
+            reactor.callWhenRunning(app.debut_game, app.options.inter)
 
     def connectionLost(self, reason):
         self.factory.parent.deconnect(self)

@@ -46,8 +46,8 @@ class joueurs :
 
     def envoi_all(self, mm) :
         for j in self.liste_actif() :
-            #j.channel.envoi(mm)
-            reactor.callLater(0, j.channel.envoi, mm)
+            j.channel.envoi(mm)
+            #reactor.callLater(0, j.channel.envoi, mm)
 
     def add_joueur(self, nick, proto, channel) :
         if nick in self.liste :

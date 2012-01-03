@@ -37,9 +37,9 @@ class ScrabbleFactory(ClientFactory):
         utils.errordlg("Le serveur ne répond pas", "Connexion impossible")
         reactor.stop()
 
-    #def clientConnectionLost(self, connector, reason):
-    #    if not self.app.onExit :
-    #        utils.errordlg("La connexion avec le serveur s'est interrompue", "Connexion perdue")
+    def clientConnectionLost(self, connector, reason):
+        if not self.app.onExit :
+            utils.errordlg("La connexion avec le serveur s'est interrompue", "Connexion perdue")
 
     def envoi(self, mm) :
         if self.channel is not None :

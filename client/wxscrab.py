@@ -7,7 +7,7 @@ sys.path.append('../common')
 import wx
 import xml.etree.ElementTree as ET
 
-from twisted.internet import reactor
+from twisted.internet import reactor,  _threadedselect
 
 import settings
 import frame
@@ -50,8 +50,9 @@ class App(wx.App):
         reactor.connectTCP(self.host, self.port, self.net)
 
     def exit(self, evt) :
-        # reactor.stop()
-        self.frame.Destroy()
+        self.onExit = True
+        reactor._stopping = True
+        reactor.callFromThread(_threadedselect.ThreadedSelectReactor.stop, reactor)
 
 #    def lance_net(self) :
 #        # Appelé en sortie de la dlgconn
