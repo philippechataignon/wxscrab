@@ -72,10 +72,7 @@ class grille :
         return "".join(m)
 
     def aff_erreur(self, erreur) :
-        if erreur in erreur_msg :
-            return erreur_msg[erreur]
-        else :
-            return "Erreur inconnue"
+        return erreur_msg.get(erreur, "Erreur inconnue")
 
     def case_prime(self, coord) :
         if coord.isOK():

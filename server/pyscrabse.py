@@ -5,8 +5,7 @@ sys.path.append('../common')
 import xml.etree.cElementTree as ET
 
 from twisted.internet import reactor
-from twisted.internet.error import AlreadyCalled, AlreadyCancelled
-from twisted.internet.task import LoopingCall, deferLater
+from twisted.internet.task import LoopingCall
 
 import dico
 import partie
@@ -32,9 +31,9 @@ class main():
         self.options = options
         self.dic = dico.dico(self.options.dico)
         self.categ_vote = ('restart', 'next', 'chrono')
-        self.init_game()
+        self.init_vars()
 
-    def init_game(self) :
+    def init_vars(self) :
         self.jo = joueur.joueurs()
         self.chrono = self.options.chrono
         self.tirage = tirage.tirage("")
@@ -69,8 +68,7 @@ class main():
 
     def debut_tour(self) :
         if self.pa.liste :
-            self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste[0]
-            del self.pa.liste[0]
+            self.tirage, self.coord_mot_top, self.mot_top, self.pts_mot_top, self.num_tour = self.pa.liste.pop(0)
         else :
             self.fin_partie()
         self.jo.score_tour_zero()
@@ -87,13 +85,15 @@ class main():
         self.init_vote()
         self.chrono = self.options.chrono
         self.loop_chrono = LoopingCall(self.decr_chrono)
-        self.chrono_on = True
         self.loop_chrono.start(1)
 
     def decr_chrono(self) :
         self.jo.envoi_all(msg.msg("chrono", self.chrono))
         self.chrono -= 1
-        if self.chrono < 0 :
+        if self.chrono >= 0 :
+            self.chrono_on = True
+        else :
+            self.chrono_on = False
             self.loop_chrono.stop()
             reactor.callWhenRunning(self.fin_tour)
             
@@ -121,7 +121,7 @@ class main():
         if self.jo.nb_actifs() > 0  :
             reactor.callWhenRunning(self.debut_game, self.options.attente)
         else :
-            self.init_game()
+            self.init_vars()
             print "En attente"
             self.en_attente = True
 

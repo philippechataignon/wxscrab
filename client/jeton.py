@@ -37,6 +37,7 @@ class jeton :
         return self.__lettre
 
     def set_lettre(self, lettre) :
+        assert self.is_joker(), "Change lettre d'un jeton non joker"
         self.__lettre = lettre
 
     def get_point(self) :
