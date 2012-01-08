@@ -1,8 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-
-from twisted.internet import reactor
-from twisted.internet.protocol import ClientFactory, Protocol, Factory
+from twisted.internet.protocol import ClientFactory, Protocol
 from twisted.protocols import basic
 import msg
 import utils
@@ -10,37 +8,43 @@ import utils
 PROTOCOL = 3
 
 class ScrabbleProtocol(basic.NetstringReceiver):
+    def __init__(self, app) :
+        self.app = app
+
     def connectionMade(self):
-        self.factory.channel = self
-        m = msg.msg("joueur", (PROTOCOL, self.factory.app.email), self.factory.app.nick)
+        m = msg.msg("joueur", (PROTOCOL, self.app.email), self.app.nick)
         self.envoi(m)
 
     def stringReceived(self, mm):
-        if self.factory.app.settings['debug_net'] :
+        if self.app.settings['debug_net'] :
             print "<- %s" % mm
         m = msg.msg(dump=mm)
-        self.factory.app.traite(m)
+        self.app.traite(m)
 
     def envoi(self, mm):
-        if self.factory.app.settings['debug_net'] :
+        if self.app.settings['debug_net'] :
             print "-> %s" % mm
         self.sendString(mm.dump())
 
-class ScrabbleFactory(ClientFactory):
-    protocol = ScrabbleProtocol
-    def __init__(self, app, nick):
-        self.nick = nick
+class ScrabbleFactory(ClientFactory) :
+    def __init__(self, app):
         self.app = app
-        self.channel = None
+
+    def buildProtocol(self, addr):
+        self.proto = ScrabbleProtocol(self.app)
+        return self.proto
 
     def clientConnectionFailed(self, connector, reason):
         utils.errordlg("Le serveur ne répond pas", "Connexion impossible")
-        reactor.stop()
+        self.app.exit()
 
     def clientConnectionLost(self, connector, reason):
         if not self.app.onExit :
             utils.errordlg("La connexion avec le serveur s'est interrompue", "Connexion perdue")
+            self.app.exit()
 
     def envoi(self, mm) :
-        if self.channel is not None :
-            self.channel.envoi(mm)
+        if self.proto is not None :
+            self.proto.envoi(mm)
+        elif self.app.settings['debug_net'] :
+            print "X Non ENVOI X : %s" % mm

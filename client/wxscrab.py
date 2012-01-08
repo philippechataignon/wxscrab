@@ -46,23 +46,13 @@ class App(wx.App):
 
     def lance_net(self) :
         # Appelé en sortie de la dlgconn
-        self.net = net.ScrabbleFactory(self, self.nick)
+        self.net = net.ScrabbleFactory(self)
         reactor.connectTCP(self.host, self.port, self.net)
 
-    def exit(self, evt) :
+    def exit(self, evt=None) :
         self.onExit = True
         reactor._stopping = True
         reactor.callFromThread(_threadedselect.ThreadedSelectReactor.stop, reactor)
-
-#    def lance_net(self) :
-#        # Appelé en sortie de la dlgconn
-#        self.t1.Start(100)
-#        self.net  = net.net(self, self.host, self.port)
-#        self.Bind(wx.EVT_TIMER, self.net.watchnet)
-#
-#    def exit(self, event) :
-#        self.t1.Stop()
-#        self.frame.Destroy()
 
 ## Gestion des évenements clavier
     def OnKey(self, e) :
