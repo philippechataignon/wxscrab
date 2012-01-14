@@ -17,45 +17,29 @@ import tirage
 import coord
 import net
 
-class Stop(Exception) :
-    pass
-
-class Restart(Exception) :
-    pass
-
-class Next(Exception) :
-    pass
-
 class main():
     def __init__(self, options) :
         self.options = options
         self.dic = dico.dico(self.options.dico)
-        self.categ_vote = ('restart', 'next', 'chrono')
-        self.init_vars()
-
-    def init_vars(self) :
         self.jo = joueur.joueurs()
-        self.chrono = self.options.chrono
-        self.tirage = tirage.tirage("")
-        self.en_attente = False
-        self.tour_on = False
-        self.partie_on = False
-        self.points_top = 0
-        self.decrement = 1
-        self.chrono_on = False
+        self.categ_vote = ('restart', 'next', 'chrono')
+        self.delta_calllater = 1
         self.votes = {}
         self.votants = {}
-        self.init_vote()
 
-    def debut_game(self, attente=2) :
-        self.en_attente = False
+    def debut_game(self, attente) :
         self.partie_on = True
+        self.tour_on = False
+        self.chrono_on = False
+        self.tirage = tirage.tirage("")
+        self.points_top = 0
+        self.chrono = self.options.chrono
+        self.init_vote()
         self.pa = partie.partie(self.options)
         self.options.game = None
         if self.options.log :
             self.log = logger.logger(self.pa.get_nom_partie())
         self.gr = grille.grille()
-        self.points_top = 0
         self.jo.score_raz()
         self.info("Prochaine partie dans %d secondes" % attente)
         reactor.callLater(attente, self.first_tour)
@@ -64,7 +48,7 @@ class main():
         self.jo.envoi_all(msg.msg("new"))
         print "-"*20, self.pa.get_nom_partie(),"-"*20
         print self.options
-        reactor.callWhenRunning(self.debut_tour)
+        reactor.callLater(self.delta_calllater, self.debut_tour)
 
     def debut_tour(self) :
         if self.pa.liste :
@@ -95,7 +79,7 @@ class main():
         else :
             self.chrono_on = False
             self.loop_chrono.stop()
-            reactor.callWhenRunning(self.fin_tour)
+            reactor.callLater(self.delta_calllater, self.fin_tour)
             
     def fin_tour(self) :
         self.tour_on = False
@@ -112,18 +96,17 @@ class main():
         if self.pa.liste :
             reactor.callLater(self.options.inter, self.debut_tour)
         else :
-            reactor.callWhenRunning(self.fin_partie)
+            reactor.callLater(self.delta_calllater, self.fin_partie)
 
     def fin_partie(self) :
         self.info("Fin de la partie")
         if self.options.log :
             self.log.fin_partie()
         if self.jo.nb_actifs() > 0  :
-            reactor.callWhenRunning(self.debut_game, self.options.attente)
+            reactor.callLater(self.delta_calllater, self.debut_game, self.options.attente)
         else :
-            self.init_vars()
+            self.partie_on = False
             print "En attente"
-            self.en_attente = True
 
     def traite(self, channel, dump) :
         mm = msg.msg(dump=dump)
@@ -230,20 +213,23 @@ class main():
         if self.jo.nb_actifs() >= 1 and self.votes['restart'] == len(self.jo) :
             # vote restart accepté
             self.loop_chrono.stop()
-            reactor.callWhenRunning(self.debut_game)
+            self.tour_on = False
+            self.debut_game(2)
         if self.jo.nb_actifs() >= 1 and self.votes['next'] == len(self.jo) :
             # vote next accepté
-            self.loop_chrono.stop()
+            if self.chrono_on :
+                self.loop_chrono.stop()
             self.jo.envoi_all(msg.msg("chrono", 0))
-            reactor.callWhenRunning(self.fin_tour)
+            self.fin_tour()
         if self.votes['chrono'] >= 1:
             if self.chrono_on :
                 self.info("Chrono arrété")
                 self.loop_chrono.stop()
+                self.chrono_on = False
             else :
                 self.info("Chrono reparti")
                 self.loop_chrono.start(1)
-            self.chrono_on = not self.chrono_on
+                self.chrono_on = True
             self.raz_vote('chrono')
 
     def init_vote(self) :

@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
+from twisted.internet import reactor
 from twisted.internet.protocol import ClientFactory, Protocol
 from twisted.protocols import basic
 import msg
@@ -19,7 +20,7 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         if self.app.settings['debug_net'] :
             print "<- %s" % mm
         m = msg.msg(dump=mm)
-        self.app.traite(m)
+        reactor.callLater(0, self.app.traite, m)
 
     def envoi(self, mm):
         if self.app.settings['debug_net'] :
