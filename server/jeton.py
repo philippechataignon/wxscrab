@@ -16,14 +16,13 @@ class jeton :
     """
     def __init__(self, lettre) :
         self.lettre = lettre
-        if self.lettre in pts :
-            self.point = pts[self.lettre]
-        else :
-            self.point = 0
+        self.point = pts.get(self.lettre, 0)
 
     def __str__(self) :
         return self.lettre
 
 if __name__ == "__main__" :
     j = jeton('J') 
+    print j,j.lettre, j.point
+    j = jeton('j') 
     print j,j.lettre, j.point

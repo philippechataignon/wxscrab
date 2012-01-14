@@ -132,23 +132,23 @@ class grille :
         t = w_tirage.copy()                 # copie du tirage pour travailler 
 
         if not w_coord.isOK() :             # si coordonnée en erreur
-            return 3,False
+            return 3
 
         if len(w_mot) < 2 :                 # si le mot est trop court
-            return 8,False
+            return 8
 
         # case précédente occupée
         if self.case_nonvide(w_coord.prev()) :
-            return 10,False
+            return 10
 
         if w_coord.is_bord_droit() :               # on part d'un bord
-            return 12,False
+            return 12
 
         i_coord = w_coord            # i_coord : indice de coordonnée courante
 
         for l in w_mot :
             if not i_coord.isOK() :         # coord en erreur
-                return 7,False
+                return 7
 
             # positionne passecentrale si on passe en H8
             if i_coord.is_centre() : 
@@ -161,7 +161,7 @@ class grille :
                 if t.retire(l) == True :
                     newlettre = True 
                 else:
-                    return 2, False
+                    return 2
 
                 # si la case dessus ou dessous est occupée, on a un soutien
                 if self.case_nonvide(i_coord.haut()) or self.case_nonvide(i_coord.bas()) :
@@ -172,26 +172,29 @@ class grille :
                 # on vérifie la compatibilité entre la lettre déjà présente
                 # et celle qui est dans le mot proposé
                 if l.upper() != self.case_coord(i_coord).jeton.lettre.upper() :
-                    return 1, False
+                    return 1
                 soutien = True 
             # case suivante
             i_coord = i_coord.next()
 
         if self.case_nonvide(i_coord) :         #lettre sur la case suivante
-            return 11,False
+            return 11
 
         if not newlettre :                      # pas de nouvelles lettres
-            return 4,False
+            return 4
 
         if self.vide() :                        # premier tour
             if not passecentrale :              # pas de passage par case centrale au tour 1
-                return 6 ,False
+                return 6
         else :                                  # tour ordinaire
             if not soutien  :                   # pas de soutien sur une grille non vide
-                return 5,False
+                return 5
 
         scrab = w_tirage.isPlein() and t.isVide()     # scrabble réalisé
-        return 0, scrab                         # pas d'erreur
+        if scrab :
+            return -1                           # pas d'erreur et scrabble
+        else :
+            return 0                           # pas d'erreur
 
     def point (self, w_coord , w_mot , scrab , dic) :
         """
@@ -302,8 +305,8 @@ if __name__ == '__main__' :
     m = "TATES"
     controle = g.controle(c, m, t)
     print controle
-    if controle[0] == 0 :
-        print g.point(c, m, controle[1], d)
+    if controle <= 0 :
+        print g.point(c, m, controle, d)
     g.pose(c, m)
     print g
 
@@ -312,7 +315,7 @@ if __name__ == '__main__' :
     m = "EPATES"
     controle = g.controle(c, m, t)
     print controle
-    if controle[0] == 0 :
-        print g.point(c, m, controle[1], d)
+    if controle <= 0 :
+        print g.point(c, m, controle, d)
     g.pose(c, m)
     print g

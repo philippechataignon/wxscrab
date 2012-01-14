@@ -57,10 +57,10 @@ if __name__ == '__main__' :
     o = options()
     pa = partie(o)
     for t, c, m, pts, tour in pa.liste :
-        controle, scrab = g.controle(c, m, t)
+        controle = g.controle(c, m, t)
         print tour, c,m,t, controle
-        if controle == 0 :
-            print pts, g.point(c, m, scrab, d)
+        if controle <= 0 :
+            print pts, g.point(c, m, controle == -1, d)
         else:
             print ">>> Controle non NUL"
         g.pose(c, m)

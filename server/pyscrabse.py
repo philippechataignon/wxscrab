@@ -141,9 +141,9 @@ class main():
             mot = mm.param[1]
             tir = self.tirage
             coo = coord.coord(coo_str=coo_str)
-            controle, scrab = self.gr.controle(coo, mot, tir)
-            if controle == 0 :
-                point, mot_nonex  = self.gr.point(coo, mot, scrab, self.dic)
+            controle = self.gr.controle(coo, mot, tir)
+            if controle <= 0 :
+                point, mot_nonex  = self.gr.point(coo, mot, controle == -1, self.dic)
                 self.jo.set_msg_fin_tour(nick, mot_nonex)
                 score = point
                 if len(mot_nonex) > 0 :
