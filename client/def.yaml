@@ -2,7 +2,7 @@ user_pseudo: ''
 user_admin: False
 user_email: ''
 
-server_port: 1989
+server_port: 12345
 server_servers: [wxscrab.ath.cx]
 
 files_rep_images: images/default

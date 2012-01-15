@@ -24,8 +24,8 @@ parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
         help="indique le temps par tour en secondes (defaut 120, soit 2mn)")
 parser.add_option("-i", "--inter", dest="inter", type="int", default=15,
         help="indique le temps entre chaque tour en secondes (defaut 15s)")
-parser.add_option("-p", "--port", dest="port", type="int", default=1989,
-        help="indique le port du serveur (defaut 1989)")
+parser.add_option("-p", "--port", dest="port", type="int", default=12345,
+        help="indique le port du serveur (defaut 12345)")
 parser.add_option("-a", "--attente", dest="attente", type="int", default=30,
         help="temps attente pour debut de partie (defaut 30s)")
 parser.add_option("-o", "--topping", dest="topping", action="store_true",
