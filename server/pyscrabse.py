@@ -78,6 +78,7 @@ class main():
             self.chrono_on = True
         else :
             self.chrono_on = False
+            # crée une erreur ?
             self.loop_chrono.stop()
             reactor.callLater(self.delta_calllater, self.fin_tour)
             
@@ -212,7 +213,8 @@ class main():
                 self.jo.envoi_all(m)
         if self.jo.nb_actifs() >= 1 and self.votes['restart'] == len(self.jo) :
             # vote restart accepté
-            self.loop_chrono.stop()
+            if self.chrono_on :
+                self.loop_chrono.stop()
             self.tour_on = False
             self.debut_game(2)
         if self.jo.nb_actifs() >= 1 and self.votes['next'] == len(self.jo) :
