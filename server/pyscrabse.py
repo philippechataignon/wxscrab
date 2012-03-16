@@ -214,20 +214,22 @@ class main():
         if self.jo.nb_actifs() >= 1 and self.votes['restart'] == len(self.jo) :
             # vote restart accepté
             if self.chrono_on :
+                self.chrono_on = False
                 self.loop_chrono.stop()
             self.tour_on = False
             self.debut_game(2)
         if self.jo.nb_actifs() >= 1 and self.votes['next'] == len(self.jo) :
             # vote next accepté
             if self.chrono_on :
+                self.chrono_on = False
                 self.loop_chrono.stop()
             self.jo.envoi_all(msg.msg("chrono", 0))
             self.fin_tour()
         if self.votes['chrono'] >= 1:
             if self.chrono_on :
+                self.chrono_on = False
                 self.info("Chrono arrété")
                 self.loop_chrono.stop()
-                self.chrono_on = False
             else :
                 self.info("Chrono reparti")
                 self.loop_chrono.start(1)
