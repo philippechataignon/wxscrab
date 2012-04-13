@@ -33,6 +33,7 @@ class main():
         self.chrono_on = False
         self.tirage = tirage.tirage("")
         self.points_top = 0
+        self.nb_actifs = 0
         self.chrono = self.options.chrono
         self.init_vote()
         self.pa = partie.partie(self.options)
@@ -65,6 +66,7 @@ class main():
             self.log.debut_tour(self.num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.jo.envoi_all(m)
+        self.nb_actifs = self.jo.nb_actifs() # recupère nb_joueurs actifs pour les votes
         self.tour_on = True
         self.init_vote()
         self.chrono = self.options.chrono
@@ -103,7 +105,7 @@ class main():
         self.info("Fin de la partie")
         if self.options.log :
             self.log.fin_partie()
-        if self.jo.nb_actifs() > 0  :
+        if self.nb_actifs > 0  : # il y a des joueurs en début de tour
             reactor.callLater(self.delta_calllater, self.debut_game, self.options.attente)
         else :
             self.partie_on = False
@@ -211,14 +213,14 @@ class main():
                 self.votants[categ].add(channel)
                 m = msg.msg("okvote", (categ, self.votes[categ]))
                 self.jo.envoi_all(m)
-        if self.jo.nb_actifs() >= 1 and self.votes['restart'] == len(self.jo) :
+        if self.nb_actifs >= 1 and self.votes['restart'] == self.nb_actifs :
             # vote restart accepté
             if self.chrono_on :
                 self.chrono_on = False
                 self.loop_chrono.stop()
             self.tour_on = False
             self.debut_game(2)
-        if self.jo.nb_actifs() >= 1 and self.votes['next'] == len(self.jo) :
+        if self.nb_actifs >= 1 and self.votes['next'] == self.nb_actifs :
             # vote next accepté
             if self.chrono_on :
                 self.chrono_on = False
