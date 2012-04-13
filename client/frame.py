@@ -18,8 +18,8 @@ ST_RESTART = 2
 ST_NEXT = 3
 
 class frame(wx.Frame):
-    def __init__(self, parent, app) :
-        wx.Frame.__init__(self, parent, title = "wxScrab")
+    def __init__(self, parent, app, title) :
+        wx.Frame.__init__(self, parent, title=title)
         self.app = app
         s = self.app.settings
         self.SetIcon(wx.Icon(app.settings["files_icone"], wx.BITMAP_TYPE_ICO))

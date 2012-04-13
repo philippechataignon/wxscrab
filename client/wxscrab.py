@@ -23,12 +23,13 @@ import net
 
 
 class App(wx.App):
+    title = "wxScrab"
     def OnInit(self) :
         wx.InitAllImageHandlers()
         self.connected = False
         self.settings = settings.settings()
         # Crée la frame principale
-        self.frame = frame.frame(None, self)
+        self.frame = frame.frame(None, self, App.title)
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         self.score = frame_score.frame_score(self.frame)
@@ -114,6 +115,7 @@ class App(wx.App):
         t = f.tirage
         if m.cmd == 'serverok' :
             self.info_serv("Serveur OK", wx.NamedColor("DARK GREEN"))
+            f.SetTitle(App.title + ' - ' + self.nick)
         elif m.cmd == 'connect' :
             if m.param[0] == 0 :
                 utils.errordlg(m.param[1],"Erreur : nom existant")
