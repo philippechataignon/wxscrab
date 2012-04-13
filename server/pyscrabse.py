@@ -207,20 +207,24 @@ class main():
         if not self.tour_on :
             # vote inactif hors des tours de jeu
             return
+        # pour qu'un vote next ou restart passe,
+        # il faut qu'il y ait plus de voix que d'actifs au début du tour
+        # et d'actifs au moment du vote (et plus de 1)
+        limite = max(1, self.nb_actifs, len(self.jo.liste_actif()))
         if categ in self.categ_vote :
             if channel not in self.votants[categ] :
                 self.votes[categ] += 1
                 self.votants[categ].add(channel)
                 m = msg.msg("okvote", (categ, self.votes[categ]))
                 self.jo.envoi_all(m)
-        if self.nb_actifs >= 1 and self.votes['restart'] == self.nb_actifs :
+        if self.votes['restart'] >= limite :
             # vote restart accepté
             if self.chrono_on :
                 self.chrono_on = False
                 self.loop_chrono.stop()
             self.tour_on = False
             self.debut_game(2)
-        if self.nb_actifs >= 1 and self.votes['next'] == self.nb_actifs :
+        if self.votes['next'] >= limite :
             # vote next accepté
             if self.chrono_on :
                 self.chrono_on = False
