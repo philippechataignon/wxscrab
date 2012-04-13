@@ -66,7 +66,7 @@ class main():
             self.log.debut_tour(self.num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
         self.jo.envoi_all(m)
-        self.nb_actifs = self.jo.nb_actifs() # recupère nb_joueurs actifs pour les votes
+        self.nb_actifs = len(self.jo.liste_actif()) # recupère nb_joueurs actifs pour les votes
         self.tour_on = True
         self.init_vote()
         self.chrono = self.options.chrono
@@ -90,7 +90,7 @@ class main():
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         if self.options.log :
             self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
-        print("%d/%d : %s - %s" % (self.jo.nb_actifs(), self.jo.nb_joueurs(), self.coord_mot_top, self.mot_top))
+        print "%d/%d : %s - %s" % (len(self.jo.liste_actif()), len(self.jo.liste), self.coord_mot_top, self.mot_top)
         self.gr.pose(self.coord_mot_top, self.mot_top)
         message = self.jo.score_fin_tour(self.pts_mot_top)
         if message != "" :

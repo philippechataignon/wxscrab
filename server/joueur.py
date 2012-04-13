@@ -13,12 +13,11 @@ class joueur :
         self.nick = nick
         self.proto = proto
         self.channel = channel
-        self.connect = True
         self.raz()
 
     def raz(self) :
         self.points_tour = 0
-        self.points_tour_def = 0
+        self.points_tour_affiche = 0
         self.points_total = 0
         self.points_ber = 0.0
         self.nb_top = 0
@@ -33,28 +32,21 @@ class joueurs :
         self.liste={}
         self.score_top = 0
 
-    def __len__(self) :
-        return len(self.liste_actif())
-
-    nb_actifs = __len__
-
     def liste_actif(self) :
-        return [j for j in self.liste.itervalues() if j.channel is not None and j.connect]
-
-    def nb_joueurs(self) :
-        return len(self.liste)
+        # les joueurs actifs sont les joueurs connectés 
+        # ou ayant fait un score dans le tour
+        return [j for j in self.liste.itervalues() if (j.channel is not None or j.points_tour > 0)]
 
     def envoi_all(self, mm) :
-        for j in self.liste_actif() :
-            j.channel.envoi(mm)
-            #reactor.callLater(0, j.channel.envoi, mm)
+        for j in self.liste.itervalues() :
+            if j.channel is not None :
+                j.channel.envoi(mm)
 
     def add_joueur(self, nick, proto, channel) :
         if nick in self.liste :
             j = self.liste[nick] 
-            if j.connect == False :
+            if j.channel is None :
                 j.channel = channel
-                j.connect = True
                 return 2
             else:
                 return 0
@@ -65,7 +57,6 @@ class joueurs :
     def deconnect(self, channel) :
         for nick, j in self.liste.iteritems() :
             if j.channel == channel :
-                j.connect = False
                 j.channel = None
                 return nick
         return None
@@ -73,22 +64,28 @@ class joueurs :
     def score_tour_zero(self) :
         for j in self.liste.itervalues() :
             j.points_tour = 0
-            j.points_tour_def = 0
+            j.points_tour_affiche = 0
             j.msg_fin_tour = []
 
     def score_raz(self) :
-        l = self.liste.items()
-        for nick,j in l :
-            if j.connect == False :
+        # appelé par debut_game
+        for nick, j in self.liste.items() :
+            # supprime les joueurs déconnectés
+            if j.channel is None :
                 del self.liste[nick]
             else :
                 j.raz()
         joueurs.cum_top = 0
 
     def set_points_tour(self, nick, score) :
+        # appelé suite à proposition
+        # score correspond au vrai score (0 si non ex)
         self.liste[nick].points_tour = score
 
     def set_msg_fin_tour(self, nick, non_ex) :
+        # appelé suite à proposition
+        # message éventuel de fin de tour
+        # en général mot non existant
         self.liste[nick].msg_fin_tour = non_ex
 
     def get_infos_joueur(self, nick) :
@@ -110,9 +107,9 @@ class joueurs :
         last_rang  = 0
         l_ber = []
         for j in l :
-            # tour_def contient les scores affiches dans le tableau des scores
+            # points_tour_affiche contient les scores affiches dans le tableau des scores
             # évite de repérer son score lors de reconnexion
-            j.points_tour_def = j.points_tour
+            j.points_tour_affiche = j.points_tour
             if j.points_tour != last_points :
                 j.rang = rg
                 for jb in l_ber :
@@ -134,11 +131,12 @@ class joueurs :
             if j.points_tour == score_top :
                 j.nb_top += 1
                 liste_top.append(j)
-            if j.channel is not None and j.connect :
+            if j.channel is not None : 
                 m = msg.msg("info", "Score : %d - Ecart : %d - Rang : %d/%d" %
                     (j.points_tour, j.points_tour-score_top, j.rang, len(l)))
                 j.channel.envoi(m)
 
+        # pas d'envoi de stats si un seul joueur
         if len(l) <= 1 :
             return ""
 
@@ -213,6 +211,6 @@ class joueurs :
             e = ET.SubElement(ligne, "val", type="f")
             e.text = "%4.1f" % j.points_ber
             e = ET.SubElement(ligne, "val", type="i")
-            e.text = "%d" % j.points_tour_def
+            e.text = "%d" % j.points_tour_affiche
         xml = ET.tostring(tree)
         return xml
