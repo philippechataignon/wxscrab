@@ -27,7 +27,6 @@ class frame(wx.Frame):
         self.max_props = app.settings["max_props"]
         self.tour = 0
         fill = s["size_fill"]
-        self.Bind(wx.EVT_KEY_DOWN, self.app.OnKey)
         self.Bind(wx.EVT_CLOSE, self.app.exit)
 
         #Creation et dessin du timer
