@@ -3,7 +3,6 @@
 
 import sys
 sys.path.append('../common')
-from twisted.internet import reactor
 
 import msg
 import xml.etree.cElementTree as ET
