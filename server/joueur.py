@@ -28,50 +28,53 @@ class joueur :
 class joueurs :
     cum_top = 0
     def __init__(self) :
-        self.liste={}
+        self.nick2joueur={}
         self.score_top = 0
+
+    def __len__(self) :
+        return len(self.nick2joueur)
 
     def liste_actif(self) :
         # les joueurs actifs sont les joueurs connectés 
         # ou ayant fait un score dans le tour
-        return [j for j in self.liste.itervalues() if (j.channel is not None or j.points_tour > 0)]
+        return [j for j in self.nick2joueur.itervalues() if (j.channel is not None or j.points_tour > 0)]
 
     def envoi_all(self, mm) :
-        for j in self.liste.itervalues() :
+        for j in self.nick2joueur.itervalues() :
             if j.channel is not None :
                 j.channel.envoi(mm)
 
     def add_joueur(self, nick, proto, channel) :
-        if nick in self.liste :
-            j = self.liste[nick] 
+        if nick in self.nick2joueur :
+            j = self.nick2joueur[nick] 
             if j.channel is None :
                 j.channel = channel
                 return 2
             else:
                 return 0
         else:
-            self.liste[nick] = joueur(nick, proto, channel)
+            self.nick2joueur[nick] = joueur(nick, proto, channel)
             return 1
 
     def deconnect(self, channel) :
-        for nick, j in self.liste.iteritems() :
+        for nick, j in self.nick2joueur.iteritems() :
             if j.channel == channel :
                 j.channel = None
                 return nick
         return None
 
     def score_tour_zero(self) :
-        for j in self.liste.itervalues() :
+        for j in self.nick2joueur.itervalues() :
             j.points_tour = 0
             j.points_tour_affiche = 0
             j.msg_fin_tour = []
 
     def score_raz(self) :
         # appelé par debut_game
-        for nick, j in self.liste.items() :
+        for nick, j in self.nick2joueur.items() :
             # supprime les joueurs déconnectés
             if j.channel is None :
-                del self.liste[nick]
+                del self.nick2joueur[nick]
             else :
                 j.raz()
         joueurs.cum_top = 0
@@ -79,17 +82,17 @@ class joueurs :
     def set_points_tour(self, nick, score) :
         # appelé suite à proposition
         # score correspond au vrai score (0 si non ex)
-        self.liste[nick].points_tour = score
+        self.nick2joueur[nick].points_tour = score
 
     def set_msg_fin_tour(self, nick, non_ex) :
         # appelé suite à proposition
         # message éventuel de fin de tour
         # en général mot non existant
-        self.liste[nick].msg_fin_tour = non_ex
+        self.nick2joueur[nick].msg_fin_tour = non_ex
 
     def get_infos_joueur(self, nick) :
-        if nick in self.liste :
-            j = self.liste[nick]
+        if nick in self.nick2joueur :
+            j = self.nick2joueur[nick]
             if joueurs.cum_top == 0 :
                 pct = 0
             else :

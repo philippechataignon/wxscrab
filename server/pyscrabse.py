@@ -90,7 +90,7 @@ class main():
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         if self.options.log :
             self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
-        print "%d/%d : %s - %s" % (len(self.jo.liste_actif()), len(self.jo.liste), self.coord_mot_top, self.mot_top)
+        print "%d/%d : %s - %s" % (len(self.jo.liste_actif()), len(self.jo), self.coord_mot_top, self.mot_top)
         self.gr.pose(self.coord_mot_top, self.mot_top)
         message = self.jo.score_fin_tour(self.pts_mot_top)
         if message != "" :
