@@ -96,8 +96,7 @@ class joueurs :
         self.nick2joueur[nick].tick = True
         if self.nick2joueur[nick].channel is None :
             self.nick2joueur[nick].channel = channel
-            m = msg.msg("info", "Retour de %s" % nick)
-            self.envoi_all(m)
+            print "%s à nouveau actif" % nick
 
     def check_tick(self) :
         # appelé en fin de tour
@@ -105,8 +104,7 @@ class joueurs :
         for j in self.nick2joueur.itervalues() :
             if not j.tick :
                 j.channel = None
-                m = msg.msg("info", "Déconnexion automatique de %s" % j.nick)
-                self.envoi_all(m)
+                print "%s inactif" % j.nick
 
     def get_infos_joueur(self, nick) :
         if nick in self.nick2joueur :
