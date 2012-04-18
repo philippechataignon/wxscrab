@@ -24,7 +24,7 @@ class joueur :
         self.rang = 0
         self.rang_total = 0
         self.msg_fin_tour = []
-        self.tick = False
+        self.tick = True
 
 class joueurs :
     cum_top = 0
