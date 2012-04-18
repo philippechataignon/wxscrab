@@ -24,6 +24,7 @@ class joueur :
         self.rang = 0
         self.rang_total = 0
         self.msg_fin_tour = []
+        self.tick = False
 
 class joueurs :
     cum_top = 0
@@ -37,7 +38,7 @@ class joueurs :
     def liste_actif(self) :
         # les joueurs actifs sont les joueurs connectés 
         # ou ayant fait un score dans le tour
-        return [j for j in self.nick2joueur.itervalues() if (j.channel is not None or j.points_tour > 0)]
+        return [j for j in self.nick2joueur.itervalues() if (j.channel is not None or j.tick)]
 
     def envoi_all(self, mm) :
         for j in self.nick2joueur.itervalues() :
@@ -68,6 +69,7 @@ class joueurs :
             j.points_tour = 0
             j.points_tour_affiche = 0
             j.msg_fin_tour = []
+            j.tick = False
 
     def score_raz(self) :
         # appelé par debut_game
@@ -89,6 +91,22 @@ class joueurs :
         # message éventuel de fin de tour
         # en général mot non existant
         self.nick2joueur[nick].msg_fin_tour = non_ex
+
+    def set_tick(self, nick, channel) :
+        self.nick2joueur[nick].tick = True
+        if self.nick2joueur[nick].channel is None :
+            self.nick2joueur[nick].channel = channel
+            m = msg.msg("info", "Retour de %s" % nick)
+            self.envoi_all(m)
+
+    def check_tick(self) :
+        # appelé en fin de tour
+        # kick les joueurs sans tick
+        for j in self.nick2joueur.itervalues() :
+            if not j.tick :
+                j.channel = None
+                m = msg.msg("info", "Déconnexion automatique de %s" % j.nick)
+                self.envoi_all(m)
 
     def get_infos_joueur(self, nick) :
         if nick in self.nick2joueur :

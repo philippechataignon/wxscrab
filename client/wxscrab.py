@@ -152,6 +152,7 @@ class App(wx.App):
             f.buttonpose.Enable(True)
             f.home_props()
             f.set_status_reliq()
+            self.envoi(msg.msg("tick"))
         elif m.cmd == 'chrono' :
             temps = m.param
             if temps > 0 :

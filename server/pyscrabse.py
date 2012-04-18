@@ -86,6 +86,7 @@ class main():
             
     def fin_tour(self) :
         self.tour_on = False
+        self.jo.check_tick()
         self.jo.envoi_all(msg.msg("mot_top",(str(self.coord_mot_top), self.mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         if self.options.log :
@@ -140,6 +141,8 @@ class main():
                 channel.envoi(m)
                 self.info("Reconnexion de %s" % nick)
         elif c == 'propo' and self.tour_on :
+            # une proposition active le 'tick'
+            self.jo.set_tick(nick, channel)
             coo_str = mm.param[0]
             mot = mm.param[1]
             tir = self.tirage
@@ -193,6 +196,8 @@ class main():
         elif c == "vote" :
             categ = mm.param[0]
             self.vote(categ, channel)
+        elif c == "tick" :
+            self.jo.set_tick(nick, channel)
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
