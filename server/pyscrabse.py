@@ -77,9 +77,7 @@ class main():
         if self.chrono >= 0 :
             self.chrono_on = True
         else :
-            self.chrono_on = False
-            # crée une erreur ?
-            self.loop_chrono.stop()
+            self.stop_chrono()
             reactor.callLater(self.delta_calllater, self.fin_tour)
             
     def fin_tour(self) :
@@ -206,6 +204,11 @@ class main():
         m = msg.msg("info", txt)
         self.jo.envoi_all(m)
 
+    def stop_chrono(self) :
+        self.chrono_on = False
+        if self.loop_chrono.running :
+            self.loop_chrono.stop()
+
     def vote(self, categ, channel) :
         if not self.tour_on :
             # vote inactif hors des tours de jeu
@@ -222,28 +225,23 @@ class main():
                 self.jo.envoi_all(m)
         if self.votes['restart'] >= limite :
             # vote restart accepté
-            if self.chrono_on :
-                self.chrono_on = False
-                self.loop_chrono.stop()
+            self.stop_chrono()
             self.tour_on = False
             self.debut_game(2)
         if self.votes['next'] >= limite :
             # vote next accepté
-            if self.chrono_on :
-                self.chrono_on = False
-                self.loop_chrono.stop()
+            self.stop_chrono()
             self.jo.envoi_all(msg.msg("chrono", 0))
             self.fin_tour()
         if self.votes['chrono'] >= 1:
+            self.raz_vote('chrono')
             if self.chrono_on :
-                self.chrono_on = False
+                self.stop_chrono()
                 self.info("Chrono arrété")
-                self.loop_chrono.stop()
             else :
                 self.info("Chrono reparti")
                 self.loop_chrono.start(1)
                 self.chrono_on = True
-            self.raz_vote('chrono')
 
     def init_vote(self) :
         for categ in self.categ_vote :
