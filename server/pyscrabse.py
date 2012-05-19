@@ -189,31 +189,32 @@ class main():
         m = msg.msg("info", mm.param, mm.nick)
         self.envoi_all(m)
 
-    def traite(self, channel, dump) :
-        mm = msg.msg(dump=dump)
-        c = mm.cmd
+    def traite_tick(self, (channel, mm)) :
+        self.jo.set_tick(mm.nick, channel)
+
+    def traite(self, cmd) :
         d = defer.Deferred()
-        if c == 'joueur' :
+        if cmd == 'joueur' :
             d.addCallback(self.traite_joueur)
-        elif c == 'propo' and self.tour_on :
+        elif cmd == 'propo' and self.tour_on :
             d.addCallback(self.traite_propo)
             d.addCallback(self.envoi_msg)
-        elif c == 'askscore' :
+        elif cmd == 'askscore' :
             d.addCallback(self.traite_askscore)
             d.addCallback(self.envoi_msg)
-        elif c == 'askinfo' :
+        elif cmd == 'askinfo' :
             d.addCallback(self.traite_askinfo)
             d.addCallback(self.envoi_msg)
-        elif c == 'askall' :
+        elif cmd == 'askall' :
             d.addCallback(self.traite_askall)
             d.addCallback(self.envoi_msg)
-        elif c == 'chat' :
+        elif cmd == 'chat' :
             d.addCallback(self.traite_chat)
-        elif c == "vote" :
+        elif cmd == "vote" :
             d.addCallback(self.traite_vote)
-        elif c == "tick" :
-            self.jo.set_tick(mm.nick, channel)
-        reactor.callLater(0, d.callback, (channel, mm))
+        elif cmd == "tick" :
+            d.addCallback(self.traite_tick)
+        return d
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)

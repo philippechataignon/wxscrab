@@ -21,10 +21,13 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         self.factory.parent.deconnect(self)
         print "Deconnect %s" % self.transport.getPeer()
 
-    def stringReceived(self, mm):
+    def stringReceived(self, dump):
+        mm = msg.msg(dump=dump)
         if self.factory.parent.options.verbose :
             print "<- %s" % mm
-        self.factory.parent.traite(self, mm)
+        # renvoit un deferred
+        d = self.factory.parent.traite(mm.cmd)
+        reactor.callLater(0, d.callback, (self, mm))
 
     def envoi(self, mm):
         if self.factory.parent.options.verbose :
