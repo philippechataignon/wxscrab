@@ -6,7 +6,7 @@ sys.path.append('../common')
 import wx
 import xml.etree.ElementTree as ET
 
-from twisted.internet import reactor,  _threadedselect
+from twisted.internet import reactor, defer,  _threadedselect
 
 import settings
 import frame
@@ -108,119 +108,170 @@ class App(wx.App):
 
 
 ## Traitement des messages reçus
-    def traite(self, m) :
+    def traite_info(self, m) :
+        txt = m.param
+        nick  = m.nick
+        if nick is None :
+            self.info_serv(txt)
+        elif nick == "" :
+            self.info_serv(txt, wx.BLUE)
+        else :
+            self.info_serv("[%s] %s" % (nick, txt), wx.NamedColor("DARK GREEN"))
+
+    def traite_tirage(self, m) :
         f = self.frame
-        g = f.grille
-        t = f.tirage
-        if m.cmd == 'serverok' :
-            self.info_serv("Serveur OK", wx.NamedColor("DARK GREEN"))
-            f.SetTitle(App.title + ' - ' + self.nick)
-        elif m.cmd == 'connect' :
-            if m.param[0] == 0 :
-                utils.errordlg(m.param[1],"Erreur : nom existant")
-                f.Close()
-            elif m.param[0] == 1 :
-                self.info_serv("Connexion établie", wx.NamedColor("DARK GREEN"))
-            elif m.param[0] == 2 :
-                self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
-            self.settings.write()
-            self.connected = True
-            self.envoi(msg.msg("askall"))
-            self.envoi(msg.msg("askinfo"))
-            self.envoi(msg.msg("askscore"))
+        self.score.Show(False)
+        self.son.play("debut")
+        f.grille.reinit_saisie()
+        f.grille.convert_prepose()
+        f.tirage.cree_tirage(m.param)
+        f.buttonpose.Enable(True)
+        f.home_props()
+        f.set_status_reliq()
+        self.envoi_msg("tick")
 
-        # pas d'analyse des commandes si non connecté (sauf connect)
-        if not self.connected :
-            return
+    def traite_chrono(self, m) :
+        f = self.frame
+        temps = m.param
+        if temps > 0 :
+            self.tour_on = True
+        f.timer.SetLabel(utils.convert_time(temps))
+        if temps == 0 :
+            self.envoi_msg("tick")
+            
+    def traite_mot_top(self, m) :
+        f = self.frame
+        #Fin du tour
+        self.tour_on = False
+        f.buttonpose.Enable(False)
+        f.grille.reinit_saisie()
+        self.son.play("fin_tour")
+        coo, mot = m.param
+        f.grille.pose_mot(coo, mot, status=jeton.PREPOSE)
+        #Questionner serveur pour pts et message mot
+        self.envoi_msg("askinfo")
 
-        if m.cmd == 'info' :
-            txt = m.param
-            nick  = m.nick
-            if nick is None :
-                self.info_serv(txt)
-            elif nick == "" :
-                self.info_serv(txt, wx.BLUE)
-            else :
-                self.info_serv("[%s] %s" % (nick, txt), wx.NamedColor("DARK GREEN"))
-        elif m.cmd == 'tirage' :
-            self.score.Show(False)
-            self.son.play("debut")
-            g.reinit_saisie()
-            g.convert_prepose()
-            t.cree_tirage(m.param)
+    def traite_new(self, m) :
+        f = self.frame
+        self.info_serv("="*20, wx.NamedColor("DARK GREEN"))
+        self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
+        self.score.Show(False)
+        f.grille.vide_grille()
+        self.envoi_msg("askinfo")
+        self.envoi_msg("askscore")
+
+    def traite_score(self, m) :
+        self.score.Destroy()
+        self.score = frame_score.frame_score(self.frame, m.param)
+        if not self.tour_on :
+            self.score.Show(True)
+
+    def traite_valid(self, m) :
+        self.son.play("valid")
+        coo, mot, pts = m.param
+        txt ="%s - %s  (%s pts)" % (coo, mot, pts)
+        self.info_serv(">>  " + txt, wx.BLUE)
+        f = self.frame
+        f.insert_props(txt, (coo, mot))
+
+    def traite_infojoueur(self, m) :
+        f = self.frame
+        total, top, prc, mess = m.param
+        f.score.SetLabel("%s/%s - %5.1f%%" % (total, top, prc))
+        for m in  mess :
+            self.info_serv("Mot non existant : %s" % m, wx.RED)
+
+    def traite_okvote(self, m) :
+        f = self.frame
+        categ, num = m.param
+        if categ  == "next" :
+            f.set_status_next(num)
+        elif categ == "restart" :
+            f.set_status_restart(num)
+
+    def traite_all(self, m) :
+        # vide tirage pour mettre jeton dans reliquat
+        f = self.frame
+        f.tirage.vide_tirage()
+        tree = ET.XML(m.param)
+        gr = tree.find("grille")
+        # read_grille met les jetons de la grille dans le reliquat
+        # puis les reprend pour créer la grille
+        f.grille.read_grille(gr.text)
+        gr = tree.find("points_top")
+        pts_top = int(gr.text)
+        if pts_top > 0 :
+            self.info_serv("Le top fait %d points" % pts_top)
+        gr = tree.find("tour_on")
+        self.tour_on = (gr.text == 'True')
+        gr = tree.find("tirage")
+        if gr.text is not None :
+            f.tirage.cree_tirage(str(gr.text))
+        if self.tour_on :
             f.buttonpose.Enable(True)
             f.home_props()
             f.set_status_reliq()
-            self.envoi(msg.msg("tick"))
-        elif m.cmd == 'chrono' :
-            temps = m.param
-            if temps > 0 :
-                self.tour_on = True
-            f.timer.SetLabel(utils.convert_time(temps))
-            if temps == 0 :
-                self.envoi(msg.msg("tick"))
-        elif m.cmd == 'error' :
-            utils.errordlg(m.param,"Erreur")
-        elif m.cmd == 'mot_top' :
-            #Fin du tour
-            self.tour_on = False
-            f.buttonpose.Enable(False)
-            g.reinit_saisie()
-            self.son.play("fin_tour")
-            coo, mot = m.param
-            g.pose_mot(coo, mot, status=jeton.PREPOSE)
-            #Questionner serveur pour pts et message mot
-            self.envoi(msg.msg("askinfo"))
-        elif m.cmd == 'new' :
-            self.info_serv("="*20, wx.NamedColor("DARK GREEN"))
-            self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
-            self.score.Show(False)
-            g.vide_grille()
-            self.envoi(msg.msg("askinfo"))
-            self.envoi(msg.msg("askscore"))
+        else :
+            self.info_serv("En attente du prochain tour")
 
-        elif m.cmd == 'score' :
-            self.score.Destroy()
-            self.score = frame_score.frame_score(f, m.param)
-            if not self.tour_on :
-                self.score.Show(True)
-        elif m.cmd == 'valid' :
-            self.son.play("valid")
-            coo, mot, pts = m.param
-            txt ="%s - %s  (%s pts)" % (coo, mot, pts)
-            self.info_serv(">>  " + txt, wx.BLUE)
-            f.insert_props(txt, (coo, mot))
-        elif m.cmd == 'infojoueur' :
-           total, top, prc, mess = m.param
-           f.score.SetLabel("%s/%s - %5.1f%%" % (total, top, prc))
-           for m in  mess :
-               self.info_serv("Mot non existant : %s" % m, wx.RED)
-        elif m.cmd == "okvote" :
-            categ, num = m.param
-            if categ  == "next" :
-                f.set_status_next(num)
-            elif categ == "restart" :
-                f.set_status_restart(num)
-        elif m.cmd == "all" :
-            # vide tirage pour mettre jeton dans reliquat
-            t.vide_tirage()
-            tree = ET.XML(m.param)
-            gr = tree.find("grille")
-            # read_grille met les jetons de la grille dans le reliquat
-            # puis les reprend pour créer la grille
-            g.read_grille(gr.text)
-            gr = tree.find("points_top")
-            pts_top = int(gr.text)
-            if pts_top > 0 :
-                self.info_serv("Le top fait %d points" % pts_top)
-            gr = tree.find("tour_on")
-            self.tour_on = (gr.text == 'True')
-            gr = tree.find("tirage")
-            if gr.text is not None :
-                t.cree_tirage(str(gr.text))
-            if self.tour_on :
-                f.buttonpose.Enable(True)
-                f.home_props()
-                f.set_status_reliq()
-            else :
-                self.info_serv("En attente du prochain tour")
+    def traite_error(self, m) :
+        utils.errordlg(m.param,"Erreur")
+
+    def traite_serverok(self, m) :
+        self.info_serv("Serveur OK", wx.NamedColor("DARK GREEN"))
+        self.frame.SetTitle(App.title + ' - ' + self.nick)
+
+    def traite_connect(self, m) :
+        f = self.frame
+        if m.param[0] == 0 :
+            utils.errordlg(m.param[1],"Erreur : nom existant")
+            f.Close()
+        elif m.param[0] == 1 :
+            self.info_serv("Connexion établie", wx.NamedColor("DARK GREEN"))
+        elif m.param[0] == 2 :
+            self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
+        self.settings.write()
+        self.connected = True
+        self.envoi_msg("askall")
+        self.envoi_msg("askinfo")
+        self.envoi_msg("askscore")
+
+    def defer_envoi_msg(self) :
+        d = defer.Deferred()
+        d.addCallback(self.envoi_msg)
+        return d
+
+    def envoi_msg(self, cmd) :
+        self.envoi(msg.msg(cmd))
+
+    def traite(self, cmd) :
+        d = defer.Deferred()
+        if cmd == 'serverok' :
+            d.addCallback(self.traite_serverok)
+        elif cmd == 'connect' :
+            d.addCallback(self.traite_connect)
+        # analyse des commandes si connecté (sauf connect et serverok)
+        if self.connected :
+            if cmd == 'info' :
+                d.addCallback(self.traite_info)
+            elif cmd == 'tirage' :
+                d.addCallback(self.traite_tirage)
+            elif cmd == 'chrono' :
+                d.addCallback(self.traite_chrono)
+            elif cmd == 'error' :
+                d.addCallback(self.traite_error)
+            elif cmd == 'mot_top' :
+                d.addCallback(self.traite_mot_top)
+            elif cmd == 'new' :
+                d.addCallback(self.traite_new)
+            elif cmd == 'score' :
+                d.addCallback(self.traite_score)
+            elif cmd == 'valid' :
+                d.addCallback(self.traite_valid)
+            elif cmd == 'infojoueur' :
+                d.addCallback(self.traite_infojoueur)
+            elif cmd == "okvote" :
+                d.addCallback(self.traite_okvote)
+            elif cmd == "all" :
+                d.addCallback(self.traite_all)
+        return d
