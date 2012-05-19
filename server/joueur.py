@@ -40,10 +40,8 @@ class joueurs :
         # ou ayant fait un score dans le tour
         return [j for j in self.nick2joueur.itervalues() if (j.channel is not None or j.tick)]
 
-    def envoi_all(self, mm) :
-        for j in self.nick2joueur.itervalues() :
-            if j.channel is not None :
-                j.channel.envoi(mm)
+    def liste_envoi(self) :
+        return [j for j in self.nick2joueur.itervalues() if j.channel is not None]
 
     def add_joueur(self, nick, proto, channel) :
         if nick in self.nick2joueur :

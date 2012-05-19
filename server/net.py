@@ -30,6 +30,7 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         if self.factory.parent.options.verbose :
             print "-> %s" % mm
         self.sendString(mm.dump())
+        return mm
 
 class ScrabbleFactory(Factory):
     protocol = ScrabbleProtocol

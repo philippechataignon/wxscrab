@@ -4,7 +4,7 @@ sys.path.append('../common')
 
 import xml.etree.cElementTree as ET
 
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
 
 import dico
@@ -26,6 +26,7 @@ class main():
         self.delta_calllater = 1
         self.votes = {}
         self.votants = {}
+        self.d = defer.Deferred()
 
     def debut_game(self, attente) :
         self.partie_on = True
@@ -45,7 +46,7 @@ class main():
         reactor.callLater(attente, self.first_tour)
 
     def first_tour(self) :
-        self.jo.envoi_all(msg.msg("new"))
+        self.envoi_all(msg.msg("new"))
         print "-"*20, self.pa.get_nom_partie(),"-"*20
         print self.options
         reactor.callLater(self.delta_calllater, self.debut_tour)
@@ -64,7 +65,7 @@ class main():
         if self.options.log :
             self.log.debut_tour(self.num_tour)
         m = msg.msg("tirage", self.tirage.get_mot())
-        self.jo.envoi_all(m)
+        self.envoi_all(m)
         self.tour_on = True
         self.init_vote()
         self.chrono = self.options.chrono
@@ -72,7 +73,7 @@ class main():
         self.loop_chrono.start(1)
 
     def decr_chrono(self) :
-        self.jo.envoi_all(msg.msg("chrono", self.chrono))
+        self.envoi_all(msg.msg("chrono", self.chrono))
         self.chrono -= 1
         if self.chrono >= 0 :
             self.chrono_on = True
@@ -83,7 +84,7 @@ class main():
     def fin_tour(self) :
         self.tour_on = False
         self.jo.check_tick()
-        self.jo.envoi_all(msg.msg("mot_top",(str(self.coord_mot_top), self.mot_top)))
+        self.envoi_all(msg.msg("mot_top",(str(self.coord_mot_top), self.mot_top)))
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         if self.options.log :
             self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
@@ -92,7 +93,7 @@ class main():
         message = self.jo.score_fin_tour(self.pts_mot_top)
         if message != "" :
             self.info(message)
-        self.jo.envoi_all(msg.msg("score", self.jo.tableau_score()))
+        self.envoi_all(msg.msg("score", self.jo.tableau_score()))
         if self.pa.liste :
             reactor.callLater(self.options.inter, self.debut_tour)
         else :
@@ -108,92 +109,111 @@ class main():
             self.partie_on = False
             print "En attente"
 
+    def traite_joueur(self, (channel, mm)) :
+        proto_serv = net.PROTOCOL
+        proto_client = mm.param[0]
+        ret = self.jo.add_joueur(mm.nick, proto_client, channel)
+        if ret == 1 :
+            m = msg.msg("connect",(1,"Connexion OK", proto_serv))
+            channel.envoi(m)
+            self.info("Connexion de %s" % mm.nick)
+            if proto_client < proto_serv :
+                m = msg.msg("info", "Attention : le protocole de votre programme (%d) est plus ancien que celui du serveur (%d)."  % (proto_client, proto_serv))
+                channel.envoi(m)
+                m = msg.msg("info", "Il faut mettre votre programme à jour dès que possible")
+                channel.envoi(m)
+            elif proto_serv < proto_client : 
+                m = msg.msg("info", "Info : le protocole du serveur (%d) est plus ancien que celui de votre programme. (%d)" % (proto_serv, proto_client))
+                channel.envoi(m)
+        elif ret == 0 :
+            m = msg.msg("connect",(0,"Erreur : nom existant", proto_serv))
+            channel.envoi(m)
+            self.info("Tentative de %s" % mm.nick)
+        elif ret == 2 :
+            m = msg.msg("connect",(2,"Reconnexion", proto_serv))
+            channel.envoi(m)
+            self.info("Reconnexion de %s" % mm.nick)
+
+    def traite_propo(self, (channel, mm)) :
+        # une proposition active le 'tick'
+        self.jo.set_tick(mm.nick, channel)
+        coo_str = mm.param[0]
+        mot = mm.param[1]
+        tir = self.tirage
+        coo = coord.coord(coo_str=coo_str)
+        controle = self.gr.controle(coo, mot, tir)
+        if controle <= 0 :
+            point, mot_nonex  = self.gr.point(coo, mot, controle == -1, self.dic)
+            self.jo.set_msg_fin_tour(mm.nick, mot_nonex)
+            score = point
+            if len(mot_nonex) > 0 :
+                # met le score a 0 si non existant
+                score = 0
+            m = msg.msg("valid",(str(coo), mot, point))
+            self.jo.set_points_tour(mm.nick, score)
+            if self.options.log :
+                self.log.add_prop(mm.nick, coo, mot, score, self.options.chrono - self.chrono)
+        else:
+            m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
+        return channel, m
+
+    def traite_askall(self, (channel, mm)) :
+        tree = ET.Element("all")
+        elt = ET.SubElement(tree, "grille")
+        elt.text = str(self.gr)
+        elt = ET.SubElement(tree, "tour_on")
+        elt.text = str(self.tour_on)
+        elt = ET.SubElement(tree, "partie_on")
+        elt.text = str(self.partie_on)
+        elt = ET.SubElement(tree, "tirage")
+        if self.tour_on :
+            elt.text = self.tirage.get_mot()
+        elt = ET.SubElement(tree, "points_top")
+        elt.text = str(self.points_top)
+        xml = ET.tostring(tree)
+        m = msg.msg("all", xml)
+        return channel, m
+
+    def traite_askinfo(self, (channel, mm)) :
+        proto, score, top, pct, message = self.jo.get_infos_joueur(mm.nick) 
+        if self.tour_on :
+            message = []
+        m = msg.msg("infojoueur", (score, top, pct, message))
+        return channel, m
+
+    def traite_askscore(self, (channel, mm)) :
+        m = msg.msg("score", self.jo.tableau_score())
+        return channel, m
+
+    def traite_chat(self, (channel, mm)) :
+        m = msg.msg("info", mm.param, mm.nick)
+        self.envoi_all(m)
+
     def traite(self, channel, dump) :
         mm = msg.msg(dump=dump)
         c = mm.cmd
-        nick  = mm.nick
+        d = defer.Deferred()
         if c == 'joueur' :
-            proto_serv = net.PROTOCOL
-            proto_client = mm.param[0]
-            ret = self.jo.add_joueur(nick, proto_client, channel)
-            if ret == 1 :
-                m = msg.msg("connect",(1,"Connexion OK", proto_serv))
-                channel.envoi(m)
-                self.info("Connexion de %s" % nick)
-                if proto_client < proto_serv :
-                    m = msg.msg("info", "Attention : le protocole de votre programme (%d) est plus ancien que celui du serveur (%d)."  % (proto_client, proto_serv))
-                    channel.envoi(m)
-                    m = msg.msg("info", "Il faut mettre votre programme à jour dès que possible")
-                    channel.envoi(m)
-                elif proto_serv < proto_client : 
-                    m = msg.msg("info", "Info : le protocole du serveur (%d) est plus ancien que celui de votre programme. (%d)" % (proto_serv, proto_client))
-                    channel.envoi(m)
-            elif ret == 0 :
-                m = msg.msg("connect",(0,"Erreur : nom existant", proto_serv))
-                channel.envoi(m)
-                self.info("Tentative de %s" % nick)
-            elif ret == 2 :
-                m = msg.msg("connect",(2,"Reconnexion", proto_serv))
-                channel.envoi(m)
-                self.info("Reconnexion de %s" % nick)
+            d.addCallback(self.traite_joueur)
         elif c == 'propo' and self.tour_on :
-            # une proposition active le 'tick'
-            self.jo.set_tick(nick, channel)
-            coo_str = mm.param[0]
-            mot = mm.param[1]
-            tir = self.tirage
-            coo = coord.coord(coo_str=coo_str)
-            controle = self.gr.controle(coo, mot, tir)
-            if controle <= 0 :
-                point, mot_nonex  = self.gr.point(coo, mot, controle == -1, self.dic)
-                self.jo.set_msg_fin_tour(nick, mot_nonex)
-                score = point
-                if len(mot_nonex) > 0 :
-                    # met le score a 0 si non existant
-                    score = 0
-                m = msg.msg("valid",(str(coo), mot, point))
-                channel.envoi(m)
-                self.jo.set_points_tour(nick, score)
-                if self.options.log :
-                    self.log.add_prop(nick, coo, mot, score, self.options.chrono - self.chrono)
-            else:
-                m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
-                channel.envoi(m)
+            d.addCallback(self.traite_propo)
+            d.addCallback(self.envoi_msg)
         elif c == 'askscore' :
-            channel.envoi(msg.msg("score", self.jo.tableau_score()))
+            d.addCallback(self.traite_askscore)
+            d.addCallback(self.envoi_msg)
         elif c == 'askinfo' :
-            proto, score, top, pct, message = self.jo.get_infos_joueur(nick) 
-            if self.tour_on :
-                message = []
-            if proto >= 1 :
-                m = msg.msg("infojoueur", (score, top, pct, message))
-            else :
-                txt = message[0] if len(message) > 0 else ""
-                m = msg.msg("infojoueur", (score, top, pct, txt))
-            channel.envoi(m)
+            d.addCallback(self.traite_askinfo)
+            d.addCallback(self.envoi_msg)
         elif c == 'askall' :
-            tree = ET.Element("all")
-            elt = ET.SubElement(tree, "grille")
-            elt.text = str(self.gr)
-            elt = ET.SubElement(tree, "tour_on")
-            elt.text = str(self.tour_on)
-            elt = ET.SubElement(tree, "partie_on")
-            elt.text = str(self.partie_on)
-            elt = ET.SubElement(tree, "tirage")
-            if self.tour_on :
-                elt.text = self.tirage.get_mot()
-            elt = ET.SubElement(tree, "points_top")
-            elt.text = str(self.points_top)
-            xml = ET.tostring(tree)
-            channel.envoi(msg.msg("all", xml))
+            d.addCallback(self.traite_askall)
+            d.addCallback(self.envoi_msg)
         elif c == 'chat' :
-            m = msg.msg("info", mm.param, nick)
-            self.jo.envoi_all(m)
+            d.addCallback(self.traite_chat)
         elif c == "vote" :
-            categ = mm.param[0]
-            self.vote(categ, channel)
+            d.addCallback(self.traite_vote)
         elif c == "tick" :
-            self.jo.set_tick(nick, channel)
+            self.jo.set_tick(mm.nick, channel)
+        reactor.callLater(0, d.callback, (channel, mm))
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
@@ -202,14 +222,24 @@ class main():
 
     def info(self, txt) :
         m = msg.msg("info", txt)
-        self.jo.envoi_all(m)
+        self.envoi_all(m)
+
+    def envoi_msg(self, (channel, message)) :
+        channel.envoi(message)
+
+    def envoi_all(self, message) :
+        d = defer.Deferred()
+        for j in self.jo.liste_envoi() :
+            d.addCallback(j.channel.envoi)
+        reactor.callLater(0, d.callback, message) 
 
     def stop_chrono(self) :
         self.chrono_on = False
         if self.loop_chrono.running :
             self.loop_chrono.stop()
 
-    def vote(self, categ, channel) :
+    def traite_vote(self, (channel, mm)) :
+        categ = mm.param[0]
         if not self.tour_on :
             # vote inactif hors des tours de jeu
             return
@@ -222,7 +252,7 @@ class main():
                 self.votes[categ] += 1
                 self.votants[categ].add(channel)
                 m = msg.msg("okvote", (categ, self.votes[categ]))
-                self.jo.envoi_all(m)
+                self.envoi_all(m)
         if self.votes['restart'] >= limite :
             # vote restart accepté
             self.stop_chrono()
@@ -231,7 +261,7 @@ class main():
         if self.votes['next'] >= limite :
             # vote next accepté
             self.stop_chrono()
-            self.jo.envoi_all(msg.msg("chrono", 0))
+            self.envoi_all(msg.msg("chrono", 0))
             self.fin_tour()
         if self.votes['chrono'] >= 1:
             self.raz_vote('chrono')
@@ -252,4 +282,4 @@ class main():
             self.votes[categ] = 0
             self.votants[categ] = set()
             m = msg.msg("okvote", (categ, self.votes[categ]))
-            self.jo.envoi_all(m)
+            self.envoi_all(m)
