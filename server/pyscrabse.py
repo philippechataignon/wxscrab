@@ -241,39 +241,39 @@ class main():
 
     def traite_vote(self, (channel, mm)) :
         categ = mm.param[0]
+        # vote inactif hors des tours de jeu
         if not self.tour_on :
-            # vote inactif hors des tours de jeu
+            return
+        # vote hors catégorie
+        if categ not in self.categ_vote :
+            return
+        # a déjà voté dans cette catégorie, on dégage
+        if channel in self.votants[categ] :
+            return
+        # plus de vote à moins de 2s de la fin du tour
+        if self.chrono < 2 :
             return
         # pour qu'un vote next ou restart passe,
         # il faut qu'il y ait plus de voix que d'actifs au début du tour
         # et d'actifs au moment du vote (et plus de 1)
         limite = max(1, len(self.jo.liste_actif()))
-        if categ in self.categ_vote :
-            if channel not in self.votants[categ] :
-                self.votes[categ] += 1
-                self.votants[categ].add(channel)
-                m = msg.msg("okvote", (categ, self.votes[categ]))
-                self.envoi_all(m)
+        self.votes[categ] += 1
+        self.votants[categ].add(channel)
+        m = msg.msg("okvote", (categ, self.votes[categ]))
+        self.envoi_all(m)
+
         if self.votes['restart'] >= limite :
             # vote restart accepté
             self.stop_chrono()
             self.tour_on = False
-            self.debut_game(2)
+            reactor.callLater(self.delta_calllater, self.debut_game)
         if self.votes['next'] >= limite :
-            # vote next accepté
             self.stop_chrono()
             self.envoi_all(msg.msg("chrono", 0))
-            self.fin_tour()
+            reactor.callLater(self.delta_calllater, self.fin_tour)
         if self.votes['chrono'] >= 1:
             self.chrono += 15
             self.raz_vote('chrono')
-            if self.chrono_on :
-                self.stop_chrono()
-                self.info("Chrono arrété")
-            else :
-                self.info("Chrono reparti")
-                self.loop_chrono.start(1)
-                self.chrono_on = True
 
     def init_vote(self) :
         for categ in self.categ_vote :
