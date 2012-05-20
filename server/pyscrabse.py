@@ -28,7 +28,7 @@ class main():
         self.votants = {}
         self.d = defer.Deferred()
 
-    def debut_game(self, attente) :
+    def debut_game(self, attente=2) :
         self.partie_on = True
         self.tour_on = False
         self.chrono_on = False
