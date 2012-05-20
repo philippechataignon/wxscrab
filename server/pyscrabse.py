@@ -265,6 +265,7 @@ class main():
             self.envoi_all(msg.msg("chrono", 0))
             self.fin_tour()
         if self.votes['chrono'] >= 1:
+            self.chrono += 15
             self.raz_vote('chrono')
             if self.chrono_on :
                 self.stop_chrono()
