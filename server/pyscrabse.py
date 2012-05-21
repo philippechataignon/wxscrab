@@ -103,7 +103,7 @@ class main():
         self.info("Fin de la partie")
         if self.options.log :
             self.log.fin_partie()
-        if self.jo.liste_actif() > 0  : # il y a des joueurs en début de tour
+        if len(self.jo.liste_actif()) > 0  : # il y a des joueurs en début de tour
             reactor.callLater(self.delta_calllater, self.debut_game, self.options.attente)
         else :
             self.partie_on = False
