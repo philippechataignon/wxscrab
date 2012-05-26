@@ -94,6 +94,7 @@ class App(wx.App):
         msg.set_nick(self.nick)
         self.net.envoi(msg)
 
+
     def envoi_mot(self) :
         "Envoie le mot courant au serveur"
         g = self.frame.grille
@@ -119,16 +120,18 @@ class App(wx.App):
             self.info_serv("[%s] %s" % (nick, txt), wx.NamedColor("DARK GREEN"))
 
     def traite_tirage(self, m) :
-        f = self.frame
         self.score.Show(False)
-        self.son.play("debut")
+        self.frame.tirage.cree_tirage(m.param)
+        return m
+
+    def traite_tirage_grille(self, m) :
+        f = self.frame
         f.grille.reinit_saisie()
         f.grille.convert_prepose()
-        f.tirage.cree_tirage(m.param)
-        f.buttonpose.Enable(True)
+        f.buttonpose.Enable()
         f.home_props()
         f.set_status_reliq()
-        self.envoi_msg("tick")
+        reactor.callLater(0.2, self.envoi_msg, "tick")
 
     def traite_chrono(self, m) :
         f = self.frame
@@ -137,7 +140,7 @@ class App(wx.App):
             self.tour_on = True
         f.timer.SetLabel(utils.convert_time(temps))
         if temps == 0 :
-            self.envoi_msg("tick")
+            reactor.callLater(0.2, self.envoi_msg, "tick")
             
     def traite_mot_top(self, m) :
         f = self.frame
@@ -145,11 +148,9 @@ class App(wx.App):
         self.tour_on = False
         f.buttonpose.Enable(False)
         f.grille.reinit_saisie()
-        self.son.play("fin_tour")
         coo, mot = m.param
         f.grille.pose_mot(coo, mot, status=jeton.PREPOSE)
-        #Questionner serveur pour pts et message mot
-        self.envoi_msg("askinfo")
+        reactor.callLater(0.2, self.envoi_msg, "askinfo")
 
     def traite_new(self, m) :
         f = self.frame
@@ -157,8 +158,8 @@ class App(wx.App):
         self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
         self.score.Show(False)
         f.grille.vide_grille()
-        self.envoi_msg("askinfo")
-        self.envoi_msg("askscore")
+        reactor.callLater(0.2, self.envoi_msg, "askinfo")
+        reactor.callLater(0.4, self.envoi_msg, "askscore")
 
     def traite_score(self, m) :
         self.score.Destroy()
@@ -167,7 +168,6 @@ class App(wx.App):
             self.score.Show(True)
 
     def traite_valid(self, m) :
-        self.son.play("valid")
         coo, mot, pts = m.param
         txt ="%s - %s  (%s pts)" % (coo, mot, pts)
         self.info_serv(">>  " + txt, wx.BLUE)
@@ -208,7 +208,7 @@ class App(wx.App):
         if gr.text is not None :
             f.tirage.cree_tirage(str(gr.text))
         if self.tour_on :
-            f.buttonpose.Enable(True)
+            f.buttonpose.Enable()
             f.home_props()
             f.set_status_reliq()
         else :
@@ -232,14 +232,9 @@ class App(wx.App):
             self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
         self.settings.write()
         self.connected = True
-        self.envoi_msg("askall")
-        self.envoi_msg("askinfo")
-        self.envoi_msg("askscore")
-
-    def defer_envoi_msg(self) :
-        d = defer.Deferred()
-        d.addCallback(self.envoi_msg)
-        return d
+        reactor.callLater(0.1, self.envoi_msg, "askall")
+        reactor.callLater(0.2, self.envoi_msg, "askinfo")
+        reactor.callLater(0.4, self.envoi_msg, "askscore")
 
     def envoi_msg(self, cmd) :
         self.envoi(msg.msg(cmd))
@@ -255,18 +250,22 @@ class App(wx.App):
             if cmd == 'info' :
                 d.addCallback(self.traite_info)
             elif cmd == 'tirage' :
+                d.addCallback(self.son.play_debut)
                 d.addCallback(self.traite_tirage)
+                d.addCallback(self.traite_tirage_grille)
             elif cmd == 'chrono' :
                 d.addCallback(self.traite_chrono)
             elif cmd == 'error' :
                 d.addCallback(self.traite_error)
             elif cmd == 'mot_top' :
+                d.addCallback(self.son.play_fin_tour)
                 d.addCallback(self.traite_mot_top)
             elif cmd == 'new' :
                 d.addCallback(self.traite_new)
             elif cmd == 'score' :
                 d.addCallback(self.traite_score)
             elif cmd == 'valid' :
+                d.addCallback(self.son.play_valid)
                 d.addCallback(self.traite_valid)
             elif cmd == 'infojoueur' :
                 d.addCallback(self.traite_infojoueur)

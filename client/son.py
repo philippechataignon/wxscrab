@@ -9,6 +9,14 @@ class son :
             'valid':wx.Sound("sound/valid.wav")
         }
 
-    def play(self, nom) :
-        if nom in self.sons :
-            self.sons[nom].Play()
+    def play_debut(self, m) :
+        self.sons['debut'].Play()
+        return m
+
+    def play_valid(self, m) :
+        self.sons['valid'].Play()
+        return m
+
+    def play_fin_tour(self, m) :
+        self.sons['fin_tour'].Play()
+        return m
