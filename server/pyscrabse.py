@@ -142,14 +142,18 @@ class main():
         tir = self.tirage
         coo = coord.coord(coo_str=coo_str)
         controle = self.gr.controle(coo, mot, tir)
+        return channel, mm, controle, coo
+
+    def traite_propo_controle(self, (channel, mm, controle, coo)) :
+        mot = mm.param[1]
         if controle <= 0 :
             point, mot_nonex  = self.gr.point(coo, mot, controle == -1, self.dic)
             self.jo.set_msg_fin_tour(mm.nick, mot_nonex)
             score = point
+            m = msg.msg("valid",(str(coo), mot, point))
             if len(mot_nonex) > 0 :
                 # met le score a 0 si non existant
                 score = 0
-            m = msg.msg("valid",(str(coo), mot, point))
             self.jo.set_points_tour(mm.nick, score)
             if self.options.log :
                 self.log.add_prop(mm.nick, coo, mot, score, self.options.chrono - self.chrono)
@@ -198,6 +202,7 @@ class main():
             d.addCallback(self.traite_joueur)
         elif cmd == 'propo' and self.tour_on :
             d.addCallback(self.traite_propo)
+            d.addCallback(self.traite_propo_controle)
             d.addCallback(self.envoi_msg)
         elif cmd == 'askscore' :
             d.addCallback(self.traite_askscore)
