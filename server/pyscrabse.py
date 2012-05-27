@@ -110,29 +110,29 @@ class main():
             print "En attente"
 
     def traite_joueur(self, (channel, mm)) :
-        proto_serv = net.PROTOCOL
         proto_client = mm.param[0]
         ret = self.jo.add_joueur(mm.nick, proto_client, channel)
+        return channel, mm, ret
+
+    def traite_joueur_ret(self, (channel, mm, ret)) :
+        proto_serv = net.PROTOCOL
         if ret == 1 :
+            proto_client = mm.param[0]
             m = msg.msg("connect",(1,"Connexion OK", proto_serv))
-            channel.envoi(m)
             self.info("Connexion de %s" % mm.nick)
             if proto_client < proto_serv :
-                m = msg.msg("info", "Attention : le protocole de votre programme (%d) est plus ancien que celui du serveur (%d)."  % (proto_client, proto_serv))
-                channel.envoi(m)
-                m = msg.msg("info", "Il faut mettre votre programme à jour dès que possible")
-                channel.envoi(m)
+                txt = "Attention : mettre le programme à jour (%d/%d)" % (proto_client, proto_serv)
+                channel.envoi(msg.msg("info", txt))
             elif proto_serv < proto_client : 
-                m = msg.msg("info", "Info : le protocole du serveur (%d) est plus ancien que celui de votre programme. (%d)" % (proto_serv, proto_client))
-                channel.envoi(m)
+                txt = "Attention : serveur ancien protocole (%d/%d)" % (proto_serv, proto_client)
+                channel.envoi(msg.msg("info", txt))
         elif ret == 0 :
             m = msg.msg("connect",(0,"Erreur : nom existant", proto_serv))
-            channel.envoi(m)
             self.info("Tentative de %s" % mm.nick)
         elif ret == 2 :
             m = msg.msg("connect",(2,"Reconnexion", proto_serv))
-            channel.envoi(m)
             self.info("Reconnexion de %s" % mm.nick)
+        return channel, m
 
     def traite_propo(self, (channel, mm)) :
         # une proposition active le 'tick'
@@ -200,6 +200,8 @@ class main():
         d = defer.Deferred()
         if cmd == 'joueur' :
             d.addCallback(self.traite_joueur)
+            d.addCallback(self.traite_joueur_ret)
+            d.addCallback(self.envoi_msg)
         elif cmd == 'propo' and self.tour_on :
             d.addCallback(self.traite_propo)
             d.addCallback(self.traite_propo_controle)
