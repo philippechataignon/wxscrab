@@ -35,9 +35,9 @@ class tirage :
             lettre = '?'
         lettre = lettre.upper()
         if 'A' <= lettre <= 'Z' or lettre == '?' :
-            for i,j in enumerate(self.jetons) :
+            for j in self.jetons :
                 if j.lettre == lettre :
-                    del self.jetons[i]
+                    self.jetons.remove(j)
                     return True
         return False
 
