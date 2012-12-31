@@ -29,32 +29,32 @@ print_dic_rec(FILE* out, Dictionary dic, char *buf, char* s, Dawg_edge i)
   if (i.term)  /* edge points at a complete word */
     {
       *s = '\0';
-      fprintf (out,"%s\n", buf);     
+      fprintf (out,"%s\n", buf);
     }
-  if (i.ptr)   
+  if (i.ptr)
     {           /* Compute index: is it non-zero ? */
       Dawg_edge *p = dic->dawg + i.ptr;
       do {                         /* for each edge out of this node */
         *s = p->chr + 'a' - 1;
-        print_dic_rec (out,dic,buf,s + 1, *p); 
+        print_dic_rec (out,dic,buf,s + 1, *p);
       }
       while (!(*p++).last);
     }
 }
 
-void 
+void
 dic_load(Dictionary* dic, char* filename)
 {
   int res;
-  if ((res = Dic_load(dic, filename)) != 0) 
+  if ((res = Dic_load(dic, filename)) != 0)
     {
       switch (res) {
-      case 1: printf("chargement: problème d'ouverture de %s\n",filename); break;
+      case 1: printf("chargement: problÃ¨me d'ouverture de %s\n",filename); break;
       case 2: printf("chargement: mauvais en-tete de dictionnaire\n"); break;
-      case 3: printf("chargement: problème 3 d'allocation mémoire\n"); break;
-      case 4: printf("chargement: problème 4 d'alocation mémoire\n"); break;
-      case 5: printf("chargement: problème de lecture des arcs du dictionnaire\n"); break;
-      default: printf("chargement: problème non-repertorié\n"); break;
+      case 3: printf("chargement: problÃ¨me 3 d'allocation mÃ©moire\n"); break;
+      case 4: printf("chargement: problÃ¨me 4 d'alocation mÃ©moire\n"); break;
+      case 5: printf("chargement: problÃ¨me de lecture des arcs du dictionnaire\n"); break;
+      default: printf("chargement: problÃ¨me non-repertoriÃ©\n"); break;
       }
       exit(res);
     }
@@ -66,7 +66,7 @@ print_dic_list(char* filename, char* out)
   FILE* fout;
   Dictionary dic;
   static char buf[80];
-  
+
   dic_load(&dic,filename);
 
   if (strcmp(out,"stdout") == 0)
@@ -167,7 +167,7 @@ print_dic_hex(char* filename)
   int i;
   Dictionary dic;
   dic_load(&dic,filename);
-  
+
   printf("offs binary       structure         \n");
   printf("---- -------- |   ------------------\n");
   for(i=0; i < (dic->nedges + 1); i++)
@@ -186,7 +186,7 @@ usage(char* name)
 }
 
 
-int 
+int
 main(int argc, char *argv[])
 {
   int arg_count;
@@ -195,12 +195,12 @@ main(int argc, char *argv[])
   int option_print_dic_hex  = 0;
   int option_print_dic_list = 0;
 
-  if (argc < 2) 
+  if (argc < 2)
     {
       usage(argv[0]);
       exit(1);
     }
-     
+
   arg_count = 1;
   while(argv[arg_count][0] == '-')
     {
@@ -215,7 +215,7 @@ main(int argc, char *argv[])
 	}
       arg_count++;
     }
-     
+
   if (option_print_header || option_print_all)
     {
       print_header(argv[arg_count]);
