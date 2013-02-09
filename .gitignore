@@ -11,3 +11,4 @@ setup*.exe
 *.pyw
 gen/listdic
 gen/compdic
+.sconsign.dblite
