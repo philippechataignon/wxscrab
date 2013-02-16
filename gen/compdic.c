@@ -105,13 +105,13 @@ print_header_info(Dict_header *header)
 {
   printf("============================\n");
   printf("keyword length %d bytes\n",(int)strlen(_COMPIL_KEYWORD_));
-  printf("keyword size   %d bytes\n",sizeof(_COMPIL_KEYWORD_));
-  printf("header size    %d bytes\n",sizeof(Dict_header));
+  printf("keyword size   %ld bytes\n",sizeof(_COMPIL_KEYWORD_));
+  printf("header size    %ld bytes\n",sizeof(Dict_header));
   printf("\n");
   printf("%d words\n",header->nwords);
   printf("\n");
   printf("root : %7d (edge)\n",header->root);
-  printf("root : %7d (byte)\n",header->root * sizeof(Dawg_edge));
+  printf("root : %7ld (byte)\n",header->root * sizeof(Dawg_edge));
   printf("\n");
   printf("nodes : %d+%d\n",header->nodesused, header->nodessaved);
   printf("edges : %d+%d\n",header->edgesused, header->edgessaved);
