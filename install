@@ -1,5 +1,4 @@
 #!/bin/sh
 cd gen
-make
-python2 setup.py build
-sudo python2 setup.py install
+scons
+python setup.py install
