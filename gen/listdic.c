@@ -101,7 +101,7 @@ void print_header(char *filename)
 	printf("nodes used  : %8d\n", header.nodesused);
 	printf("nodes saved : %8d\n", header.nodessaved);
 	printf("edges saved : %8d\n", header.edgessaved);
-	printf("size header : %8ld\n", sizeof(header));
+	printf("size header : %8zd\n", sizeof(header));
 }
 
 void print_node_hex(int i, Dictionary dic)

@@ -24,17 +24,17 @@
 #include "dic_internals.h"
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 typedef struct _Dictionary* Dictionary;
-typedef unsigned int uint_t;
+typedef uint32_t uint_t;
 
 int    Dic_load   (Dictionary*,const char*);
 int    Dic_destroy(Dictionary);
 
   /*************************
-   * functions to access the elements 
+   * functions to access the elements
    *************************/
 
 char   Dic_chr (Dictionary,uint_t);
@@ -49,5 +49,5 @@ uint_t Dic_succ(Dictionary,uint_t);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 #endif

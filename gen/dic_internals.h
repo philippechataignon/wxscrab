@@ -20,6 +20,8 @@
  */
 #ifndef _DIC_INTERNALS_H
 #define _DIC_INTERNALS_H
+
+#include <stdint.h>
 /*
 
    structure of a compressed dictionary
@@ -40,32 +42,32 @@
 
 #define _COMPIL_KEYWORD_ "_COMPILED_DICTIONARY_"
 
-typedef struct _Dawg_edge { 
-    unsigned int ptr  : 24; 
-    unsigned int term : 1;  
-    unsigned int last : 1;  
-    unsigned int fill : 1;  
-    unsigned int chr  : 5;  
-} Dawg_edge;    
+typedef struct _Dawg_edge {
+    uint32_t ptr  : 24;
+    uint32_t term : 1;
+    uint32_t last : 1;
+    uint32_t fill : 1;
+    uint32_t chr  : 5;
+} Dawg_edge;
 
 typedef struct _Dict_header {
     char ident[sizeof(_COMPIL_KEYWORD_)];
     char unused_1;
     char unused_2;
-    int root;
-    int nwords;
-    unsigned int edgesused;
-    unsigned int nodesused;
-    unsigned int nodessaved;
-    unsigned int edgessaved;
+    int32_t root;
+    int32_t nwords;
+    uint32_t edgesused;
+    uint32_t nodesused;
+    uint32_t nodessaved;
+    uint32_t edgessaved;
 } Dict_header;
 
 struct _Dictionary {
-    Dawg_edge *dawg; 
-    unsigned int root;
-    int nwords;
-    int nnodes;
-    int nedges;
+    Dawg_edge *dawg;
+    uint32_t root;
+    int32_t nwords;
+    int32_t nnodes;
+    int32_t nedges;
 };
 
 #endif
