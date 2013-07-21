@@ -26,7 +26,6 @@ class main():
         self.delta_calllater = 1
         self.votes = {}
         self.votants = {}
-        self.d = defer.Deferred()
 
     def debut_game(self, attente=2) :
         self.partie_on = True
