@@ -7,6 +7,7 @@ import xml.etree.cElementTree as ET
 import time
 import os
 import subprocess
+import random
 
 import coord
 import tirage
@@ -20,7 +21,6 @@ class partie:
             nbtour = int(tree.find("resume/nbtour").text)
             if tot >= 900 and 16 <= nbtour <= 24 :
                 break
-            time.sleep(1)
         self.liste = []
         tour = 0
         for e in tree.findall("tour"):
@@ -39,12 +39,15 @@ class partie:
         return  os.path.basename(self.file_partie)
 
     def gen_part(self):
+        r = random.SystemRandom()
         pgm = '../gen/gen_part'
         rep = "partie"
-        nom_partie = "p_%s.partie" % time.strftime("%Y%m%d%H%M%S")
+        num = r.randrange(0,2**32)
+        seed = r.randrange(0,2**16)
+        nom_partie = "p_%d_%d.partie" % (num, seed)
         self.file_partie = os.path.join(rep, nom_partie)
         f = open(self.file_partie, "w")
-        subprocess.call([pgm, '-d', self.options.dico], stdout = f)
+        subprocess.call([pgm, '-d', self.options.dico, '-n', str(num), '-s', str(seed)], stdout = f)
         f.close()
         tree = ET.parse(self.file_partie)
         return tree
