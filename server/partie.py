@@ -14,17 +14,13 @@ import tirage
 class partie:
     def __init__(self, options) :
         self.options = options
-        if self.options.game is None :
-            pgm = '../gen/gen_part'
-            rep = "partie"
-            nom_partie = "p_%s.partie" % time.strftime("%Y%m%d%H%M%S")
-            self.file_partie = os.path.join(rep, nom_partie)
-            f = open(self.file_partie, "w")
-            subprocess.call([pgm, '-d', self.options.dico], stdout = f)
-            f.close()
-        else :
-            self.file_partie = self.options.game
-        tree = ET.parse(self.file_partie)
+        while True :
+            tree = self.gen_part()
+            tot = int(tree.find("resume/total").text)
+            nbtour = int(tree.find("resume/nbtour").text)
+            if tot >= 900 and 16 <= nbtour <= 24 :
+                break
+            time.sleep(1)
         self.liste = []
         tour = 0
         for e in tree.findall("tour"):
@@ -41,6 +37,17 @@ class partie:
 
     def get_nom_partie(self) :
         return  os.path.basename(self.file_partie)
+
+    def gen_part(self):
+        pgm = '../gen/gen_part'
+        rep = "partie"
+        nom_partie = "p_%s.partie" % time.strftime("%Y%m%d%H%M%S")
+        self.file_partie = os.path.join(rep, nom_partie)
+        f = open(self.file_partie, "w")
+        subprocess.call([pgm, '-d', self.options.dico], stdout = f)
+        f.close()
+        tree = ET.parse(self.file_partie)
+        return tree
 
 if __name__ == '__main__' :
     import dico

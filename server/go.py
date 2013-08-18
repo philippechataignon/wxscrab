@@ -16,8 +16,6 @@ import net
 
 usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage=usage)
-parser.add_option("-g", "--game", dest="game", default=None,
-        help="indique le fichier partie (défaut partie générée)")
 parser.add_option("-d", "--dico", dest="dico", default="../dic/ods6.dawg",
         help="indique le fichier dictionnaire (defaut ../dic/ods6.dawg)")
 parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
