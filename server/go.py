@@ -26,6 +26,12 @@ parser.add_option("-p", "--port", dest="port", type="int", default=12345,
         help="indique le port du serveur (defaut 12345)")
 parser.add_option("-a", "--attente", dest="attente", type="int", default=30,
         help="temps attente pour debut de partie (defaut 30s)")
+parser.add_option("--minpoint", dest="minpoint", type="int", default=900,
+        help="points mini pour partie (defaut 900)")
+parser.add_option("--mintour", dest="mintour", type="int", default=18,
+        help="tours mini pour partie (defaut 18)")
+parser.add_option("--maxtour", dest="maxtour", type="int", default=24,
+        help="tours maxi pour partie (defaut 24)")
 parser.add_option("-o", "--topping", dest="topping", action="store_true",
         help="indique le score du top au debut du tour")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", 

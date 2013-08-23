@@ -19,7 +19,7 @@ class partie:
             tree = self.gen_part()
             tot = int(tree.find("resume/total").text)
             nbtour = int(tree.find("resume/nbtour").text)
-            if tot >= 900 and 16 <= nbtour <= 24 :
+            if tot >= options.minpoint and options.mintour <= nbtour <= options.maxtour :
                 break
         self.liste = []
         tour = 0
