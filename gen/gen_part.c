@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <getopt.h>
@@ -380,7 +379,7 @@ main(int argc, char *argv[])
     Dictionary dic ;
     unsigned short int state[3] ;
     static char* nomdic = "../dic/ods6.dawg" ;
-    long int seed = time(0) ;
+    unsigned long int seed = time(0) ;
     int noprint = 0;
     int notiret = 0;
     int nbessai = 1000;
@@ -412,7 +411,7 @@ main(int argc, char *argv[])
                 nomdic = optarg;
                 break;
             case 'n':
-                seed = atoi(optarg);
+                seed = strtoul(optarg, NULL, 10);
                 break;
             case 'h' :
                 help() ;
@@ -479,8 +478,8 @@ main(int argc, char *argv[])
 
     printf("<?xml version=\"1.0\"?>\n");
     printf("<partie ");
-    printf("num=\"%ld\" ",seed);
-    printf("seed=\"%d\" ",state[2]);
+    printf("num=\"%lu\" ",seed);
+    printf("seed=\"%u\" ",state[2]);
     printf("dic=\"%s\" >\n",nomdic) ;
     
     game = Game_create(dic);
