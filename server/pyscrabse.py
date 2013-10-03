@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 sys.path.append('../common')
+import time
 
 import xml.etree.cElementTree as ET
 
@@ -47,6 +48,7 @@ class main():
     def first_tour(self) :
         self.envoi_all(msg.msg("new"))
         print "-"*20, self.pa.get_nom_partie(),"-"*20
+        print time.strftime('%A %d %B %Y %H:%M')
         print self.options
         reactor.callLater(self.delta_calllater, self.debut_tour)
 
@@ -79,7 +81,7 @@ class main():
         else :
             self.stop_chrono()
             reactor.callLater(self.delta_calllater, self.fin_tour)
-            
+
     def fin_tour(self) :
         self.tour_on = False
         self.jo.check_tick()
@@ -122,7 +124,7 @@ class main():
             if proto_client < proto_serv :
                 txt = "Attention : mettre le programme à jour (%d/%d)" % (proto_client, proto_serv)
                 channel.envoi(msg.msg("info", txt))
-            elif proto_serv < proto_client : 
+            elif proto_serv < proto_client :
                 txt = "Attention : serveur ancien protocole (%d/%d)" % (proto_serv, proto_client)
                 channel.envoi(msg.msg("info", txt))
         elif ret == 0 :
@@ -178,7 +180,7 @@ class main():
         return channel, m
 
     def traite_askinfo(self, (channel, mm)) :
-        proto, score, top, pct, message = self.jo.get_infos_joueur(mm.nick) 
+        proto, score, top, pct, message = self.jo.get_infos_joueur(mm.nick)
         if self.tour_on :
             message = []
         m = msg.msg("infojoueur", (score, top, pct, message))
@@ -238,7 +240,7 @@ class main():
         d = defer.Deferred()
         for j in self.jo.liste_envoi() :
             d.addCallback(j.channel.envoi)
-        reactor.callLater(0, d.callback, message) 
+        reactor.callLater(0, d.callback, message)
 
     def stop_chrono(self) :
         self.chrono_on = False
