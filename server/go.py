@@ -30,11 +30,11 @@ parser.add_option("--minpoint", dest="minpoint", type="int", default=900,
         help="points mini pour partie (defaut 900)")
 parser.add_option("--mintour", dest="mintour", type="int", default=18,
         help="tours mini pour partie (defaut 18)")
-parser.add_option("--maxtour", dest="maxtour", type="int", default=24,
+parser.add_option("--maxtour", dest="maxtour", type="int", default=22,
         help="tours maxi pour partie (defaut 24)")
 parser.add_option("-o", "--topping", dest="topping", action="store_true",
         help="indique le score du top au debut du tour")
-parser.add_option("-v", "--verbose", dest="verbose", action="store_true", 
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
         help="sortie des echanges reseau")
 parser.add_option("-l", "--log", dest="log", action="store_true", help="crée un ficher log")
 (options, args) = parser.parse_args()
