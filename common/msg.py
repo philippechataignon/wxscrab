@@ -27,16 +27,16 @@ list_cmd = (
 )
 
 class msg :
-    def __init__(self, cmd = None, param=None, nick=None, dump=None) :
-        if dump is None :
-            self.cmd = cmd
-            self.nick = nick
-            self.param = param
-        else :
-            self.cmd, self.param, self.nick = json.loads(dump)
-        if self.cmd not in list_cmd :
-            print "Erreur : commande %s" % self.cmd
-            self.cmd = None
+    @classmethod
+    def load(cls, dump):
+        data = json.loads(dump)
+        return cls(*data)
+
+    def __init__(self, cmd, param=None, nick=None) :
+        assert cmd in list_cmd
+        self.cmd = cmd
+        self.nick = nick
+        self.param = param
 
     def __str__(self) :
         return repr([self.cmd, self.param, self.nick])
@@ -48,7 +48,7 @@ class msg :
         return json.dumps([self.cmd, self.param, self.nick])
 
 if __name__ == '__main__' :
-    m = msg("chat", [0, 2], "philippe")
+    m = msg("cha", [0, 2], "philippe")
     d = m.dump()
     print m, d
     n = msg(dump=d)

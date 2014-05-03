@@ -22,7 +22,7 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         print "Deconnect %s" % self.transport.getPeer()
 
     def stringReceived(self, dump):
-        mm = msg.msg(dump=dump)
+        mm = msg.msg.load(dump)
         if self.factory.parent.options.verbose :
             print "<- %s" % mm
         # renvoit un deferred
