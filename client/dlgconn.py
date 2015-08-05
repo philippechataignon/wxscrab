@@ -15,13 +15,13 @@ class dlgconnframe(wx.Frame):
         self.settings = app.settings
         fill = self.settings["size_fill"]
 
-        conn = wx.FlexGridSizer(rows=3, cols=4, hgap=fill, vgap=fill)
+        conn = wx.FlexGridSizer(rows=2, cols=4, hgap=fill, vgap=fill)
         # conn = wx.GridBagSizer(hgap=fill, vgap=fill)
         space = (fill,fill)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
+        # conn.Add(space)
+        # conn.Add(space)
+        # conn.Add(space)
+        # conn.Add(space)
 
         b = wx.ALIGN_RIGHT | wx.ALIGN_CENTER
         conn.Add(wx.StaticText(panel, label="Serveur : "), flag=b, border = fill)
@@ -34,20 +34,16 @@ class dlgconnframe(wx.Frame):
         conn.Add(self.txtport, flag=wx.EXPAND)
 
         conn.Add(wx.StaticText(panel, label="Pseudo  : "), flag=b)
-        self.txtnom  = wx.TextCtrl(panel, value=self.settings["user_pseudo"])
+        self.txtnom  = wx.TextCtrl(panel, size=(150,-1), value=self.settings["user_pseudo"])
         conn.Add(self.txtnom, flag=wx.EXPAND)
         conn.Add(space)
-        bok = wx.Button(panel, label="OK")
+        bok = wx.Button(panel, size=(100, 28), label="OK")
         bok.SetDefault()
         conn.Add(bok, flag=wx.ALIGN_RIGHT)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
-        conn.Add(space)
         border = wx.BoxSizer(wx.VERTICAL)
         border.Add(conn,0,wx.ALL,10)
         panel.SetSizerAndFit(border)
-        self.SetSize(self.GetBestSize())
+        # self.SetSize(self.GetBestSize())
         self.Bind(wx.EVT_BUTTON, self.click_button_ok, bok)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Centre()

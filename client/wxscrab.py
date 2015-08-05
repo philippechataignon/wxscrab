@@ -24,7 +24,7 @@ import net
 class App(wx.App):
     title = "wxScrab"
     def OnInit(self) :
-        wx.InitAllImageHandlers()
+        # wx.InitAllImageHandlers()
         self.connected = False
         self.settings = settings.settings()
         # Crée la frame principale
@@ -103,7 +103,7 @@ class App(wx.App):
             m = msg.msg("propo", (str(debut), mot, 0))
             self.envoi(m)
         g.reinit_saisie()
-        
+
     def info_serv(self, txt, color = wx.BLACK) :
         self.frame.info_serv(txt, color)
 
@@ -117,7 +117,7 @@ class App(wx.App):
         elif nick == "" :
             self.info_serv(txt, wx.BLUE)
         else :
-            self.info_serv("[%s] %s" % (nick, txt), wx.NamedColor("DARK GREEN"))
+            self.info_serv("[%s] %s" % (nick, txt), wx.NamedColour("DARK GREEN"))
 
     def traite_tirage(self, m) :
         self.score.Show(False)
@@ -141,7 +141,7 @@ class App(wx.App):
         f.timer.SetLabel(utils.convert_time(temps))
         if temps == 0 :
             reactor.callLater(0.2, self.envoi_msg, "tick")
-            
+
     def traite_mot_top(self, m) :
         f = self.frame
         #Fin du tour
@@ -154,8 +154,8 @@ class App(wx.App):
 
     def traite_new(self, m) :
         f = self.frame
-        self.info_serv("="*20, wx.NamedColor("DARK GREEN"))
-        self.info_serv("Nouvelle partie", wx.NamedColor("DARK GREEN"))
+        self.info_serv("="*20, wx.NamedColour("DARK GREEN"))
+        self.info_serv("Nouvelle partie", wx.NamedColour("DARK GREEN"))
         self.score.Show(False)
         f.grille.vide_grille()
         reactor.callLater(0.2, self.envoi_msg, "askinfo")
@@ -218,7 +218,7 @@ class App(wx.App):
         utils.errordlg(m.param,"Erreur")
 
     def traite_serverok(self, m) :
-        self.info_serv("Serveur OK", wx.NamedColor("DARK GREEN"))
+        self.info_serv("Serveur OK", wx.NamedColour("DARK GREEN"))
         self.frame.SetTitle(App.title + ' - ' + self.nick)
 
     def traite_connect(self, m) :
@@ -227,9 +227,9 @@ class App(wx.App):
             utils.errordlg(m.param[1],"Erreur : nom existant")
             f.Close()
         elif m.param[0] == 1 :
-            self.info_serv("Connexion établie", wx.NamedColor("DARK GREEN"))
+            self.info_serv("Connexion établie", wx.NamedColour("DARK GREEN"))
         elif m.param[0] == 2 :
-            self.info_serv("Reconnexion établie", wx.NamedColor("DARK GREEN"))
+            self.info_serv("Reconnexion établie", wx.NamedColour("DARK GREEN"))
         self.settings.write()
         self.connected = True
         reactor.callLater(0.1, self.envoi_msg, "askall")
