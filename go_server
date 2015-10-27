@@ -1,3 +1,4 @@
 #!/bin/sh
+echo "GO: $OPTS"
 cd server
-./go.py
+python -u go.py $OPTS
