@@ -116,8 +116,8 @@ print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int
     return 0;
 }
 
-score 
-traite(Game game, int num, unsigned short int state[3]) 
+score
+traite(Game game, int num, unsigned short int state[3])
 {
     if (verbeux >=1) {
         char mot[WORD_SIZE_MAX] ;
@@ -128,15 +128,15 @@ traite(Game game, int num, unsigned short int state[3])
     }
     score w_score ;
     w_score.cross = traite_cross(game,num) ;
-    w_score.best  = traite_best(game,num,state) ; 
+    w_score.best  = traite_best(game,num,state) ;
     w_score.scrab = traite_scrab(game,num) ;
     w_score.pc    = traite_pc(game,num) ;
     w_score.joker = traite_joker(game,num) ;
     return w_score ;
 }
 
-int 
-traite_cross(Game game, int num) 
+int
+traite_cross(Game game, int num)
 {
     int score ;
     Game_testplay(game, num) ;
@@ -148,8 +148,8 @@ traite_cross(Game game, int num)
     return score ;
 }
 
-int 
-traite_scrab(Game game, int num) 
+int
+traite_scrab(Game game, int num)
 {
     int score ;
     Game_testplay(game, num) ;
@@ -161,8 +161,8 @@ traite_scrab(Game game, int num)
     return score ;
 }
 
-int 
-traite_joker(Game game, int num) 
+int
+traite_joker(Game game, int num)
 {
     int i;
     int score = 2 ;
@@ -184,8 +184,8 @@ traite_joker(Game game, int num)
     return score ;
 }
 
-int 
-traite_pc(Game game, int num) 
+int
+traite_pc(Game game, int num)
 {
     int i;
     int score = 0 ;
@@ -210,14 +210,14 @@ traite_pc(Game game, int num)
 }
 
 score_best
-traite_best(Game game, int num, unsigned short int state[3]) 
+traite_best(Game game, int num, unsigned short int state[3])
 {
     int i;
     score_best sscore ;
     unsigned short int contexte[3] ;
     Game g ;
     int tir ;
-    
+
     /* sauve le contexte rand */
     for (i=0 ; i<3 ; i++) {
         contexte[i] = state[i] ;
@@ -270,8 +270,8 @@ fin:
     return sscore ;
 }
 
-int 
-fin_partie (Game game, int noprint, int nbscrab, int maxisotop) 
+int
+fin_partie (Game game, int noprint, int nbscrab, int maxisotop)
 {
     printf("<resume>\n<total>%d</total>\n",Game_getpoints (game)) ;
     printf("<nbtour>%d</nbtour>\n",Game_getnrounds(game)) ;
@@ -317,19 +317,19 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
             Game_setrack_random(game, state, 1) ;
             Game_search(game);
         }
-        
+
         if (nbessai < 0) {
             fin_partie(game,noprint,nbscrab,maxisotop) ;
             return 0 ;
         }
-        
+
         nbisotop = Game_getnresults(game) ;
         nbsol    = Game_getntotal(game) ;
-        
+
         if (nbisotop > maxisotop) {
             maxisotop = nbisotop ;
         }
-    
+
         if (nbisotop == 1) {
             Game_play(game, 0) ;
         } else {
@@ -361,13 +361,13 @@ help()
     puts ("Génération de parties Scrabble - Philippe CHATAIGNON") ;
     puts ("d'après Eliot - Antoine FRABOULET - sous license GPL") ;
     puts ("");
-    puts ("Utilisation : gen_part [-d dictionnaire] [-n numéro] [-s seed] [-v] [-q] [-h]") ; 
-    puts ("        -d : fichier dawg contenant le dictionnaire (par défaut : ../dic/ods6.dawg)");
+    puts ("Utilisation : gen_part [-d dictionnaire] [-n numéro] [-s seed] [-v] [-q] [-h]") ;
+    puts ("        -d : fichier dawg contenant le dictionnaire (par défaut : ../dic/ods7.dawg)");
     puts ("        -n : numéro de la partie à générer ; par défaut, utilise time(0)");
     puts ("        -s : seed, valeur de la variante  ; par défaut, 47482");
     puts ("        -q : n'imprime que les statistiques de la partie");
     puts ("        -t : n'imprime pas un - devant les tirages rejetés");
-    puts ("        -e : nombre d'essais de tirages si absence de solution (par défaut : 1000) ; -e0 pour supprimer la fonctionnalité");    
+    puts ("        -e : nombre d'essais de tirages si absence de solution (par défaut : 1000) ; -e0 pour supprimer la fonctionnalité");
     puts ("        -h : affiche cette aide");
     puts ("");
 }
@@ -378,7 +378,7 @@ main(int argc, char *argv[])
     Game game ;
     Dictionary dic ;
     unsigned short int state[3] ;
-    static char* nomdic = "../dic/ods6.dawg" ;
+    static char* nomdic = "../dic/ods7.dawg" ;
     unsigned long int seed = time(0) ;
     int noprint = 0;
     int notiret = 0;
@@ -429,11 +429,11 @@ main(int argc, char *argv[])
             default:
                 abort ();
         }
-    }    
+    }
 
     if (! nomdic) {
         help() ;
-        puts("Spécifier un dictionnaire avec l'option -d (ex : -d ods4.dawg)") ;
+        puts("Spécifier un dictionnaire avec l'option -d (ex : -d ods7.dawg)") ;
         exit(11);
     }
 
@@ -481,7 +481,7 @@ main(int argc, char *argv[])
     printf("num=\"%lu\" ",seed);
     printf("seed=\"%u\" ",state[2]);
     printf("dic=\"%s\" >\n",nomdic) ;
-    
+
     game = Game_create(dic);
     main_loop(game,noprint,notiret,nbessai,state);
     Game_destroy(game);
