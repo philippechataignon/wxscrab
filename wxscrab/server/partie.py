@@ -40,7 +40,7 @@ class partie:
 
     def gen_part(self):
         r = random.SystemRandom()
-        pgm = '../gen/gen_part'
+        pgm = '/gen_part'
         rep = "partie"
         num = r.randrange(0,2**32)
         seed = r.randrange(0,2**16)
