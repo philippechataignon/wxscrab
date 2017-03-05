@@ -1,7 +1,4 @@
-/wxscrab/gen/compdic
-/wxscrab/gen/listdic
-/wxscrab/gen/gen_part
-/wxscrab/win/dist
+gen/
 Makefile.dep
 *.o
 *.partie

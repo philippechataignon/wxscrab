@@ -1,0 +1,4 @@
+#!/bin/sh
+mkdir -p gen
+cp ~/wxscrab_gen/gen_part gen
+cp ~/wxscrab_gen/dist/* gen
