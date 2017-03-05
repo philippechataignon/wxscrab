@@ -1,9 +1,5 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
-
-import sys
-sys.path.append('../common')
-
 import msg
 import xml.etree.cElementTree as ET
 
@@ -36,7 +32,7 @@ class joueurs :
         return len(self.nick2joueur)
 
     def liste_actif(self) :
-        # les joueurs actifs sont les joueurs connectés 
+        # les joueurs actifs sont les joueurs connectés
         # ou ayant fait un score dans le tour
         return [j for j in self.nick2joueur.itervalues() if (j.channel is not None or j.tick)]
 
@@ -45,7 +41,7 @@ class joueurs :
 
     def add_joueur(self, nick, proto, channel) :
         if nick in self.nick2joueur :
-            j = self.nick2joueur[nick] 
+            j = self.nick2joueur[nick]
             if j.channel is None :
                 j.channel = channel
                 return 2
@@ -136,7 +132,7 @@ class joueurs :
                 j.rang = last_rang
                 l_ber.append(j)
                 sum_ber += (len(l) - rg)
-            last_points, last_rang = j.points_tour, j.rang 
+            last_points, last_rang = j.points_tour, j.rang
             rg += 1
         for jb in l_ber :
             jb.points_ber += float(sum_ber)/len(l_ber)
@@ -147,7 +143,7 @@ class joueurs :
             if j.points_tour == score_top :
                 j.nb_top += 1
                 liste_top.append(j)
-            if j.channel is not None : 
+            if j.channel is not None :
                 m = msg.msg("info", "Score : %d - Ecart : %d - Rang : %d/%d" %
                     (j.points_tour, j.points_tour-score_top, j.rang, len(l)))
                 j.channel.envoi(m)
@@ -170,18 +166,18 @@ class joueurs :
                 j.rang_total = last_rang
             else :
                 j.rang_total = rg
-            last_points, last_rang = j.points_total, j.rang_total 
+            last_points, last_rang = j.points_total, j.rang_total
             rg += 1
 
         l_msg = []
         if len(liste_top) == 0 :
             if len(liste_best) > 0 :
-                txt = "Meilleur score (%d points) : %s" % (liste_best[0].points_tour, 
+                txt = "Meilleur score (%d points) : %s" % (liste_best[0].points_tour,
                         self.l_comma(liste_best))
                 l_msg.append(txt)
         elif len(liste_top) == 1 :
             liste_top[0].nb_solo += 1
-            txt = "%s a fait un solo" % liste_top[0].nick 
+            txt = "%s a fait un solo" % liste_top[0].nick
             l_msg.append(txt)
         elif len(liste_top) > 0 :
             txt = "Top réalisé par : %s " % self.l_comma(liste_top)
@@ -212,7 +208,7 @@ class joueurs :
             nom = ET.SubElement(ligne, "nom", type="s")
             if j.rang_total == 0 :
                 nom.text = unicode(j.nick)
-            else: 
+            else:
                 nom.text  = "%d. %s" % (j.rang_total, unicode(j.nick))
             e = ET.SubElement(ligne, "val", type="i")
             e.text = "%d" % j.points_total

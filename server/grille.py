@@ -1,8 +1,5 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append('../common')
-
 import case
 import jeton
 
@@ -13,7 +10,7 @@ MD = 3
 MT = 4
 
 erreur_msg = {
-  1:   "Contradiction avec des lettres déjà posées sur la grille", 
+  1:   "Contradiction avec des lettres déjà posées sur la grille",
   2:   "Mot impossible avec les lettres du tirage" ,
   3:   "Coordonnées mal indiquées" ,
   4:   "Pas de nouvelles lettres posées" ,
@@ -109,15 +106,15 @@ class grille :
             if self.case_vide(c) :
                 self.case_coord(c).jeton = jeton.jeton(l)
             c = c.next()
-        
+
     def vide(self) :
         for case in self.cases.itervalues() :
             if not case.isVide() :
                 return False
-        return True 
+        return True
 
     def controle (self, w_coord , w_mot , w_tirage) :
-        """ 
+        """
         Controle à partir d'une coord, d'un mot et d'un tirage si une erreur
         de placement est rencontré
         Renvoie le code d'erreur ; 0 si pas d'erreur
@@ -129,7 +126,7 @@ class grille :
         passecentrale = False               # vérifie que le mot passe en H8 au tour 1
         scrab = False                       # test si un scrabble est réalisé
 
-        t = w_tirage.copy()                 # copie du tirage pour travailler 
+        t = w_tirage.copy()                 # copie du tirage pour travailler
 
         if not w_coord.isOK() :             # si coordonnée en erreur
             return 3
@@ -151,7 +148,7 @@ class grille :
                 return 7
 
             # positionne passecentrale si on passe en H8
-            if i_coord.is_centre() : 
+            if i_coord.is_centre() :
                 passecentrale = True
 
             # cas ou la case est vide
@@ -159,13 +156,13 @@ class grille :
                 # on retire la lettre du tirage si on peut
                 # sinon erreur
                 if t.retire(l) == True :
-                    newlettre = True 
+                    newlettre = True
                 else:
                     return 2
 
                 # si la case dessus ou dessous est occupée, on a un soutien
                 if self.case_nonvide(i_coord.haut()) or self.case_nonvide(i_coord.bas()) :
-                    soutien = True 
+                    soutien = True
             else :
                 # cas où la case est occupée
                 # dans ce cas, on a un soutien pour le mot
@@ -173,7 +170,7 @@ class grille :
                 # et celle qui est dans le mot proposé
                 if l.upper() != self.case_coord(i_coord).jeton.lettre.upper() :
                     return 1
-                soutien = True 
+                soutien = True
             # case suivante
             i_coord = i_coord.next()
 
@@ -206,7 +203,7 @@ class grille :
 
         Test réalisé avec dic
         """
-        
+
         point = 0          # initialise le score
         totv = 0           # initialse le cumul des mots réalisés en posant des lettres
         multmot = 1        # initialise le multiplicateur de score
@@ -218,7 +215,7 @@ class grille :
             mot_nonex.append(w_mot)
 
         for l in w_mot :
-            # on parcourt chaque lettre du mot        
+            # on parcourt chaque lettre du mot
             jl = jeton.jeton(l)
             pointl = jl.point               # nombre de points de la lettre courante
 
@@ -236,7 +233,7 @@ class grille :
 
                 # on remonte vers le haut/gauche tant que les cases sont occupées
                 j_coord = i_coord.haut()
-                while self.case_nonvide(j_coord) : 
+                while self.case_nonvide(j_coord) :
                     j = self.case_coord(j_coord).jeton
                     motv = j.lettre + motv  # on insère les lettres par l'avant
                     pointv += j.point       # on cumule les points sans prime
@@ -245,7 +242,7 @@ class grille :
 
                 # on descend vers le bas/droite tant que les cases sont occupées
                 j_coord = i_coord.bas()
-                while self.case_nonvide(j_coord) : 
+                while self.case_nonvide(j_coord) :
                     j = self.case_coord(j_coord).jeton
                     motv += j.lettre        # on insère les lettres par l'avant
                     pointv += j.point       # on cumule les points sans prime
@@ -264,15 +261,15 @@ class grille :
                 # renvoie 0 pour le score global si inexistant
                 # met à jour totv sinon
                 if tvois :
-                    if dic.isMot(motv) == False : 
+                    if dic.isMot(motv) == False :
                         mot_nonex.append(motv)
-                    totv += pointv 
+                    totv += pointv
             else :
                 # la case n'est pas vide
                 if self.case_joker(i_coord) :
                     # la case contient un joker, donc 0 point
                     # y compris si l'utilisateur n'a pas "shifté" la lettre
-                    pointl = 0 
+                    pointl = 0
 
             # fin de l'analyse de la lettre courante
             # on met à jour point et on passe au suivant

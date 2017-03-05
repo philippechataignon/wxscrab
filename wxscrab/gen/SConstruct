@@ -1,6 +1,0 @@
-env = Environment(CCFLAGS = '-O2')
-env.Program(['gen_part.c','bag.c','board.c', 'board_cross.c', 'board_search.c', 'dic.c',
-    'game.c', 'getopt.c', 'pldrack.c', 'rack.c', 'results.c', 
-    'round.c', 'tiles.c'])
-env.Program(['listdic.c', 'dic.c'])
-env.Program(['compdic.c', 'hashtable.c'])

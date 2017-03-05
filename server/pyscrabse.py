@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append('../common')
 import time
 
 import xml.etree.cElementTree as ET

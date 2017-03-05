@@ -16,8 +16,8 @@ import net
 
 usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage=usage)
-parser.add_option("-d", "--dico", dest="dico", default="../dic/ods7.dawg",
-        help="indique le fichier dictionnaire (defaut ../dic/ods7.dawg)")
+parser.add_option("-d", "--dico", dest="dico", default="/dic/ods7.dawg",
+        help="indique le fichier dictionnaire (defaut /dic/ods7.dawg)")
 parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
         help="indique le temps par tour en secondes (defaut 120, soit 2mn)")
 parser.add_option("-i", "--inter", dest="inter", type="int", default=15,
