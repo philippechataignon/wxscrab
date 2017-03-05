@@ -1,0 +1,11 @@
+gen_part
+dist
+*.o
+*.partie
+*.pyc
+*.pyo
+*.pyw
+.sconsign.dblite
+settings.xml
+setup*.exe
+*.so
