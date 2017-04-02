@@ -1,4 +1,3 @@
-gen/
 Makefile.dep
 *.o
 *.partie
