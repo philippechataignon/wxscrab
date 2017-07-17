@@ -37,7 +37,7 @@ class partie:
 
     def gen_part(self):
         r = random.SystemRandom()
-        pgm = '/gen_part'
+        pgm = self.options.gen
         rep = "partie"
         num = r.randrange(0,2**32)
         seed = r.randrange(0,2**16)
@@ -54,11 +54,15 @@ if __name__ == '__main__' :
     import grille
     class options :
         def __init__(self) :
-            self.dico = "../dic/ods5.dawg"
+            self.dico = "../dic/ods7.dawg"
+            self.gen = "../gen/gen_part"
             self.game = "partie/p_20101231164246.partie"
+            self.minpoint = 18
+            self.maxtour = 24
+            self.mintour = 18
             self.game = None
 
-    d = dico.dico("../dic/ods5.dawg")
+    d = dico.dico("../dic/ods7.dawg")
     g = grille.grille()
     c = coord.coord()
     o = options()
