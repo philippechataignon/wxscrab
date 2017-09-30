@@ -1,4 +1,3 @@
-gen_part
 dist
 *.o
 *.partie
@@ -9,3 +8,11 @@ dist
 settings.xml
 setup*.exe
 *.so
+SConstruct.atari
+compdic*
+gen_part*
+listdic*
+ods7.*
+ods7.*
+ods7.*
+swapdic
