@@ -40,7 +40,7 @@
 
 #define CHAR    0x1F
 
-#define _COMPIL_KEYWORD_ "_COMPILED_DICTIONARY_"
+#define _COMPIL_KEYWORD_ "__DIC__"
 
 typedef struct _Dawg_edge {
     uint32_t ptr  : 24;
@@ -52,8 +52,6 @@ typedef struct _Dawg_edge {
 
 typedef struct _Dict_header {
     char ident[sizeof(_COMPIL_KEYWORD_)];
-    char unused_1;
-    char unused_2;
     int32_t root;
     int32_t nwords;
     uint32_t edgesused;

@@ -69,8 +69,6 @@ int file_length(const char *file_name)
 
 void skip_init_header(FILE * outfile, Dict_header * header)
 {
-	header->unused_1 = 0;
-	header->unused_2 = 0;
 	header->root = 0;
 	header->nwords = 0;
 	header->nodesused = 1;

@@ -93,8 +93,6 @@ void print_header(char *filename)
 
 	printf("Dictionary header information\n");
 	printf("ident       : %s\n", header.ident);
-	printf("unused 1    : %8d\n", header.unused_1);
-	printf("unused 2    : %8d\n", header.unused_2);
 	printf("root        : %8d\n", header.root);
 	printf("words       : %8d\n", header.nwords);
 	printf("edges used  : %8d\n", header.edgesused);
