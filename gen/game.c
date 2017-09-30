@@ -300,17 +300,24 @@ Game_setrack_random(Game game, unsigned short int etat[3], int force_vide)
     // 1 si retirage
     //
     Playedrack p = game->playedracks[game->nrounds] ;
+    int essai_max = 10;
     int retour = 0 ;
     int res ;
-    if (force_vide)
-        res = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
-    else
-        res = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
-    if (res == 0) {
-        retour = 1 ;
-        while ((res = Game_setrack_random_aux(game,p,RACK_ALL,etat)) == 0) ;
-    } else if (res >= 2) {
-        retour = -1 ;
+    int ok = 0;
+    while(!ok && essai_max > 0) {
+        if (force_vide)
+            res = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
+        else
+            res = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
+        if (res == 1) {
+            ok = 1;
+            retour = 0;
+        } else if (res >= 2) {
+            ok = 1;
+            retour = -1 ;
+        }
+        essai_max--;
+        retour = 1;
     }
     return retour ;
 }
