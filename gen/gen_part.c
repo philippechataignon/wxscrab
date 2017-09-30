@@ -36,6 +36,7 @@
 #include "gen_part.h"
 
 int verbeux = 0;
+int use_best = 1;
 
 int
 cmp_score_best(score_best score_a, score_best score_b)
@@ -60,7 +61,12 @@ int
 cmp_score(score score_a, score score_b)
 {
     // renvoit 1 si score_a > score_b, 0 si =, -1 sinon
-    int d_best  = cmp_score_best(score_a.best, score_b.best) ;
+    int d_best;
+    if (use_best) {
+        d_best  = cmp_score_best(score_a.best, score_b.best) ;
+    } else {
+        d_best = 0;
+    }
     int d_cross = score_a.cross - score_b.cross ;
     int d_scrab = score_a.scrab - score_b.scrab ;
     int d_joker = score_a.joker - score_b.joker ;
@@ -128,7 +134,9 @@ traite(Game game, int num, unsigned short int state[3])
     }
     score w_score ;
     w_score.cross = traite_cross(game,num) ;
-    w_score.best  = traite_best(game,num,state) ;
+    if (use_best) {
+        w_score.best = traite_best(game,num,state);
+    }
     w_score.scrab = traite_scrab(game,num) ;
     w_score.pc    = traite_pc(game,num) ;
     w_score.joker = traite_joker(game,num) ;
@@ -368,6 +376,7 @@ help()
     puts ("        -q : n'imprime que les statistiques de la partie");
     puts ("        -t : n'imprime pas un - devant les tirages rejetés");
     puts ("        -e : nombre d'essais de tirages si absence de solution (par défaut : 1000) ; -e0 pour supprimer la fonctionnalité");
+    puts ("        -b : pas de best score (couteux en temps)");
     puts ("        -h : affiche cette aide");
     puts ("");
 }
@@ -390,7 +399,7 @@ main(int argc, char *argv[])
     state[2] = 0xB97A ;
 
     opterr = 0;
-    while ((c = getopt (argc, argv, "qd:n:s:e:vht")) != -1) {
+    while ((c = getopt (argc, argv, "bqd:n:s:e:vht")) != -1) {
         switch (c) {
             case 'v':
                 verbeux++;
@@ -403,6 +412,9 @@ main(int argc, char *argv[])
                 break;
             case 't':
                 notiret = 1;
+                break;
+            case 'b':
+                use_best = 0;
                 break;
             case 'q':
                 noprint = 1;
