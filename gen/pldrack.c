@@ -46,7 +46,7 @@ Playedrack_create(void)
     return p;
 }
 
-void 
+void
 Playedrack_init(Playedrack p)
 {
     p->oldtiles[0] = '\0';
@@ -55,7 +55,7 @@ Playedrack_init(Playedrack p)
     p->nold = 0;
 }
 
-void 
+void
 Playedrack_destroy(Playedrack p)
 {
     if (p) {
@@ -89,13 +89,13 @@ Playedrack_nold(Playedrack p)
     return p->nold;
 }
 
-int  
+int
 Playedrack_ntiles(Playedrack p)
 {
     return Playedrack_nold(p) + Playedrack_nnew(p);
 }
 
-int  
+int
 Playedrack_empty(Playedrack p)
 {
     return Playedrack_ntiles(p) == 0;
@@ -131,7 +131,7 @@ Playedrack_oldtiles(Playedrack p, int i) {
         return 0;
     }
 }
- 
+
 tile_t
 Playedrack_newtiles(Playedrack p, int i) {
     if ( 0<=i && i<p->nnew) {
@@ -140,7 +140,7 @@ Playedrack_newtiles(Playedrack p, int i) {
         return 0;
     }
 }
- 
+
 void
 Playedrack_getold(Playedrack p, Rack r)
 {
@@ -162,7 +162,7 @@ Playedrack_getnew(Playedrack p, Rack r)
 }
 
 
-void 
+void
 Playedrack_getrack(Playedrack p, Rack r)
 {
     int i;

@@ -26,7 +26,7 @@
 #include "round.h"
 #include "results.h"
 #include "board.h"
-#include "board_internals.h" 
+#include "board_internals.h"
 
 /*
  * crosschecks
@@ -67,7 +67,7 @@ Board_checkout_tile(Dictionary d, tile_t* tiles, char* joker, int *points)
     unsigned int node,succ;
     unsigned int mask;
     tile_t* t = tiles; //pointeur de travail sur tiles
-    char* j = joker;   // 
+    char* j = joker;   //
 
     mask = 0;
     *points = 0;
@@ -94,7 +94,7 @@ Board_checkout_tile(Dictionary d, tile_t* tiles, char* joker, int *points)
         if (Dic_last(d,succ)) {
             break;
         }
-    } 
+    }
 
     /* points on the right part */
     while (tiles[1]) {
@@ -109,7 +109,7 @@ Board_checkout_tile(Dictionary d, tile_t* tiles, char* joker, int *points)
 }
 
 static void
-Board_check(Dictionary d, 
+Board_check(Dictionary d,
             tile_t        tiles[BOARD_REALDIM][BOARD_REALDIM],
             char          joker[BOARD_REALDIM][BOARD_REALDIM],
             unsigned int  cross[BOARD_REALDIM][BOARD_REALDIM],
@@ -123,7 +123,7 @@ Board_check(Dictionary d,
             // on initialise point à -1
             point[j][i] = -1;
             // si la case est remplie, on ne peut poser aucune lettre (cross=0)
-            if (tiles[i][j]) { 
+            if (tiles[i][j]) {
                 cross[j][i] = 0;
             // sinon, si il y a une lettre au-dessus ou au-dessous, on teste
             } else if (tiles[i][j - 1] || tiles[i][j + 1]) {
@@ -136,7 +136,7 @@ Board_check(Dictionary d,
     }
 }
 
-void  
+void
 Board_buildcross(Dictionary d, Board b)
 {
   Board_check(d,b->tiles_r,b->joker_r,b->cross_c,b->point_c);
@@ -166,12 +166,12 @@ Board_checkout_tile_eval(Dictionary d, tile_t* tiles)
         }
         if (Dic_last(d,succ))
             break;
-    } 
+    }
     return mask;
 }
 
 static int
-Board_check_eval(Dictionary d, 
+Board_check_eval(Dictionary d,
              tile_t tiles[BOARD_REALDIM][BOARD_REALDIM],
              Bag g
              )
@@ -184,12 +184,12 @@ Board_check_eval(Dictionary d,
 
     for(i = 1; i <= BOARD_DIM; i++) {
         for(j = 1; j <= BOARD_DIM; j++) {
-            if (!tiles[i][j] && 
+            if (!tiles[i][j] &&
                 (tiles[i][j-1] || tiles[i][j+1] || tiles[i-1][j] || tiles[i+1][j]) ) {
                 mask = Board_checkout_tile_eval(d, tiles[i] + j) ;
                 for (l=1 ; l<=26 ; l++) {
                     if ( mask & (1<<l) ) {
-                        cumul += 1 
+                        cumul += 1
                             /**(Bag_in(g,l)>0)*/
                             *Tiles_points[l]
                             /**(1+(Tiles_points[l]>1)+2*(Tiles_points[l]>=8))*/
@@ -223,7 +223,7 @@ Board_calc_scrab_tiles(tile_t tiles[BOARD_REALDIM][BOARD_REALDIM])
     for(i = 1; i <= BOARD_DIM; i++) {
         for(j = 1; j <= BOARD_DIM; j++) {
             /* si case vide et case adjacente occupée = anchor */
-            if (!tiles[i][j] && 
+            if (!tiles[i][j] &&
                 (tiles[i][j-1] || tiles[i][j+1] || tiles[i-1][j] || tiles[i+1][j]) ) {
                 k = j ;
                 s = 0;
@@ -243,7 +243,7 @@ Board_calc_scrab_tiles(tile_t tiles[BOARD_REALDIM][BOARD_REALDIM])
     return scrab ;
 }
 
-int 
+int
 Board_calc_scrab(Board b)
 {
 // printf("nb scrab R : %d\n",Board_calc_scrab_tiles(b->tiles_r)) ;

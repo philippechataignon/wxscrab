@@ -22,9 +22,9 @@
 #define _PLAYEDRACK_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 #include "rack.h"
 typedef struct tplayedrack* Playedrack;
 
@@ -60,5 +60,5 @@ int      Playedrack_check_rack  (Playedrack,int);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 #endif

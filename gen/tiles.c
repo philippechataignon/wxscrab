@@ -24,19 +24,19 @@
 
 
 /* The jokers and the 'Y' can be considered both as vowels or consonants */
-const int Tiles_vowels[TILES_NUMBER] = 
+const int Tiles_vowels[TILES_NUMBER] =
 {
 /* x A B C D  E F G H I J  K L M N O P Q R S T U V  W  X  Y  Z ? */
    0,1,0,0,0, 1,0,0,0,1,0, 0,0,0,0,1,0,0,0,0,0,1,0, 0, 0, 0, 0,0
 };
 
-const int Tiles_consonants[TILES_NUMBER] = 
+const int Tiles_consonants[TILES_NUMBER] =
 {
 /* x A B C D  E F G H I J  K L M N O P Q R S T U V  W  X  Y  Z ? */
    0,0,1,1,1, 0,1,1,1,0,1, 1,1,1,1,0,1,1,1,1,1,0,1, 1, 1, 0, 1,0
 };
 
-const int Tiles_numbers[TILES_NUMBER] = 
+const int Tiles_numbers[TILES_NUMBER] =
 {
 /* x A B C D  E F G H I J  K L M N O P Q R S T U V  W  X  Y  Z ? */
    0,9,2,2,3,15,2,2,2,8,1, 1,5,3,6,6,2,1,6,6,6,6,2, 1, 1, 1, 1,2
@@ -66,7 +66,7 @@ const int Tiles_pc[TILES_NUMBER] =
     20, 20, 30, 20, 20, 10, 30, 50, 20, 10, 20,
 //  w  x  y   z   ?
     1, 10, 10, 10, 100000
-    }; 
+    };
 
 tile_t
 chartocode(char c)

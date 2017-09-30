@@ -22,9 +22,9 @@
 #define _GAMESTRUCT_H
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 
 #define PLAYEDRACK_MAX 50
 #include "dic.h"
@@ -54,5 +54,5 @@ struct tgame {
 
 #if defined(__cplusplus)
 }
-#endif 
-#endif 
+#endif
+#endif

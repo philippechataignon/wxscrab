@@ -22,9 +22,9 @@
 #define _RACK_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 
   /*************************
    * A rack is a set of tiles, no more.
@@ -33,7 +33,7 @@ extern "C"
    *************************/
 
 typedef struct track* Rack;
-  
+
   /*************************
    * general routines
    *************************/
@@ -57,6 +57,6 @@ void Rack_remove  (Rack r,tile_t t);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 
 #endif

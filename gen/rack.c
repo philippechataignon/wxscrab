@@ -29,7 +29,7 @@ struct track {
     int ntiles;
 };
 
-Rack 
+Rack
 Rack_create(void)
 {
     Rack r;
@@ -41,14 +41,14 @@ Rack_create(void)
 }
 
 
-void 
+void
 Rack_init(Rack r)
 {
     memset(r,0,sizeof(struct track));
 }
 
 
-void 
+void
 Rack_destroy(Rack r)
 {
     if (r) {
@@ -64,7 +64,7 @@ Rack_copy(Rack dest, Rack source)
 }
 
 
-int 
+int
 Rack_empty(Rack r)
 {
     return r->ntiles == 0;

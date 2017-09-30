@@ -22,9 +22,9 @@
 #define _RESULTS_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 
 #define RESULTS_INTERNAL_MAX 5000
 
@@ -54,5 +54,5 @@ void    Results_addsorted  (Results,Round);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 #endif

@@ -87,13 +87,13 @@ Round_setword(Round r, tile_t* c)
     strncpy((char*)r->word,(char*)c,ROUND_INTERNAL_MAX);
 }
 
-void 
+void
 Round_setrow(Round r, int row)
 {
     r->row = row;
 }
 
-void 
+void
 Round_setcolumn(Round r, int c)
 {
     r->column = c;
@@ -121,31 +121,31 @@ Round_gettile(Round r, int n)
     return r->word[n];
 }
 
-int 
+int
 Round_joker(Round r, int c)
 {
     return r->tileorigin[c] & JOKER;
 }
 
-int 
+int
 Round_playedfromrack(Round r, int c)
 {
     return r->tileorigin[c] & FROMRACK;
 }
 
-int 
+int
 Round_wordlen(Round r)
 {
     return r->wordlen;
 }
 
-int 
+int
 Round_row(Round r)
 {
     return r->row;
 }
 
-int 
+int
 Round_column(Round r)
 {
     return r->column;
@@ -157,7 +157,7 @@ Round_points(Round r)
     return r->points;
 }
 
-Direction 
+Direction
 Round_dir(Round r)
 {
     return r->dir;
@@ -169,14 +169,14 @@ Round_bonus(Round r)
     return r->bonus;
 }
 
-void 
+void
 Round_addrightfromboard(Round r, tile_t c)
 {
     r->word[r->wordlen] = c;
     r->tileorigin[r->wordlen++] = FROMBOARD;
 }
 
-void 
+void
 Round_removerighttoboard(Round r, tile_t c)
 {
     r->wordlen--;
@@ -184,7 +184,7 @@ Round_removerighttoboard(Round r, tile_t c)
     r->tileorigin[r->wordlen] = VIDE;
 }
 
-void 
+void
 Round_addrightfromrack(Round r, tile_t c, int j)
 {
     r->word[r->wordlen] = c;
@@ -195,7 +195,7 @@ Round_addrightfromrack(Round r, tile_t c, int j)
     r->wordlen++;
 }
 
-void 
+void
 Round_removerighttorack(Round r, tile_t c, int j)
 {
     r->wordlen--;

@@ -23,7 +23,7 @@
 
 #if defined(__cplusplus)
 extern "C" {
-#endif 
+#endif
 #include "tiles.h"
 
 typedef struct tround* Round;
@@ -62,5 +62,5 @@ Direction Round_dir           (Round);
 
 #if defined(__cplusplus)
      }
-#endif 
+#endif
 #endif

@@ -22,10 +22,10 @@
 #define _GEN_PART_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
 #endif
-    
+
 #define WORDSIZE_MAX 16
 #define SEARCHRESULTLINE_MAX 50
 #define SCORE_INTERNAL_MAX 5000
@@ -62,4 +62,4 @@ int main(int argc, char *argv[]) ;
 }
 #endif
 #endif
-     
+

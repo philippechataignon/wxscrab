@@ -27,7 +27,7 @@
 #include "dic_internals.h"
 #include "dic.h"
 
-static int 
+static int
 check_header(FILE* file, Dict_header *header)
 {
     if (fread(header,sizeof(Dict_header),1,file) != 1)
@@ -70,7 +70,7 @@ Dic_load(Dictionary *dic, const char* path)
     return 0;
 }
 
-int 
+int
 Dic_destroy(Dictionary dic)
 {
     if (dic != NULL) {

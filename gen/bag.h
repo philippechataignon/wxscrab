@@ -22,12 +22,12 @@
 #define _BAG_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 
   /*************************
-   * A bag stores the set of free 
+   * A bag stores the set of free
    * tiles for the game
    *************************/
 
@@ -46,7 +46,7 @@ void  Bag_copy    (Bag dst, Bag src);
    * take or replace a tile in the bag
    * return value :
    * 0 : Ok
-   * 1 : an error occured (not enough or too many tiles 
+   * 1 : an error occured (not enough or too many tiles
    *     of that type are in the bag)
    *************************/
 
@@ -71,7 +71,7 @@ int   Bag_nvowels     (Bag b);
 int   Bag_nconsonants (Bag b);
 
   /*************************
-   * return a random available tile 
+   * return a random available tile
    * the tile is not taken out of the bag.
    * returns 0 on failure
    *************************/
@@ -80,7 +80,7 @@ tile_t Bag_select_random(Bag b,unsigned short int etat[3]);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 #endif
 
 

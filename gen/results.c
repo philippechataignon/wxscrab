@@ -31,7 +31,7 @@ struct tresults {
     int ntotal;   /* nb de coups possibles */
 };
 
-Results 
+Results
 Results_create()
 {
     Results r;
@@ -41,14 +41,14 @@ Results_create()
     return r;
 }
 
-void 
+void
 Results_init(Results r)
 {
     Results_init_p(r);
     r->ntotal   = 0 ;
 }
 
-void 
+void
 Results_init_p(Results r)
 {
     int i;
@@ -61,7 +61,7 @@ Results_init_p(Results r)
     r->nresults = 0;
 }
 
-void 
+void
 Results_destroy(Results r)
 {
     if (r) {
@@ -70,7 +70,7 @@ Results_destroy(Results r)
     }
 }
 
-void 
+void
 Results_addsorted(Results re, Round ro)
 {
     re->ntotal++ ;
@@ -81,7 +81,7 @@ Results_addsorted(Results re, Round ro)
         Round_copy(re->list[0],ro);
         re->nresults = 1 ;
     } else if (Round_points(ro) == Round_points(re->list[0])) {
-        /* Sinon points=max et on ajoute un isotop à la liste */    
+        /* Sinon points=max et on ajoute un isotop à la liste */
         re->list[re->nresults]=Round_create() ;
         Round_copy(re->list[re->nresults],ro);
         re->nresults++ ;

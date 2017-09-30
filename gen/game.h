@@ -23,12 +23,12 @@
 
 #if defined(__cplusplus)
 extern "C" {
-#endif 
+#endif
 
 #include "round.h"
 #include "pldrack.h"
   /*************************
-   * Dimensions of the board, the tiles placed on 
+   * Dimensions of the board, the tiles placed on
    * the board can be accessed Game_getboardchar()
    *************************/
 
@@ -39,7 +39,7 @@ extern "C" {
    * dimensions of the strings that are used to return
    * values to the GUI
    *************************/
-  
+
 #define WORD_SIZE_MAX            16
 #define RACK_SIZE_MAX            10
 #define COOR_SIZE_MAX            5
@@ -63,9 +63,9 @@ void     Game_destroy        (Game);
    * Game_init will set up a new (empty) game
    *
    * Game_load return :
-   *  0 : ok 
+   *  0 : ok
    *  1 : bad identstring
-   * Game_load might need some more work to be robust enough to 
+   * Game_load might need some more work to be robust enough to
    * handling "hand written" files
    *************************/
 
@@ -76,8 +76,8 @@ int      Game_load           (Game,FILE*);
 void     Game_save           (Game,FILE*);
 
   /*************************
-   * Dictionary associated with the game 
-   * the dictionary can be changed during a 
+   * Dictionary associated with the game
+   * the dictionary can be changed during a
    * game without problem
    *************************/
 
@@ -89,7 +89,7 @@ void     Game_setdic         (Game,Dictionary);
    * the int parameter should be 0 <= int < Game_getnrounds
    *
    * testplay will place a temporary word on the board for
-   * preview purpose 
+   * preview purpose
    * return value is
    *  0 : ok
    *  1 : dictionary is set to NULL
@@ -114,7 +114,7 @@ int  Game_getpoints           (Game);
   /*************************
    * Set the rack for searching
    *
-   * the int parameter is a boolean, if this parameter 
+   * the int parameter is a boolean, if this parameter
    * set the rack will check that there are at least
    * 2 vowels and 2 consonants before the round 15.
    *
@@ -135,7 +135,7 @@ int  Game_setrack_random       (Game,unsigned short int etat[3], int force_vide)
 int  Game_setrack_random_aux   (Game,Playedrack,set_rack_mode,unsigned short int etat[3]);
 
   /*************************
-   * Get the number of tile available in the bag. 
+   * Get the number of tile available in the bag.
    * The parameter has to be
    * 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '?'
    *************************/
@@ -181,5 +181,5 @@ int  Game_getcalc_scrab (Game g) ;
 
 #if defined(__cplusplus)
    }
-#endif 
+#endif
 #endif /* _GAME_H */

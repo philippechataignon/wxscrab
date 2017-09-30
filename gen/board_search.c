@@ -31,7 +31,7 @@
 
 /*
  * computes the score of a word, coordinates may be changed to reflect
- * the real direction of the word 
+ * the real direction of the word
  */
 static void
 Boardsearch_evalmove(
@@ -109,7 +109,7 @@ Boardsearch_evalmove(
 }
 
 static void
-ExtendRight(Dictionary dic, 
+ExtendRight(Dictionary dic,
       tile_t tiles[BOARD_REALDIM][BOARD_REALDIM],
       unsigned int  cross[BOARD_REALDIM][BOARD_REALDIM],
       int points[BOARD_REALDIM][BOARD_REALDIM],
@@ -126,8 +126,8 @@ ExtendRight(Dictionary dic,
 
     // si case vide
     if (! tiles[row][column]) {
-        // si un mot est réalisé et qu'on a avancé strictement 
-        // min 2 lettres pour un mot 
+        // si un mot est réalisé et qu'on a avancé strictement
+        // min 2 lettres pour un mot
         if (Dic_word(dic,n) && column > anchor) {
             // on évalue
             Boardsearch_evalmove(dic,tiles,points,joker,results,partialword);
@@ -177,7 +177,7 @@ ExtendRight(Dictionary dic,
         l = tiles[row][column];
         // boucle parcourant l'ensemble des "sous-noeuds" d'un niveau de l'arbre
         for(succ = Dic_succ(dic,n); succ ; succ = Dic_next(dic,succ)) {
-            // avec la contrainte d'égalité 
+            // avec la contrainte d'égalité
             if (Dic_chr(dic,succ) == l) {
                 // on ajoute la lettre correspondante à droite du motpartiel
                 Round_addrightfromboard(partialword,l);
@@ -193,7 +193,7 @@ ExtendRight(Dictionary dic,
 }
 
 static void
-LeftPart(Dictionary dic, 
+LeftPart(Dictionary dic,
     tile_t tiles[BOARD_REALDIM][BOARD_REALDIM],
     unsigned int cross[BOARD_REALDIM][BOARD_REALDIM],
     int points[BOARD_REALDIM][BOARD_REALDIM],
@@ -249,7 +249,7 @@ LeftPart(Dictionary dic,
                 Rack_add(rack,JOKER_TILE);
             }
         }
-    } 
+    }
 }
 
 static void
@@ -263,7 +263,7 @@ Board_search_aux(Dictionary dic,
     int row,column,lastanchor;
     int match, l;
     Round partialword;
-    
+
 	// mot partiel vide
     partialword = Round_create();
     // on parcoure les lignes (algo ramène à dimension 1)
@@ -307,7 +307,7 @@ Board_search_aux(Dictionary dic,
                         // case précédente dans la ligne est vide
                         // on met le motpartiel
                         Round_setcolumn(partialword,column);
-                        // on cherche une partie gauche 
+                        // on cherche une partie gauche
                         LeftPart(dic,tiles,cross,points,joker,
                             rack,partialword,results,
                             Dic_root(dic),row,column,column -

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "getopt.h" 
+#include "getopt.h"
 
 int	opterr = 1;
 int	optind = 1;

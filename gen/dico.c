@@ -35,12 +35,12 @@ int
 num_noeud_mot(Dictionary dic, const char* mot) {
     return num_noeud_mot_rec(dic,mot,0,Dic_root(dic)) ;
 }
-    
+
 int
 test_mot(Dictionary dic, const char* mot) {
     return Dic_word(dic,num_noeud_mot(dic,mot)) ;
 }
-    
+
 static void
 dico_dealloc(dico* self)
 {
@@ -135,7 +135,7 @@ static PyMethodDef module_methods[] = {
 };
 
 PyMODINIT_FUNC
-initdico(void) 
+initdico(void)
 {
     PyObject* m;
 

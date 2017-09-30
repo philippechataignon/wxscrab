@@ -37,7 +37,7 @@ Bag_create(void)
     return b;
 }
 
-void 
+void
 Bag_init(Bag b)
 {
     int i;
@@ -48,7 +48,7 @@ Bag_init(Bag b)
     }
 }
 
-void 
+void
 Bag_destroy(Bag b)
 {
     if (b) {
@@ -64,7 +64,7 @@ Bag_copy(Bag dest, Bag src)
     }
 }
 
-int 
+int
 Bag_in(Bag b, tile_t c)
 {
     return b->tiles[c];

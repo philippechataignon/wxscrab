@@ -22,9 +22,9 @@
 #define _BOARD_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 
   /*************************
    *************************/
@@ -57,14 +57,14 @@ void   Board_removetestround (Board);
 char   Board_gettestchar     (Board,int,int);
 
   /*************************
-   * board_search.c 
+   * board_search.c
    *************************/
 
 void   Board_search          (Dictionary,Board,Rack,Results);
 void   Board_search_first    (Dictionary,Board,Rack,Results);
 
   /*************************
-   * board_cross.c 
+   * board_cross.c
    *************************/
 
 void   Board_buildcross    (Dictionary, Board);
@@ -84,6 +84,6 @@ int    Board_calc_scrab(Board b) ;
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 
 #endif

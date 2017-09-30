@@ -29,7 +29,7 @@
 #include "board.h"
 #include "board_internals.h"
 
-const int Board_tile_multipliers[BOARD_REALDIM][BOARD_REALDIM] = 
+const int Board_tile_multipliers[BOARD_REALDIM][BOARD_REALDIM] =
 {
     { oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo },
     { oo,__,__,__,L2,__,__,__,__,__,__,__,L2,__,__,__,oo },
@@ -51,7 +51,7 @@ const int Board_tile_multipliers[BOARD_REALDIM][BOARD_REALDIM] =
 };
 
 
-const int Board_word_multipliers[BOARD_REALDIM][BOARD_REALDIM] = 
+const int Board_word_multipliers[BOARD_REALDIM][BOARD_REALDIM] =
 {
     { oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo,oo },
     { oo,W3,__,__,__,__,__,__,W3,__,__,__,__,__,__,W3,oo },
@@ -82,7 +82,7 @@ Board_create(void)
     return b;
 }
 
-void 
+void
 Board_init(Board b)
 {
     int i, j;
@@ -106,14 +106,14 @@ Board_copy(Board dest, Board src)
     return dest;
 }
 
-void 
+void
 Board_destroy(Board b)
 {
     if (b)
         free(b);
 }
 
-tile_t 
+tile_t
 Board_tile(Board b, int row, int column)
 {
     return b->tiles_r[row][column];
@@ -125,7 +125,7 @@ Board_joker(Board b, int row, int column)
     return b->joker_r[row][column];
 }
 
-int 
+int
 Board_vacant(Board b, int row, int column)
 {
     if (row < 1 || row > BOARD_DIM ||
@@ -135,7 +135,7 @@ Board_vacant(Board b, int row, int column)
     return (b->tiles_r[row][column] == 0);
 }
 
-void 
+void
 Board_addround(Dictionary d, Board b, Round r)
 {
     tile_t t;
@@ -167,7 +167,7 @@ Board_addround(Dictionary d, Board b, Round r)
     Board_buildcross(d, b);
 }
 
-void 
+void
 Board_removeround(Dictionary d, Board b, Round r)
 {
     int row, column, i;
@@ -253,7 +253,7 @@ Board_gettestchar(Board b,int r,int c)
     return b->tests_r[r][c];
 }
 
-int   
+int
 Board_getwordmultiplier(Board b,int r,int c)
 {
     if (r < BOARD_MIN || r > BOARD_MAX ||
@@ -263,7 +263,7 @@ Board_getwordmultiplier(Board b,int r,int c)
     return Board_word_multipliers[r][c];
 }
 
-int   
+int
 Board_getlettermultiplier(Board b, int r, int c)
 {
     if (r < BOARD_MIN || r > BOARD_MAX ||

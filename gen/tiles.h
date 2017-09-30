@@ -22,13 +22,13 @@
 #define _TILES_H_
 
 #if defined(__cplusplus)
-extern "C" 
+extern "C"
 {
-#endif 
+#endif
 
   /*************************
    * A ttile is the internal representation
-   * used within the game library to 
+   * used within the game library to
    * handles letters
    *************************/
 
@@ -52,5 +52,5 @@ char   codetochar(tile_t t);
 
 #if defined(__cplusplus)
 }
-#endif 
+#endif
 #endif
