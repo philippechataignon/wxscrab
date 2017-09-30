@@ -4,3 +4,4 @@ env.Program(['gen_part.c','bag.c','board.c', 'board_cross.c', 'board_search.c', 
     'round.c', 'tiles.c'])
 env.Program(['listdic.c', 'dic.c'])
 env.Program(['compdic.c', 'hashtable.c'])
+env.Program(['swapdic.c'])
