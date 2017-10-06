@@ -37,6 +37,7 @@
 
 int verbeux = 0;
 int use_best = 1;
+FILE* out = NULL;
 
 int
 cmp_score_best(score_best score_a, score_best score_b)
@@ -45,7 +46,7 @@ cmp_score_best(score_best score_a, score_best score_b)
     int d_pts   = score_a.pts   - score_b.pts ;
     int d_nb    = score_a.nb    - score_b.nb ;
     int d_retir = score_a.retir - score_b.retir ;
-    //printf("%d %d %d\n", d_pts,d_nb,d_retir) ;
+    //fprintf(out,"%d %d %d\n", d_pts,d_nb,d_retir) ;
     if (d_retir > 0)
         return 1 ;
     if (d_retir == 0 && d_pts > 0)
@@ -71,7 +72,7 @@ cmp_score(score score_a, score score_b)
     int d_scrab = score_a.scrab - score_b.scrab ;
     int d_joker = score_a.joker - score_b.joker ;
     int d_pc    = score_a.pc    - score_b.pc ;
-    //printf("%d %d %d %d %d \n", d_best,d_cross,d_scrab,d_joker,d_pc) ;
+    //fprintf(out,"%d %d %d %d %d \n", d_best,d_cross,d_scrab,d_joker,d_pc) ;
     if (d_joker > 0 )
         return 1 ;
     if (d_joker == 0 && d_best > 0)
@@ -94,18 +95,18 @@ print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int
     char first [2*COOR_SIZE_MAX];
     char second[COOR_SIZE_MAX];
     char tirage[RACK_SIZE_MAX];
-    printf("<tour num=\"%d\">\n", Game_getnrounds(game));
+    fprintf(out,"<tour num=\"%d\">\n", Game_getnrounds(game));
     Game_getplayedrack(game,num,tirage) ;
     if (change_tirage == 1 && !notiret) {
-        printf("  <tirage>-%s</tirage>\n",tirage) ;
+        fprintf(out,"  <tirage>-%s</tirage>\n",tirage) ;
     } else {
-        printf("  <tirage>%s</tirage>\n",tirage);
+        fprintf(out,"  <tirage>%s</tirage>\n",tirage);
     }
     Game_getplayedword(game,num,word);
     if (!word[0]) {
         return 0;
     }
-    printf("  <mot>%s</mot>\n",word);
+    fprintf(out,"  <mot>%s</mot>\n",word);
     Game_getplayedfirstcoord(game,num,first);
     Game_getplayedsecondcoord(game,num,second);
 #ifdef __OpenBSD__
@@ -113,12 +114,12 @@ print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int
 #else
     strcat(first,second) ;
 #endif
-    printf("  <coord>%s</coord>\n",first);
-    printf("  <points>%d</points>\n",Game_getplayedpoints(game,num));
-    printf("  <scrab>%d</scrab>\n", Game_getplayedbonus(game,num));
-    printf("  <isotop>%d</isotop>\n", nbisotop);
-    printf("  <nbsol>%d</nbsol>\n", nbsol);
-    printf("</tour>\n\n");
+    fprintf(out,"  <coord>%s</coord>\n",first);
+    fprintf(out,"  <points>%d</points>\n",Game_getplayedpoints(game,num));
+    fprintf(out,"  <scrab>%d</scrab>\n", Game_getplayedbonus(game,num));
+    fprintf(out,"  <isotop>%d</isotop>\n", nbisotop);
+    fprintf(out,"  <nbsol>%d</nbsol>\n", nbsol);
+    fprintf(out,"</tour>\n\n");
     return 0;
 }
 
@@ -130,7 +131,7 @@ traite(Game game, int num, unsigned short int state[3])
         char coord[COOR_SIZE_MAX];
         Game_getsearchedcoord(game,num,coord);
         Game_getsearchedword(game,num,mot) ;
-        printf("<mot>%s - %s</mot>\n",coord, mot);
+        fprintf(out,"<mot>%s - %s</mot>\n",coord, mot);
     }
     score w_score ;
     w_score.cross = traite_cross(game,num) ;
@@ -151,7 +152,7 @@ traite_cross(Game game, int num)
     score = Game_getcalc_cross(game);
     Game_removetestplay(game) ;
     if (verbeux >=2) {
-        printf("<score_cross>%d</score_cross>\n", score);
+        fprintf(out,"<score_cross>%d</score_cross>\n", score);
     }
     return score ;
 }
@@ -164,7 +165,7 @@ traite_scrab(Game game, int num)
     score = Game_getcalc_scrab(game) ;
     Game_removetestplay(game) ;
     if (verbeux >=2) {
-        printf("<score_scrab>%d</score_scrab>\n", score);
+        fprintf(out,"<score_scrab>%d</score_scrab>\n", score);
     }
     return score ;
 }
@@ -187,7 +188,7 @@ traite_joker(Game game, int num)
     }
     Round_destroy(round) ;
     if (verbeux >=2) {
-        printf("<score_joker>%d</score_joker>\n", score);
+        fprintf(out,"<score_joker>%d</score_joker>\n", score);
     }
     return score ;
 }
@@ -212,7 +213,7 @@ traite_pc(Game game, int num)
     }
     Round_destroy(round) ;
     if (verbeux >=2) {
-        printf("<score_pc>%d</score_pc>\n", score);
+        fprintf(out,"<score_pc>%d</score_pc>\n", score);
     }
     return score ;
 }
@@ -254,9 +255,9 @@ traite_best(Game game, int num, unsigned short int state[3])
     }
 
     if (verbeux >=2) {
-        printf("<best_pts>%d</best_pts>\n", sscore.pts);
-        printf("<best_sol>%d</best_sol>\n", sscore.nb);
-        printf("<best_tirage>%d</best_tirage>\n", sscore.retir);
+        fprintf(out,"<best_pts>%d</best_pts>\n", sscore.pts);
+        fprintf(out,"<best_sol>%d</best_sol>\n", sscore.nb);
+        fprintf(out,"<best_tirage>%d</best_tirage>\n", sscore.retir);
     }
 
     if (verbeux >= 3) {
@@ -265,7 +266,7 @@ traite_best(Game game, int num, unsigned short int state[3])
         for (i=0 ; i<Game_getnresults(g); i++) {
             Game_getsearchedcoord(g,i,coord);
             Game_getsearchedword(g,i,mot) ;
-            printf("<mot>%s - %s</mot>\n",coord, mot );
+            fprintf(out,"<mot>%s - %s</mot>\n",coord, mot );
         }
     }
 
@@ -281,11 +282,11 @@ fin:
 int
 fin_partie (Game game, int noprint, int nbscrab, int maxisotop)
 {
-    printf("<resume>\n<total>%d</total>\n",Game_getpoints (game)) ;
-    printf("<nbtour>%d</nbtour>\n",Game_getnrounds(game)) ;
-    printf("<nbscrab>%d</nbscrab>\n",nbscrab) ;
-    printf("<maxisotop>%d</maxisotop>\n</resume>\n",maxisotop) ;
-    puts("</partie>");
+    fprintf(out,"<resume>\n<total>%d</total>\n",Game_getpoints (game)) ;
+    fprintf(out,"<nbtour>%d</nbtour>\n",Game_getnrounds(game)) ;
+    fprintf(out,"<nbscrab>%d</nbscrab>\n",nbscrab) ;
+    fprintf(out,"<maxisotop>%d</maxisotop>\n</resume>\n",maxisotop) ;
+    fprintf(out,"</partie>\n");
     return 0 ;
 }
 
@@ -320,7 +321,7 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
             if (verbeux) {
                 char tirage[RACK_SIZE_MAX];
                 Game_getplayedrack(game,Game_getnrounds(game),tirage) ;
-                printf ("<essai_tirage>%s</essai_tirage>\n",tirage) ;
+                fprintf(out,"<essai_tirage>%s</essai_tirage>\n",tirage) ;
             }
             Game_setrack_random(game, state, 1) ;
             Game_search(game);
@@ -394,12 +395,13 @@ main(int argc, char *argv[])
     int nbessai = 1000;
     int c;
     verbeux = 0;
+    out = stdout;
 
     srand48(0);
     state[2] = 0xB97A ;
 
     opterr = 0;
-    while ((c = getopt (argc, argv, "bqd:n:s:e:vht")) != -1) {
+    while ((c = getopt (argc, argv, "o:bqd:n:s:e:vht")) != -1) {
         switch (c) {
             case 'v':
                 verbeux++;
@@ -425,6 +427,9 @@ main(int argc, char *argv[])
             case 'n':
                 seed = strtoul(optarg, NULL, 10);
                 break;
+            case 'o':
+                out = fopen(optarg, "w");
+                break;
             case 'h' :
                 help() ;
                 exit(10) ;
@@ -432,10 +437,10 @@ main(int argc, char *argv[])
             case '?':
                 if (isprint (optopt)) {
                     help() ;
-                    fprintf (stderr, "Option inconnue `-%c'.\n", optopt);
+                    fprintf(stderr, "Option inconnue `-%c'.\n", optopt);
                 } else {
                     help() ;
-                    fprintf (stderr, "Caractère non reconnu dans les options `\\x%x'.\n",optopt);
+                    fprintf(stderr, "Caractère non reconnu dans les options `\\x%x'.\n",optopt);
                 }
                 return 1;
             default:
@@ -455,32 +460,32 @@ main(int argc, char *argv[])
             break;
         case 1:
             help();
-            printf("chargement: problème d'ouverture de %s\n",nomdic) ;
+            fprintf(out,"chargement: problème d'ouverture de %s\n",nomdic) ;
             exit(1);
             break;
         case 2:
             help();
-            printf("chargement: mauvais en-tete de dictionnaire\n");
+            fprintf(out,"chargement: mauvais en-tete de dictionnaire\n");
             exit(2);
             break;
         case 3:
             help();
-            printf("chargement: problème 3 d'allocation mémoire\n");
+            fprintf(out,"chargement: problème 3 d'allocation mémoire\n");
             exit(3);
             break;
         case 4:
             help();
-            printf("chargement: problème 4 d'allocation mémoire\n");
+            fprintf(out,"chargement: problème 4 d'allocation mémoire\n");
             exit(4);
             break;
         case 5:
             help();
-            printf("chargement: problème de lecture des arcs du dictionnaire\n");
+            fprintf(out,"chargement: problème de lecture des arcs du dictionnaire\n");
             exit(5);
             break;
         default:
             help();
-            printf("chargement: problème non-repertorié\n");
+            fprintf(out,"chargement: problème non-repertorié\n");
             exit(6);
             break;
     }
@@ -488,11 +493,11 @@ main(int argc, char *argv[])
     state[0] = seed>>16 ;
     state[1] = seed&0x0000FFFF ;
 
-    printf("<?xml version=\"1.0\"?>\n");
-    printf("<partie ");
-    printf("num=\"%lu\" ",seed);
-    printf("seed=\"%u\" ",state[2]);
-    printf("dic=\"%s\" >\n",nomdic) ;
+    fprintf(out,"<?xml version=\"1.0\"?>\n");
+    fprintf(out,"<partie ");
+    fprintf(out,"num=\"%lu\" ",seed);
+    fprintf(out,"seed=\"%u\" ",state[2]);
+    fprintf(out,"dic=\"%s\" >\n",nomdic) ;
 
     game = Game_create(dic);
     main_loop(game,noprint,notiret,nbessai,state);
