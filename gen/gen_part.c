@@ -120,6 +120,7 @@ print_line(Game game, int num, int nbisotop, int change_tirage, int notiret, int
     fprintf(out,"  <isotop>%d</isotop>\n", nbisotop);
     fprintf(out,"  <nbsol>%d</nbsol>\n", nbsol);
     fprintf(out,"</tour>\n\n");
+    // Bag_print(game->bag);
     return 0;
 }
 
@@ -237,10 +238,9 @@ traite_best(Game game, int num, unsigned short int state[3])
     Game_copy_n(g,game) ;
     /* joue le round num dans la copie de game */
     Game_play_round(g,Results_get(game->searchresults,num)) ;
-    // tir vaut 1 si retirage ; -1 si vide et 0 sinon
-    tir=Game_setrack_random(g, state, 0) ;
+    tir = Game_setrack_random(g, state, 0) ;
     sscore.retir = 2 - (tir == 1) ;
-    if ( tir == -1) {
+    if (tir >= 2) {
         sscore.pts = 0 ;
         sscore.nb  = 0 ;
         goto fin ;
@@ -305,7 +305,7 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
         score t_score ;
         int change_tirage = 0 ;
         res = Game_setrack_random(game, state, 0) ;
-        if (res == -1) {
+        if (res >= 2) {
             fin_partie(game,noprint,nbscrab,maxisotop) ;
             return 0 ;
         }

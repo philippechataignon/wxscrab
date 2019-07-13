@@ -294,40 +294,31 @@ Game_getcalc_scrab(Game g)
 int
 Game_setrack_random(Game game, unsigned short int etat[3], int force_vide)
 {
-    // retour :
-    // -1 si sac vide
     // 0 si OK
-    // 1 si retirage
-    //
+    // 1 si tirage incorrect après essai_max essais
+    // 2 si sac vide
+    // 3 si plus assez voy/cons dans sac
     Playedrack p = game->playedracks[game->nrounds] ;
-    int essai_max = 10;
-    int retour = 0 ;
-    int res ;
-    int ok = 0;
-    while(!ok && essai_max > 0) {
+    int essai_max = 100;
+    int error = 3;
+    while(error && essai_max > 0) {
         if (force_vide)
-            res = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
+            error = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
         else
-            res = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
-        if (res == 1) {
-            ok = 1;
-            retour = 0;
-        } else if (res >= 2) {
-            ok = 1;
-            retour = -1 ;
-        }
+            error = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
+        if (error >= 2) // definitive error, no more tries
+            break;
         essai_max--;
-        retour = 1;
     }
-    return retour ;
+    return error;
 }
 
 int
 Game_setrack_random_aux(Game game, Playedrack p, set_rack_mode mode, unsigned short int etat[3])
 {
     // retour :
-    // 0 si mauvais nb voyelles/consonnes
-    // 1 si OK
+    // 0 si OK
+    // 1 si mauvais nb voyelles/consonnes
     // 2 si sac vide
     // 3 si plus assez voy/cons dans sac
     //
@@ -337,7 +328,7 @@ Game_setrack_random_aux(Game game, Playedrack p, set_rack_mode mode, unsigned sh
 
     /* create a copy of the bag in which we can do everything we want */
     b = Bag_create();
-    Bag_copy(b,game->bag);
+    Bag_copy(b, game->bag);
 
     /* si le sac est vide */
     if (Bag_ntiles(b) == 0) {
@@ -346,17 +337,11 @@ Game_setrack_random_aux(Game game, Playedrack p, set_rack_mode mode, unsigned sh
     }
 
     min = Game_getnrounds(game)<15 ? 2 : 1 ;
-    /* pas assez de consonnes ou de voyelles */
-    if (Bag_nvowels(b) < min || Bag_nconsonants(b) < min) {
-        if (Bag_njoker(b) == 0 ) {
-            // si plus de joker => fin
-            Bag_destroy(b);
-            return 3;
-        } else {
-            // sinon on abaisse le mini pour tirage OK
-            // Playedrack_check_rack assure qu'il y a un joker quand min=0
-            min = 0;
-        }
+
+    /* pas assez de consonnes ou de voyelles et plus de joker*/
+    if ((Bag_nvowels(b) < min || Bag_nconsonants(b) < min) && (Bag_njoker(b) == 0)) {
+        Bag_destroy(b);
+        return 3;
     }
 
     nold = Playedrack_nold(p);

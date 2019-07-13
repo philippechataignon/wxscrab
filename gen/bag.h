@@ -77,6 +77,7 @@ int   Bag_nconsonants (Bag b);
    *************************/
 
 tile_t Bag_select_random(Bag b,unsigned short int etat[3]);
+void  Bag_print    (Bag b);
 
 #if defined(__cplusplus)
 }

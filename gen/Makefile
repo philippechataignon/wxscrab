@@ -1,5 +1,5 @@
-CC=clang
-CFLAGS=-O3 -Wall -march=athlon-xp
+CC=tcc
+# CFLAGS=-O3 -Wall -march=athlon-xp
 
 exe = gen_part listdic compdic
 obj = bag.o board.o  board_cross.o board_search.o dic.o game.o \

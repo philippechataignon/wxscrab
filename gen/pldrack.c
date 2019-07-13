@@ -206,21 +206,20 @@ Playedrack_check_rack(Playedrack p, int min)
     tile_t i;
     int v = 0;
     int c = 0;
-    int j = 0;
+    // joker is consonant and vowel
 
     for(i=0; i < p->nold; i++) {
         v += Tiles_vowels[p->oldtiles[i]];
         c += Tiles_consonants[p->oldtiles[i]];
-        j += ( p->oldtiles[i] == JOKER_TILE );
+        v += (p->oldtiles[i] == JOKER_TILE);
+        c += (p->oldtiles[i] == JOKER_TILE);
     }
     for(i=0; i < p->nnew; i++) {
         v += Tiles_vowels[p->newtiles[i]];
         c += Tiles_consonants[p->newtiles[i]];
-        j += ( p->newtiles[i] == JOKER_TILE );
+        v += (p->newtiles[i] == JOKER_TILE);
+        c += (p->newtiles[i] == JOKER_TILE);
     }
-    if (min > 0) {
-        return (v >= min) && (c >= min);
-    } else {
-        return (j >= 1) ;
-    }
+    // return 0 if OK, else error 1
+    return v < min || c < min;
 }

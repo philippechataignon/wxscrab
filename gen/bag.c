@@ -19,6 +19,7 @@
 /* $Id: bag.c 14 2004-03-18 20:28:13Z philippe $ */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "tiles.h"
 #include "bag.h"
@@ -143,4 +144,16 @@ Bag_select_random(Bag b, unsigned short int etat[3])
         }
     }
     return 0;
+}
+
+void
+Bag_print(Bag b)
+{
+    int i, j;
+    for (i = 0; i < TILES_NUMBER; i++) {
+        for (j = 0; j < b->tiles[i]; j++) {
+            putchar(codetochar(i));
+        }
+    }
+    puts("");
 }
