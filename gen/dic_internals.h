@@ -66,8 +66,8 @@ typedef struct _Dictionary {
     int32_t nwords;
     int32_t nnodes;
     int32_t nedges;
-} Dic;
+} Dico;
 
-typedef Dic* Dictionary;
+typedef Dico* Dictionary;
 
 #endif

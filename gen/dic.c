@@ -36,6 +36,34 @@ check_header(FILE* file, Dict_header *header)
 }
 
 int
+Dic_init(Dictionary dic, const char* path)
+{
+    FILE* file;
+    Dict_header header;
+
+    if ((file = fopen(path,"rb")) == NULL)
+        return 1;
+    if (check_header(file,&header))
+        return 2;
+    if ((dic->dawg = (Dawg_edge*)malloc((header.edgesused + 1)*
+                    sizeof(Dawg_edge))) == NULL) {
+        return 4;
+    }
+    if (fread(dic->dawg,sizeof(Dawg_edge),header.edgesused + 1,file) !=
+            (header.edgesused + 1)) {
+        free(dic->dawg);
+        return 5;
+    }
+    dic->root = header.root;
+    dic->nwords = header.nwords;
+    dic->nnodes = header.nodesused;
+    dic->nedges = header.edgesused;
+
+    fclose(file);
+    return 0;
+}
+
+int
 Dic_load(Dictionary *dic, const char* path)
 {
     FILE* file;
