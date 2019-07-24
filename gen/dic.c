@@ -88,38 +88,38 @@ Dic_destroy(Dictionary dic)
 }
 
 char
-Dic_chr(Dictionary d, uint_t e)
+Dic_chr(Dictionary d, uint32_t e)
 {
     return (d->dawg[e]).chr;
 }
 
 int
-Dic_last(Dictionary d, uint_t e)
+Dic_last(Dictionary d, uint32_t e)
 {
     return (d->dawg[e]).last;
 }
 
 int
-Dic_word(Dictionary d, uint_t e)
+Dic_word(Dictionary d, uint32_t e)
 {
     return (d->dawg[e]).term;
 }
 
-uint_t
-Dic_next(Dictionary d, uint_t e)
+uint32_t
+Dic_next(Dictionary d, uint32_t e)
 {
     if (! Dic_last(d,e))
         return e+1;
     return 0;
 }
 
-uint_t
-Dic_succ(Dictionary d, uint_t e)
+uint32_t
+Dic_succ(Dictionary d, uint32_t e)
 {
     return (d->dawg[e]).ptr;
 }
 
-uint_t
+uint32_t
 Dic_root(Dictionary d)
 {
     return d->root;

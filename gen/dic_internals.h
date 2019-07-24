@@ -68,4 +68,6 @@ struct _Dictionary {
     int32_t nedges;
 };
 
+typedef struct _Dictionary* Dictionary;
+
 #endif

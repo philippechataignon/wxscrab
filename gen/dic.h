@@ -23,8 +23,6 @@
 
 #include "dic_internals.h"
 
-typedef struct _Dictionary* Dictionary;
-typedef uint32_t uint_t;
 
 int    Dic_load   (Dictionary*, const char*);
 int    Dic_destroy(Dictionary);
@@ -33,13 +31,13 @@ int    Dic_destroy(Dictionary);
    * functions to access the elements
    *************************/
 
-char   Dic_chr (Dictionary,uint_t);
-int    Dic_last(Dictionary,uint_t);
-int    Dic_word(Dictionary,uint_t);
+char   Dic_chr (Dictionary,uint32_t);
+int    Dic_last(Dictionary,uint32_t);
+int    Dic_word(Dictionary,uint32_t);
 
-uint_t Dic_root(Dictionary);
-uint_t Dic_next(Dictionary,uint_t);
-uint_t Dic_succ(Dictionary,uint_t);
+uint32_t Dic_root(Dictionary);
+uint32_t Dic_next(Dictionary,uint32_t);
+uint32_t Dic_succ(Dictionary,uint32_t);
 
 unsigned int num_noeud_mot_rec(Dictionary dic, const char* mot, int n, unsigned int e);
 int num_noeud_mot(Dictionary dic, const char* mot);
