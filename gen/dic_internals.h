@@ -60,14 +60,14 @@ typedef struct _Dict_header {
     uint32_t edgessaved;
 } Dict_header;
 
-struct _Dictionary {
+typedef struct _Dictionary {
     Dawg_edge *dawg;
     uint32_t root;
     int32_t nwords;
     int32_t nnodes;
     int32_t nedges;
-};
+} Dic;
 
-typedef struct _Dictionary* Dictionary;
+typedef Dic* Dictionary;
 
 #endif
