@@ -23,14 +23,14 @@
 #include "dic.h"
 
 static void
-print_dic_rec(FILE * out, Dictionary dic, char *buf, char *s, Dawg_edge i)
+print_dic_rec(FILE* out, Dico dic, char *buf, char *s, Dawg_edge i)
 {
 	if (i.term) {		/* edge points at a complete word */
 		*s = '\0';
 		fprintf(out, "%s\n", buf);
 	}
 	if (i.ptr) {		/* Compute index: is it non-zero ? */
-		Dawg_edge *p = dic->dawg + i.ptr;
+		Dawg_edge *p = dic.dawg + i.ptr;
 		do {		/* for each edge out of this node */
 			*s = p->chr + 'a' - 1;
 			print_dic_rec(out, dic, buf, s + 1, *p);
@@ -39,10 +39,10 @@ print_dic_rec(FILE * out, Dictionary dic, char *buf, char *s, Dawg_edge i)
 	}
 }
 
-void dic_load(Dictionary * dic, char *filename)
+void dic_load(Dico *dic, char *filename)
 {
 	int res;
-	if ((res = Dic_load(dic, filename)) != 0) {
+	if ((res = Dic_init(dic, filename)) != 0) {
 		switch (res) {
 		case 1:
 			printf("chargement: problème d'ouverture de %s\n",
@@ -73,11 +73,11 @@ void dic_load(Dictionary * dic, char *filename)
 
 void print_dic_list(char *filename)
 {
-	Dictionary dic;
+	Dico dic;
 	static char buf[80];
 	dic_load(&dic, filename);
-	print_dic_rec(stdout, dic, buf, buf, dic->dawg[dic->root]);
-	Dic_destroy(dic);
+	print_dic_rec(stdout, dic, buf, buf, dic.dawg[dic.root]);
+    Dic_destroy(&dic);
 }
 
 void print_header(char *filename)
@@ -91,7 +91,7 @@ void print_header(char *filename)
 		return;
 	fclose(file);
 
-	printf("Dictionary header information\n");
+	printf("Dico * header information\n");
 	printf("ident       : %s\n", header.ident);
 	printf("root        : %8d\n", header.root);
 	printf("words       : %8d\n", header.nwords);
@@ -102,7 +102,7 @@ void print_header(char *filename)
 	printf("size header : %8zd\n", sizeof(header));
 }
 
-void print_node_hex(int i, Dictionary dic)
+void print_node_hex(int i, Dico * dic)
 {
 	Dawg_edge e = dic->dawg[i];
 	printf("%2d ptr=%2d t=%d l=%d f=%d chr=%d (%c)\n",
@@ -112,12 +112,12 @@ void print_node_hex(int i, Dictionary dic)
 void print_dic_hex(char *filename)
 {
 	int i;
-	Dictionary dic;
-	dic_load(&dic, filename);
+	Dico * dic;
+	dic_load(dic, filename);
 	for (i = 0; i < (dic->nedges + 1); i++) {
 		print_node_hex(i, dic);
 	}
-	Dic_destroy(dic);
+	//Dic_destroy(dic);
 }
 
 void usage(char *name)

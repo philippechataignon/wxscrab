@@ -42,7 +42,7 @@
 
 #define _COMPIL_KEYWORD_ "__DIC__"
 
-typedef struct _Dawg_edge {
+typedef struct Dawg_edge {
     uint32_t ptr  : 24;
     uint32_t term : 1;
     uint32_t last : 1;
@@ -50,7 +50,7 @@ typedef struct _Dawg_edge {
     uint32_t chr  : 5;
 } Dawg_edge;
 
-typedef struct _Dict_header {
+typedef struct Dict_header {
     char ident[8];
     int32_t root;
     int32_t nwords;
@@ -60,7 +60,7 @@ typedef struct _Dict_header {
     uint32_t edgessaved;
 } Dict_header;
 
-typedef struct _Dictionary {
+typedef struct Dico {
     Dawg_edge *dawg;
     uint32_t root;
     int32_t nwords;

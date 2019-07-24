@@ -74,7 +74,7 @@ Dic_load(Dictionary *dic, const char* path)
         return 1;
     if (check_header(file,&header))
         return 2;
-    if ((*dic = (Dictionary) malloc(sizeof(struct _Dictionary))) == NULL)
+    if ((*dic = (Dictionary) malloc(sizeof(struct Dico))) == NULL)
         return 3;
     if (((*dic)->dawg = (Dawg_edge*)malloc((header.edgesused + 1)*
                     sizeof(Dawg_edge))) == NULL) {
@@ -101,17 +101,7 @@ Dic_load(Dictionary *dic, const char* path)
 int
 Dic_destroy(Dictionary dic)
 {
-    if (dic != NULL) {
-        if (dic->dawg != NULL) {
-            free(dic->dawg);
-        } else {
-            free(dic);
-            return 2;
-        }
-        free(dic);
-    } else {
-        return 1;
-    }
+    free(dic->dawg);
     return 0;
 }
 
