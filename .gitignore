@@ -16,3 +16,5 @@ ods7.*
 ods7.*
 ods7.*
 swapdic
+*.txt
+gen/build

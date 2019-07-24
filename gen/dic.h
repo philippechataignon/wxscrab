@@ -23,14 +23,10 @@
 
 #include "dic_internals.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
 typedef struct _Dictionary* Dictionary;
 typedef uint32_t uint_t;
 
-int    Dic_load   (Dictionary*,const char*);
+int    Dic_load   (Dictionary*, const char*);
 int    Dic_destroy(Dictionary);
 
   /*************************
@@ -45,9 +41,8 @@ uint_t Dic_root(Dictionary);
 uint_t Dic_next(Dictionary,uint_t);
 uint_t Dic_succ(Dictionary,uint_t);
 
+unsigned int num_noeud_mot_rec(Dictionary dic, const char* mot, int n, unsigned int e);
+int num_noeud_mot(Dictionary dic, const char* mot);
+int test_mot(Dictionary dic, const char* mot);
 
-
-#if defined(__cplusplus)
-}
-#endif
 #endif

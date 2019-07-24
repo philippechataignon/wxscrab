@@ -124,3 +124,31 @@ Dic_root(Dictionary d)
 {
     return d->root;
 }
+
+unsigned int
+num_noeud_mot_rec(Dictionary dic, const char* mot, int n, unsigned int e)
+{
+    unsigned int p;
+
+    if (mot[n]) {
+        char c = (mot[n] & 0x1f) ;
+        for(p = Dic_succ(dic,e); p && Dic_chr(dic,p)<=c ; p = Dic_next(dic,p)) {
+            if ( c == Dic_chr(dic,p) ) {
+                return num_noeud_mot_rec(dic, mot, n+1, p) ;
+            }
+        }
+        return 0 ;
+    } else {
+        return e ;
+    }
+}
+
+int
+num_noeud_mot(Dictionary dic, const char* mot) {
+    return num_noeud_mot_rec(dic,mot,0,Dic_root(dic)) ;
+}
+
+int
+test_mot(Dictionary dic, const char* mot) {
+    return Dic_word(dic,num_noeud_mot(dic,mot)) ;
+}
