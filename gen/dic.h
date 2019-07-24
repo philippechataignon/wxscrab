@@ -41,6 +41,6 @@ uint32_t Dic_succ(Dictionary,uint32_t);
 
 unsigned int num_noeud_mot_rec(Dictionary dic, const char* mot, int n, unsigned int e);
 int num_noeud_mot(Dictionary dic, const char* mot);
-int test_mot(Dictionary dic, const char* mot);
+int isMot(Dictionary dic, const char* mot);
 
 #endif

@@ -132,6 +132,6 @@ num_noeud_mot(Dictionary dic, const char* mot) {
 }
 
 int
-test_mot(Dictionary dic, const char* mot) {
+isMot(Dictionary dic, const char* mot) {
     return Dic_word(dic,num_noeud_mot(dic,mot)) ;
 }
