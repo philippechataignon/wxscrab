@@ -51,7 +51,7 @@ typedef struct _Dawg_edge {
 } Dawg_edge;
 
 typedef struct _Dict_header {
-    char ident[sizeof(_COMPIL_KEYWORD_)];
+    char ident[8];
     int32_t root;
     int32_t nwords;
     uint32_t edgesused;
