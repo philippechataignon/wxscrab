@@ -386,7 +386,7 @@ int
 main(int argc, char *argv[])
 {
     Game game ;
-    Dictionary dic ;
+    Dico dic ;
     unsigned short int state[3] ;
     static char* nomdic = "../dic/ods7.dawg" ;
     unsigned long int seed = time(0) ;
@@ -448,13 +448,13 @@ main(int argc, char *argv[])
         }
     }
 
-    if (! nomdic) {
+    if (!nomdic) {
         help() ;
         puts("Spécifier un dictionnaire avec l'option -d (ex : -d ods7.dawg)") ;
         exit(11);
     }
 
-    switch (Dic_load(&dic, nomdic)) {
+    switch (Dic_init(&dic, nomdic)) {
         case 0:
             /* cas normal */
             break;
@@ -499,9 +499,9 @@ main(int argc, char *argv[])
     fprintf(out,"seed=\"%u\" ",state[2]);
     fprintf(out,"dic=\"%s\" >\n",nomdic) ;
 
-    game = Game_create(dic);
+    game = Game_create(&dic);
     main_loop(game,noprint,notiret,nbessai,state);
     Game_destroy(game);
-    Dic_destroy(dic);
+    Dic_destroy(&dic);
     return 0;
 }

@@ -25,7 +25,6 @@
 
 
 int    Dic_init   (Dictionary, const char*);
-int    Dic_load   (Dictionary*, const char*);
 int    Dic_destroy(Dictionary);
 
   /*************************
