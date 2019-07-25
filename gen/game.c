@@ -299,7 +299,7 @@ Game_setrack_random(Game game, unsigned short int etat[3], int force_vide)
     // 2 si sac vide
     // 3 si plus assez voy/cons dans sac
     Playedrack p = game->playedracks[game->nrounds] ;
-    int essai_max = 100;
+    int essai_max = 1000;
     int error = 3;
     while(error && essai_max > 0) {
         if (force_vide)
@@ -308,6 +308,8 @@ Game_setrack_random(Game game, unsigned short int etat[3], int force_vide)
             error = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
         if (error >= 2) // definitive error, no more tries
             break;
+        if (error == 1)
+            force_vide = 1;
         essai_max--;
     }
     return error;
