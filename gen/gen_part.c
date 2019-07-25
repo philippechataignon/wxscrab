@@ -503,6 +503,7 @@ main(int argc, char *argv[])
 
     game = Game_create(&dic);
     main_loop(game,noprint,notiret,nbessai,state);
+    fclose(out);
     Game_destroy(game);
     Dic_destroy(&dic);
     return 0;
