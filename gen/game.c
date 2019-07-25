@@ -291,28 +291,29 @@ Game_getcalc_scrab(Game g)
     return Board_calc_scrab(g->board);
 }
 
+
 int
 Game_setrack_random(Game game, unsigned short int etat[3], int force_vide)
 {
+    // retour :
+    // -1 si pb définitif lié au sac
     // 0 si OK
-    // 1 si tirage incorrect après essai_max essais
-    // 2 si sac vide
-    // 3 si plus assez voy/cons dans sac
+    // 1 si OK après retirage
+
     Playedrack p = game->playedracks[game->nrounds] ;
-    int essai_max = 1000;
-    int error = 3;
-    while(error && essai_max > 0) {
-        if (force_vide)
-            error = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
-        else
-            error = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
-        if (error >= 2) // definitive error, no more tries
-            break;
-        if (error == 1)
-            force_vide = 1;
-        essai_max--;
+    int retour = 0 ;
+    int res ;
+    if (force_vide)
+        res = Game_setrack_random_aux(game, p, RACK_ALL, etat) ;
+    else
+        res = Game_setrack_random_aux(game, p, RACK_NEW, etat) ;
+    if (res == 1) {
+        retour = 1 ;
+        while ((res = Game_setrack_random_aux(game,p,RACK_ALL,etat)) != 0) ;
+    } else if (res >= 2) {
+        retour = -1 ;
     }
-    return error;
+    return retour ;
 }
 
 int
