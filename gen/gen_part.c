@@ -305,11 +305,13 @@ main_loop(Game game,int noprint, int notiret, int nbessai, unsigned short int st
         score t_score ;
         int change_tirage = 0 ;
         res = Game_setrack_random(game, state, 0) ;
-        if (res >= 2) {
+        // -1 = problème définitif lié au sac
+        if (res == -1) {
             fin_partie(game,noprint,nbscrab,maxisotop) ;
             return 0 ;
         }
 
+        // 1 = OK après retirage
         if (res == 1) {
             change_tirage = 1;
         }
