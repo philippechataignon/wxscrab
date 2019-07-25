@@ -10,7 +10,7 @@ PROTOCOL = 3
 
 class ScrabbleProtocol(basic.NetstringReceiver):
     def connectionMade(self):
-        print "Connect %s" % self.transport.getPeer()
+        print("Connect %s" % self.transport.getPeer())
         m = msg.msg("serverok", (PROTOCOL,))
         self.envoi(m)
         app = self.factory.parent
@@ -19,19 +19,17 @@ class ScrabbleProtocol(basic.NetstringReceiver):
 
     def connectionLost(self, reason):
         self.factory.parent.deconnect(self)
-        print "Deconnect %s" % self.transport.getPeer()
+        print("Deconnect %s" % self.transport.getPeer())
 
     def stringReceived(self, dump):
         mm = msg.msg.load(dump)
         if self.factory.parent.options.verbose :
-            print "<- %s" % mm
-        # renvoit un deferred
-        d = self.factory.parent.traite(mm.cmd)
-        reactor.callLater(0, d.callback, (self, mm))
+            print("<- %s" % mm)
+        self.factory.parent.traite(mm.cmd, mm)
 
     def envoi(self, mm):
         if self.factory.parent.options.verbose :
-            print "-> %s" % mm
+            print("-> %s" % mm)
         self.sendString(mm.dump())
         return mm
 

@@ -29,6 +29,7 @@ list_cmd = (
 class msg :
     @classmethod
     def load(cls, dump):
+        dump = dump.decode('utf-8')
         data = json.loads(dump)
         return cls(*data)
 
@@ -45,13 +46,13 @@ class msg :
         self.nick = nick
 
     def dump(self) :
-        return json.dumps([self.cmd, self.param, self.nick])
+        return json.dumps([self.cmd, self.param, self.nick]).encode('utf-8')
 
 if __name__ == '__main__' :
     m = msg("cha", [0, 2], "philippe")
     d = m.dump()
-    print m, d
+    print(m, d)
     n = msg(dump=d)
-    print n, d
+    print(n, d)
     m = msg("chat")
-    print m, m.dump()
+    print(m, m.dump())

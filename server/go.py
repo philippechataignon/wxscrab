@@ -1,9 +1,6 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
+#! /usr/bin/env python3
 import optparse
 import sys
-reload(sys)
-sys.setdefaultencoding("utf8")
 
 if sys.platform[:5] == 'linux' :
     from twisted.internet import epollreactor
@@ -46,5 +43,5 @@ factory = net.ScrabbleFactory(g)
 factory.protocol = net.ScrabbleProtocol
 reactor.callWhenRunning(g.debut_game, options.attente)
 reactor.listenTCP(options.port, factory)
-print "Lancement reactor"
+print("Lancement reactor")
 reactor.run()

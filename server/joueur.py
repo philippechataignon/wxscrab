@@ -34,10 +34,10 @@ class joueurs :
     def liste_actif(self) :
         # les joueurs actifs sont les joueurs connectés
         # ou ayant fait un score dans le tour
-        return [j for j in self.nick2joueur.itervalues() if (j.channel is not None or j.tick)]
+        return [j for j in self.nick2joueur.values() if (j.channel is not None or j.tick)]
 
     def liste_envoi(self) :
-        return [j for j in self.nick2joueur.itervalues() if j.channel is not None]
+        return [j for j in self.nick2joueur.values() if j.channel is not None]
 
     def add_joueur(self, nick, proto, channel) :
         if nick in self.nick2joueur :
@@ -52,14 +52,14 @@ class joueurs :
             return 1
 
     def deconnect(self, channel) :
-        for nick, j in self.nick2joueur.iteritems() :
+        for nick, j in self.nick2joueur.items() :
             if j.channel == channel :
                 j.channel = None
                 return nick
         return None
 
     def score_tour_zero(self) :
-        for j in self.nick2joueur.itervalues() :
+        for j in self.nick2joueur.values() :
             j.points_tour = 0
             j.points_tour_affiche = 0
             j.msg_fin_tour = []
@@ -67,7 +67,7 @@ class joueurs :
 
     def score_raz(self) :
         # appelé par debut_game
-        for nick, j in self.nick2joueur.items() :
+        for nick, j in list(self.nick2joueur.items()) :
             # supprime les joueurs déconnectés
             if j.channel is None :
                 del self.nick2joueur[nick]
@@ -90,15 +90,15 @@ class joueurs :
         self.nick2joueur[nick].tick = True
         if self.nick2joueur[nick].channel is None :
             self.nick2joueur[nick].channel = channel
-            print "%s à nouveau actif" % nick
+            print("%s à nouveau actif" % nick)
 
     def check_tick(self) :
         # appelé en fin de tour
         # kick les joueurs sans tick
-        for j in self.nick2joueur.itervalues() :
+        for j in self.nick2joueur.values() :
             if not j.tick :
                 j.channel = None
-                print "%s inactif" % j.nick
+                print("%s inactif" % j.nick)
 
     def get_infos_joueur(self, nick) :
         if nick in self.nick2joueur :
@@ -193,7 +193,7 @@ class joueurs :
     def tableau_score(self) :
         tree = ET.Element("score")
         label = ET.SubElement(tree, "label")
-        cols = ('Score total', '% total', u'Négatif', 'Top', 'Solo', 'Ber', 'Score tour')
+        cols = ('Score total', '% total', 'Négatif', 'Top', 'Solo', 'Ber', 'Score tour')
         for c in cols :
             col = ET.SubElement(label,"col")
             col.text = c
@@ -207,9 +207,9 @@ class joueurs :
             ligne = ET.SubElement(tree, "ligne")
             nom = ET.SubElement(ligne, "nom", type="s")
             if j.rang_total == 0 :
-                nom.text = unicode(j.nick)
+                nom.text = str(j.nick)
             else:
-                nom.text  = "%d. %s" % (j.rang_total, unicode(j.nick))
+                nom.text  = "%d. %s" % (j.rang_total, str(j.nick))
             e = ET.SubElement(ligne, "val", type="i")
             e.text = "%d" % j.points_total
             e = ET.SubElement(ligne, "val", type="f")

@@ -43,13 +43,13 @@ class tirage :
 
 if __name__ == '__main__' :
     t = tirage("AZERTYU")
-    print t
-    print len(t)
-    print t.isPlein()
-    print t.isVide()
+    print(t)
+    print(len(t))
+    print(t.isPlein())
+    print(t.isVide())
     u = t.copy()
     u.retire('R')
-    print t,u
-    print len(u)
-    print u.isPlein()
-    print u.isVide()
+    print(t,u)
+    print(len(u))
+    print(u.isPlein())
+    print(u.isVide())

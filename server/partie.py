@@ -54,25 +54,25 @@ if __name__ == '__main__' :
     import grille
     class options :
         def __init__(self) :
-            self.dico = "../dic/ods7.dawg"
-            self.gen = "../gen/gen_part"
+            self.dico = "../dic/ods7.dico"
+            self.gen = "/home/philippe/wxscrab_gen/gen/gen_part"
             self.game = "partie/p_20101231164246.partie"
             self.minpoint = 18
             self.maxtour = 24
             self.mintour = 18
             self.game = None
 
-    d = dico.dico("../dic/ods7.dawg")
+    d = dico.Dico("../dic/ods7.dico")
     g = grille.grille()
     c = coord.coord()
     o = options()
     pa = partie(o)
     for t, c, m, pts, tour in pa.liste :
         controle = g.controle(c, m, t)
-        print tour, c,m,t, controle
+        print(tour, c,m,t, controle)
         if controle <= 0 :
-            print pts, g.point(c, m, controle == -1, d)
+            print(pts, g.point(c, m, controle == -1, d))
         else:
-            print ">>> Controle non NUL"
+            print(">>> Controle non NUL")
         g.pose(c, m)
-        print g
+        print(g)
