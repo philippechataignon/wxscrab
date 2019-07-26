@@ -230,10 +230,8 @@ class main():
         channel.envoi(mm)
 
     def envoi_all(self, message) :
-        d = defer.Deferred()
         for j in self.jo.liste_envoi() :
-            d.addCallback(j.channel.envoi)
-        reactor.callLater(0, d.callback, message)
+            j.channel.envoi(message)
 
     def stop_chrono(self) :
         self.chrono_on = False
