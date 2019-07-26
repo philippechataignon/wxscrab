@@ -42,10 +42,10 @@ FILE* out = NULL;
 int
 cmp_score_best(score_best score_a, score_best score_b)
 {
-    // renvoit 1 si score_a > score_b, 0 si =, -1 sinon
+    // tri dans l'ordre retir/pts/nb
+    int d_retir = score_a.retir - score_b.retir ;
     int d_pts   = score_a.pts   - score_b.pts ;
     int d_nb    = score_a.nb    - score_b.nb ;
-    int d_retir = score_a.retir - score_b.retir ;
     //fprintf(out,"%d %d %d\n", d_pts,d_nb,d_retir) ;
     if (d_retir > 0)
         return 1 ;
@@ -239,12 +239,13 @@ traite_best(Game game, int num, unsigned short int state[3])
     /* joue le round num dans la copie de game */
     Game_play_round(g,Results_get(game->searchresults,num)) ;
     tir = Game_setrack_random(g, state, 0) ;
-    sscore.retir = 2 - (tir == 1) ;
     if (tir >= 2) {
         sscore.pts = 0 ;
         sscore.nb  = 0 ;
         goto fin ;
     }
+    // renvoit 1 si pas de retirage, 0 sinon
+    sscore.retir = tir == 1 ? 0 : 1;
     Game_search(g);
     if (Game_getnresults(g) == 0) {
         sscore.pts = 0 ;
@@ -255,9 +256,9 @@ traite_best(Game game, int num, unsigned short int state[3])
     }
 
     if (verbeux >=2) {
-        fprintf(out,"<best_pts>%d</best_pts>\n", sscore.pts);
-        fprintf(out,"<best_sol>%d</best_sol>\n", sscore.nb);
         fprintf(out,"<best_tirage>%d</best_tirage>\n", sscore.retir);
+        fprintf(out,"<best_pts>%d</best_pts>\n", sscore.pts);
+        fprintf(out,"<best_nb>%d</best_nb>\n", sscore.nb);
     }
 
     if (verbeux >= 3) {
@@ -390,7 +391,7 @@ main(int argc, char *argv[])
     Game game ;
     Dico dic ;
     unsigned short int state[3] ;
-    static char* nomdic = "../dic/ods7.dawg" ;
+    static char* nomdic = "../../wxscrab/dic/ods7.dico" ;
     unsigned long int seed = time(0) ;
     int noprint = 0;
     int notiret = 0;
