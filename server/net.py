@@ -25,7 +25,7 @@ class ScrabbleProtocol(basic.NetstringReceiver):
         mm = msg.msg.load(dump)
         if self.factory.parent.options.verbose :
             print("<- %s" % mm)
-        self.factory.parent.traite(mm.cmd, mm)
+        self.factory.parent.traite(self, mm)
 
     def envoi(self, mm):
         if self.factory.parent.options.verbose :
