@@ -11,6 +11,9 @@ if sys.platform[:5] == 'linux' :
 
 from twisted.internet import reactor
 
+from twisted.internet.defer import setDebugging
+setDebugging(True)
+
 import pyscrabse
 import net
 

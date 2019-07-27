@@ -54,7 +54,7 @@ if __name__ == '__main__' :
     import grille
     class options :
         def __init__(self) :
-            self.dico = "../dic/ods7.dawg"
+            self.dico = "../dic/ods7.dico"
             self.gen = "../gen/gen_part"
             self.game = "partie/p_20101231164246.partie"
             self.minpoint = 18
@@ -62,7 +62,7 @@ if __name__ == '__main__' :
             self.mintour = 18
             self.game = None
 
-    d = dico.dico("../dic/ods7.dawg")
+    d = dico.Dico("../dic/ods7.dico")
     g = grille.grille()
     c = coord.coord()
     o = options()
