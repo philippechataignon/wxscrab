@@ -211,7 +211,7 @@ class grille :
 
         i_coord = w_coord            # i_coord : indice de coordonnée courante
 
-        if dic.isMot(w_mot) == False :      # si le mot proposé n'existe pas
+        if not dic.isMot(w_mot):      # si le mot proposé n'existe pas
             mot_nonex.append(w_mot)
 
         for l in w_mot :
@@ -261,7 +261,7 @@ class grille :
                 # renvoie 0 pour le score global si inexistant
                 # met à jour totv sinon
                 if tvois :
-                    if dic.isMot(motv) == False :
+                    if not dic.isMot(motv):
                         mot_nonex.append(motv)
                     totv += pointv
             else :
