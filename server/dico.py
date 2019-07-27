@@ -10,7 +10,7 @@ class Dico():
             raise ValueError
 
     def isMot(self, mot):
-        return dic.isMot(self.d, mot)
+        return dic.isMot(self.d, mot) == 1
 
     def __del__(self):
         dic.Dic_destroy(self.d)
