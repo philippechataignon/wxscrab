@@ -3,7 +3,7 @@ import time
 
 import xml.etree.cElementTree as ET
 
-from twisted.internet import reactor, defer
+from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 
 import dico
