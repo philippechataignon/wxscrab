@@ -224,5 +224,5 @@ class joueurs :
             e.text = "%4.1f" % j.points_ber
             e = ET.SubElement(ligne, "val", type="i")
             e.text = "%d" % j.points_tour_affiche
-        xml = ET.tostring(tree)
+        xml = ET.tostring(tree, encoding="unicode")
         return xml

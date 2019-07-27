@@ -46,6 +46,7 @@ class msg :
         self.nick = nick
 
     def dump(self) :
+        print(self.cmd, self.param, self.nick)
         return json.dumps([self.cmd, self.param, self.nick]).encode('utf-8')
 
 if __name__ == '__main__' :

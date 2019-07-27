@@ -128,7 +128,7 @@ class main():
         elif ret == 2 :
             m = msg.msg("connect",(2,"Reconnexion", proto_serv))
             self.info("Reconnexion de %s" % mm.nick)
-        return channel, m
+        self.envoi_msg(channel, m)
 
     def traite_propo(self, channel, mm):
         # une proposition active le 'tick'
@@ -138,10 +138,6 @@ class main():
         tir = self.tirage
         coo = coord.coord(coo_str=coo_str)
         controle = self.gr.controle(coo, mot, tir)
-        return channel, mm, controle, coo
-
-    def traite_propo_controle(self, channel, mm):
-        mot = mm.param[1]
         if controle <= 0 :
             point, mot_nonex  = self.gr.point(coo, mot, controle == -1, self.dic)
             self.jo.set_msg_fin_tour(mm.nick, mot_nonex)
@@ -155,7 +151,7 @@ class main():
                 self.log.add_prop(mm.nick, coo, mot, score, self.options.chrono - self.chrono)
         else:
             m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
-        return channel, m
+        self.envoi_msg(channel, m)
 
     def traite_askall(self, channel, mm):
         tree = ET.Element("all")
@@ -170,20 +166,20 @@ class main():
             elt.text = self.tirage.get_mot()
         elt = ET.SubElement(tree, "points_top")
         elt.text = str(self.points_top)
-        xml = ET.tostring(tree)
+        xml = ET.tostring(tree, encoding="unicode")
         m = msg.msg("all", xml)
-        return channel, m
+        self.envoi_msg(channel, m)
 
     def traite_askinfo(self, channel, mm):
         proto, score, top, pct, message = self.jo.get_infos_joueur(mm.nick)
         if self.tour_on :
             message = []
         m = msg.msg("infojoueur", (score, top, pct, message))
-        return channel, m
+        self.envoi_msg(channel, m)
 
     def traite_askscore(self, channel, mm):
         m = msg.msg("score", self.jo.tableau_score())
-        return channel, m
+        self.envoi_msg(channel, m)
 
     def traite_chat(self, channel, mm):
         m = msg.msg("info", mm.param, mm.nick)
@@ -199,17 +195,12 @@ class main():
             self.envoi_msg
         elif cmd == 'propo' and self.tour_on :
             self.traite_propo(channel, mm)
-            self.traite_propo_controle(channel, mm)
-            self.envoi_msg(channel, mm)
         elif cmd == 'askscore' :
             self.traite_askscore(channel, mm)
-            self.envoi_msg(channel, mm)
         elif cmd == 'askinfo' :
             self.traite_askinfo(channel, mm)
-            self.envoi_msg(channel, mm)
         elif cmd == 'askall' :
             self.traite_askall(channel, mm)
-            self.envoi_msg(channel, mm)
         elif cmd == 'chat' :
             self.traite_chat(channel, mm)
         elif cmd == "vote" :
