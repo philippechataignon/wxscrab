@@ -33,8 +33,25 @@
 #include "bag.h"
 #include "game.h"
 #include "game_internals.h"
-#include "gen_part.h"
 #include "main.h"
+
+void
+help()
+{
+    puts ("Génération de parties Scrabble - Philippe CHATAIGNON") ;
+    puts ("d'après Eliot - Antoine FRABOULET - sous license GPL") ;
+    puts ("");
+    puts ("Utilisation : gen_part [-d dictionnaire] [-n numéro] [-s seed] [-v] [-q] [-h]") ;
+    puts ("        -d : fichier dawg contenant le dictionnaire (par défaut : ../dic/ods7.dawg)");
+    puts ("        -n : numéro de la partie à générer ; par défaut, utilise time(0)");
+    puts ("        -s : seed, valeur de la variante  ; par défaut, 47482");
+    puts ("        -q : n'imprime que les statistiques de la partie");
+    puts ("        -t : n'imprime pas un - devant les tirages rejetés");
+    puts ("        -e : nombre d'essais de tirages si absence de solution (par défaut : 1000) ; -e0 pour supprimer la fonctionnalité");
+    puts ("        -b : pas de best score (couteux en temps)");
+    puts ("        -h : affiche cette aide");
+    puts ("");
+}
 
 int
 main(int argc, char *argv[])
