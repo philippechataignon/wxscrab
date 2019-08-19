@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Scrabble serveur
+Exec=/home/marie/wxscrab/server/go_server
+Path=/home/marie/wxscrab/server
+Type=Application
+Terminal=true
+Categories=Game
