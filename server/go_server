@@ -1,3 +1,4 @@
 #!/bin/sh
+OPTS='-p1991 -o -c90 -i10 --mintour 18 --maxtour 20 -d /home/marie/wxscrab/dic/ods7.dico -g /home/marie/wxscrab_gen/gen/gen_part'
 echo "GO: $OPTS"
 python -u go.py $OPTS
