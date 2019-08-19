@@ -1,3 +1,4 @@
 #!/bin/sh
+OPTS="-c90 -o -d ../dic/ods7.dico -g ../gen/gen_part"
 echo "GO: $OPTS"
-python -u go.py $OPTS
+python3 -u go.py $OPTS

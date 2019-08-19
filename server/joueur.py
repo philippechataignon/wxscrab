@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 import msg
 import xml.etree.cElementTree as ET
+from functools import total_ordering
 
-class joueur :
+@total_ordering
+class joueur:
     def __init__(self, nick, proto, channel) :
         self.nick = nick
         self.proto = proto
@@ -21,6 +23,15 @@ class joueur :
         self.rang_total = 0
         self.msg_fin_tour = []
         self.tick = True
+
+    def __eq__(self, other):
+        return ((self.points_total, self.points_tour) == (other.points_total, other.points_tour))
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __lt__(self, other):
+        return ((self.points_total, self.points_tour) < (other.points_total, other.points_tour))
 
 class joueurs :
     cum_top = 0
