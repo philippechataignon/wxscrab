@@ -3,7 +3,7 @@ import time
 
 import xml.etree.cElementTree as ET
 
-from twisted.internet import reactor, defer
+from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 
 import dico
@@ -19,7 +19,7 @@ import net
 class main():
     def __init__(self, options) :
         self.options = options
-        self.dic = dico.dico(self.options.dico)
+        self.dic = dico.Dico(self.options.dico)
         self.jo = joueur.joueurs()
         self.categ_vote = ('restart', 'next', 'chrono')
         self.delta_calllater = 1
@@ -45,9 +45,9 @@ class main():
 
     def first_tour(self) :
         self.envoi_all(msg.msg("new"))
-        print "-"*20, self.pa.get_nom_partie(),"-"*20
-        print time.strftime('%A %d %B %Y %H:%M')
-        print self.options
+        print("-"*20, self.pa.get_nom_partie(),"-"*20)
+        print(time.strftime('%A %d %B %Y %H:%M'))
+        print(self.options)
         reactor.callLater(self.delta_calllater, self.debut_tour)
 
     def debut_tour(self) :
@@ -87,7 +87,7 @@ class main():
         self.info("Top retenu : %s-%s (%d pts)" % (self.coord_mot_top, self.mot_top, self.pts_mot_top))
         if self.options.log :
             self.log.fin_tour(self.coord_mot_top, self.mot_top, self.pts_mot_top)
-        print "%d/%d : %s - %s" % (len(self.jo.liste_actif()), len(self.jo), self.coord_mot_top, self.mot_top)
+        print("%d/%d : %s - %s" % (len(self.jo.liste_actif()), len(self.jo), self.coord_mot_top, self.mot_top))
         self.gr.pose(self.coord_mot_top, self.mot_top)
         message = self.jo.score_fin_tour(self.pts_mot_top)
         if message != "" :
@@ -106,15 +106,12 @@ class main():
             reactor.callLater(self.delta_calllater, self.debut_game, self.options.attente)
         else :
             self.partie_on = False
-            print "En attente"
+            print("En attente")
 
-    def traite_joueur(self, (channel, mm)) :
+    def traite_joueur(self, channel, mm):
+        proto_serv = net.PROTOCOL
         proto_client = mm.param[0]
         ret = self.jo.add_joueur(mm.nick, proto_client, channel)
-        return channel, mm, ret
-
-    def traite_joueur_ret(self, (channel, mm, ret)) :
-        proto_serv = net.PROTOCOL
         if ret == 1 :
             proto_client = mm.param[0]
             m = msg.msg("connect",(1,"Connexion OK", proto_serv))
@@ -131,9 +128,9 @@ class main():
         elif ret == 2 :
             m = msg.msg("connect",(2,"Reconnexion", proto_serv))
             self.info("Reconnexion de %s" % mm.nick)
-        return channel, m
+        self.envoi_msg(channel, m)
 
-    def traite_propo(self, (channel, mm)) :
+    def traite_propo(self, channel, mm):
         # une proposition active le 'tick'
         self.jo.set_tick(mm.nick, channel)
         coo_str = mm.param[0]
@@ -141,10 +138,6 @@ class main():
         tir = self.tirage
         coo = coord.coord(coo_str=coo_str)
         controle = self.gr.controle(coo, mot, tir)
-        return channel, mm, controle, coo
-
-    def traite_propo_controle(self, (channel, mm, controle, coo)) :
-        mot = mm.param[1]
         if controle <= 0 :
             point, mot_nonex  = self.gr.point(coo, mot, controle == -1, self.dic)
             self.jo.set_msg_fin_tour(mm.nick, mot_nonex)
@@ -158,9 +151,9 @@ class main():
                 self.log.add_prop(mm.nick, coo, mot, score, self.options.chrono - self.chrono)
         else:
             m = msg.msg("error","Erreur %d : %s" % (controle, self.gr.aff_erreur(controle)))
-        return channel, m
+        self.envoi_msg(channel, m)
 
-    def traite_askall(self, (channel, mm)) :
+    def traite_askall(self, channel, mm):
         tree = ET.Element("all")
         elt = ET.SubElement(tree, "grille")
         elt.text = str(self.gr)
@@ -173,54 +166,47 @@ class main():
             elt.text = self.tirage.get_mot()
         elt = ET.SubElement(tree, "points_top")
         elt.text = str(self.points_top)
-        xml = ET.tostring(tree)
+        xml = ET.tostring(tree, encoding="unicode")
         m = msg.msg("all", xml)
-        return channel, m
+        self.envoi_msg(channel, m)
 
-    def traite_askinfo(self, (channel, mm)) :
+    def traite_askinfo(self, channel, mm):
         proto, score, top, pct, message = self.jo.get_infos_joueur(mm.nick)
         if self.tour_on :
             message = []
         m = msg.msg("infojoueur", (score, top, pct, message))
-        return channel, m
+        self.envoi_msg(channel, m)
 
-    def traite_askscore(self, (channel, mm)) :
+    def traite_askscore(self, channel, mm):
         m = msg.msg("score", self.jo.tableau_score())
-        return channel, m
+        self.envoi_msg(channel, m)
 
-    def traite_chat(self, (channel, mm)) :
+    def traite_chat(self, channel, mm):
         m = msg.msg("info", mm.param, mm.nick)
         self.envoi_all(m)
 
-    def traite_tick(self, (channel, mm)) :
+    def traite_tick(self, channel, mm):
         self.jo.set_tick(mm.nick, channel)
 
-    def traite(self, cmd) :
-        d = defer.Deferred()
+    def traite(self, channel, mm) :
+        cmd = mm.cmd
         if cmd == 'joueur' :
-            d.addCallback(self.traite_joueur)
-            d.addCallback(self.traite_joueur_ret)
-            d.addCallback(self.envoi_msg)
+            self.traite_joueur(channel, mm)
+            self.envoi_msg
         elif cmd == 'propo' and self.tour_on :
-            d.addCallback(self.traite_propo)
-            d.addCallback(self.traite_propo_controle)
-            d.addCallback(self.envoi_msg)
+            self.traite_propo(channel, mm)
         elif cmd == 'askscore' :
-            d.addCallback(self.traite_askscore)
-            d.addCallback(self.envoi_msg)
+            self.traite_askscore(channel, mm)
         elif cmd == 'askinfo' :
-            d.addCallback(self.traite_askinfo)
-            d.addCallback(self.envoi_msg)
+            self.traite_askinfo(channel, mm)
         elif cmd == 'askall' :
-            d.addCallback(self.traite_askall)
-            d.addCallback(self.envoi_msg)
+            self.traite_askall(channel, mm)
         elif cmd == 'chat' :
-            d.addCallback(self.traite_chat)
+            self.traite_chat(channel, mm)
         elif cmd == "vote" :
-            d.addCallback(self.traite_vote)
+            self.traite_vote(channel, mm)
         elif cmd == "tick" :
-            d.addCallback(self.traite_tick)
-        return d
+            self.traite_tick(channel, mm)
 
     def deconnect(self, channel) :
         nick = self.jo.deconnect(channel)
@@ -231,21 +217,19 @@ class main():
         m = msg.msg("info", txt)
         self.envoi_all(m)
 
-    def envoi_msg(self, (channel, message)) :
-        channel.envoi(message)
+    def envoi_msg(self, channel, mm):
+        channel.envoi(mm)
 
     def envoi_all(self, message) :
-        d = defer.Deferred()
         for j in self.jo.liste_envoi() :
-            d.addCallback(j.channel.envoi)
-        reactor.callLater(0, d.callback, message)
+            j.channel.envoi(message)
 
     def stop_chrono(self) :
         self.chrono_on = False
         if self.loop_chrono.running :
             self.loop_chrono.stop()
 
-    def traite_vote(self, (channel, mm)) :
+    def traite_vote(self, channel, mm):
         categ = mm.param[0]
         # vote inactif hors des tours de jeu
         if not self.tour_on :

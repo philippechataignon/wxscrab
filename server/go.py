@@ -1,9 +1,6 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
+#! /usr/bin/env python3
 import optparse
 import sys
-reload(sys)
-sys.setdefaultencoding("utf8")
 
 if sys.platform[:5] == 'linux' :
     from twisted.internet import epollreactor
@@ -11,13 +8,16 @@ if sys.platform[:5] == 'linux' :
 
 from twisted.internet import reactor
 
+# from twisted.internet.defer import setDebugging
+# setDebugging(True)
+
 import pyscrabse
 import net
 
 usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage=usage)
-parser.add_option("-d", "--dico", dest="dico", default="/dic/ods7.dawg",
-        help="indique le fichier dictionnaire (defaut /dic/ods7.dawg)")
+parser.add_option("-d", "--dico", dest="dico", default="../dic/ods7.dico",
+        help="indique le fichier dictionnaire (defaut ../dic/ods7.dico)")
 parser.add_option("-g", "--gen", dest="gen", default="/gen_part",
         help="indique executable générateur de partie (défaut /gen_part)")
 parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
@@ -46,5 +46,5 @@ factory = net.ScrabbleFactory(g)
 factory.protocol = net.ScrabbleProtocol
 reactor.callWhenRunning(g.debut_game, options.attente)
 reactor.listenTCP(options.port, factory)
-print "Lancement reactor"
+print("Lancement reactor")
 reactor.run()

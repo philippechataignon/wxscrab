@@ -105,10 +105,10 @@ class grille :
         for l in mot :
             if self.case_vide(c) :
                 self.case_coord(c).jeton = jeton.jeton(l)
-            c = c.next()
+            c = next(c)
 
     def vide(self) :
-        for case in self.cases.itervalues() :
+        for case in self.cases.values() :
             if not case.isVide() :
                 return False
         return True
@@ -172,7 +172,7 @@ class grille :
                     return 1
                 soutien = True
             # case suivante
-            i_coord = i_coord.next()
+            i_coord = next(i_coord)
 
         if self.case_nonvide(i_coord) :         #lettre sur la case suivante
             return 11
@@ -211,7 +211,7 @@ class grille :
 
         i_coord = w_coord            # i_coord : indice de coordonnée courante
 
-        if dic.isMot(w_mot) == False :      # si le mot proposé n'existe pas
+        if not dic.isMot(w_mot):      # si le mot proposé n'existe pas
             mot_nonex.append(w_mot)
 
         for l in w_mot :
@@ -261,7 +261,7 @@ class grille :
                 # renvoie 0 pour le score global si inexistant
                 # met à jour totv sinon
                 if tvois :
-                    if dic.isMot(motv) == False :
+                    if not dic.isMot(motv):
                         mot_nonex.append(motv)
                     totv += pointv
             else :
@@ -274,7 +274,7 @@ class grille :
             # fin de l'analyse de la lettre courante
             # on met à jour point et on passe au suivant
             point += pointl
-            i_coord = i_coord.next()
+            i_coord = next(i_coord)
 
         # calcul global du score :
         # on applique le multiplicateur de score et on ajoute
@@ -292,8 +292,9 @@ if __name__ == '__main__' :
     import coord
     import dico
     import tirage
+    import dico
 
-    d = dico.dico("../dic/ods5.dawg")
+    d = dico.Dico("/home/philippe/wxscrab/dic/ods7.dico")
     g = grille()
     t = tirage.tirage("TETESAU")
     c = coord.coord()
@@ -301,18 +302,18 @@ if __name__ == '__main__' :
     c.fromstr("H8")
     m = "TATES"
     controle = g.controle(c, m, t)
-    print controle
+    print(controle)
     if controle <= 0 :
-        print g.point(c, m, controle, d)
+        print(g.point(c, m, controle, d))
     g.pose(c, m)
-    print g
+    print(g)
 
     t = tirage.tirage("AEPESTU")
     c.fromstr("7H")
     m = "EPATES"
     controle = g.controle(c, m, t)
-    print controle
+    print(controle)
     if controle <= 0 :
-        print g.point(c, m, controle, d)
+        print(g.point(c, m, controle, d))
     g.pose(c, m)
-    print g
+    print(g)

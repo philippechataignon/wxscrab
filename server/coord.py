@@ -118,7 +118,7 @@ class coord :
         else :
             self.set_error()
 
-    def next(self) :
+    def __next__(self) :
         "Coordonnée suivante selon direction"
         if self._dir == HOR :
             return coord(self._x + 1, self._y, self._dir)
@@ -148,7 +148,7 @@ class coord :
 if __name__ == '__main__' :
     e = coord(1,1)
     c = coord(coo_str=" h    8")
-    print e,c
+    print(e,c)
     #e.fromstr("8H")
     #print e
     #print c==e

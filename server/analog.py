@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-from __future__ import division
+
 import sys
 import xml.etree.cElementTree as ET
 
@@ -22,7 +22,7 @@ for tour in tree.findall("tour") :
 cum = {}
 liste_nick.sort()
 
-print """\
+print("""\
 <html>
 <head>
 <style type="text/css">
@@ -33,27 +33,27 @@ td.l  {text-align:left;border-left: 1px dashed; }
 </style>
 </head>
 <body>
-"""
-print """\
+""")
+print("""\
 <table style="border: 1px solid" cellpadding="2">
   <tr>
   <th>Tour</th>
-"""
+""")
 for nick in liste_nick :
     cum[nick] = 0 
-    print """<th colspan="5">%s</th>""" % nick
-print """\
+    print("""<th colspan="5">%s</th>""" % nick)
+print("""\
   </tr>
   <tr>
   <td>&nbsp;</td>
-"""
+""")
 for nick in liste_nick :
-    print "<th>Coord</th> <th>Mot</th> <th>Score</th> <th>Cumul</th> <th>% Top</th>"
-print "</tr>"
+    print("<th>Coord</th> <th>Mot</th> <th>Score</th> <th>Cumul</th> <th>% Top</th>")
+print("</tr>")
 
-for tour in xrange(len(tab)) :
-    print "<tr>"
-    print "<td>%d</td>" % (tour+1)
+for tour in range(len(tab)) :
+    print("<tr>")
+    print("<td>%d</td>" % (tour+1))
     for nick in liste_nick :
         dic = tab[tour]
         if nick in dic :
@@ -61,7 +61,7 @@ for tour in xrange(len(tab)) :
             val = (dic[nick][0], dic[nick][1], "%d"%dic[nick][2], "%d"%cum[nick], "%4.2f"%(cum[nick]/cum[nom_top]*100))
         else :
             val= ("&nbsp;",)*5
-        print """<td class="extr">%s</td> <td class="l">%s</td> <td >%s</td> <td >%s</td> <td >%s<s/td>""" % val
-    print "</tr>" 
-print "</table>"
-print "</html>"
+        print("""<td class="extr">%s</td> <td class="l">%s</td> <td >%s</td> <td >%s</td> <td >%s<s/td>""" % val)
+    print("</tr>") 
+print("</table>")
+print("</html>")

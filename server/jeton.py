@@ -23,6 +23,6 @@ class jeton :
 
 if __name__ == "__main__" :
     j = jeton('J') 
-    print j,j.lettre, j.point
+    print(j,j.lettre, j.point)
     j = jeton('j') 
-    print j,j.lettre, j.point
+    print(j,j.lettre, j.point)
