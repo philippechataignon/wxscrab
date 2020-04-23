@@ -16,7 +16,7 @@ import tirage
 import coord
 import net
 
-class main():
+class main:
     def __init__(self, options) :
         self.options = options
         self.dic = dico.Dico(self.options.dico)

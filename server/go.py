@@ -18,8 +18,6 @@ usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage=usage)
 parser.add_option("-d", "--dico", dest="dico", default="ods8",
         help="indique le fichier dictionnaire (defaut ods8)")
-parser.add_option("-g", "--gen", dest="gen", default="/gen_part",
-        help="indique executable générateur de partie (défaut /gen_part)")
 parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
         help="indique le temps par tour en secondes (defaut 120, soit 2mn)")
 parser.add_option("-i", "--inter", dest="inter", type="int", default=15,
@@ -36,10 +34,11 @@ parser.add_option("--maxtour", dest="maxtour", type="int", default=22,
         help="tours maxi pour partie (defaut 24)")
 parser.add_option("-o", "--topping", dest="topping", action="store_true",
         help="indique le score du top au debut du tour")
-parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
+parser.add_option("-v", "--verbose", dest="verbose", action="store_false",
         help="sortie des echanges reseau")
 parser.add_option("-l", "--log", dest="log", action="store_true", help="crée un ficher log")
 (options, args) = parser.parse_args()
+print(options)
 
 g = pyscrabse.main(options)
 factory = net.ScrabbleFactory(g)
