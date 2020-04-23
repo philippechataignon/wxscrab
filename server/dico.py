@@ -3,8 +3,9 @@ import dic
 
 class Dico():
     def __init__(self, nom_dico):
+        repdic = "../dic"
         self.d = dic.Dico()
-        ret = dic.Dic_init(self.d, nom_dico)
+        ret = dic.Dic_init(self.d, f"{repdic}/{nom_dico}.dico")
         if ret:
             print("Init dico : erreur", ret)
             raise ValueError

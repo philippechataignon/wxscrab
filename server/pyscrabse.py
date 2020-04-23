@@ -36,8 +36,6 @@ class main():
         self.init_vote()
         self.pa = partie.partie(self.options)
         self.options.game = None
-        if self.options.log :
-            self.log = logger.logger(self.pa.get_nom_partie())
         self.gr = grille.grille()
         self.jo.score_raz()
         self.info("Prochaine partie dans %d secondes" % attente)
@@ -45,7 +43,6 @@ class main():
 
     def first_tour(self) :
         self.envoi_all(msg.msg("new"))
-        print("-"*20, self.pa.get_nom_partie(),"-"*20)
         print(time.strftime('%A %d %B %Y %H:%M'))
         print(self.options)
         reactor.callLater(self.delta_calllater, self.debut_tour)

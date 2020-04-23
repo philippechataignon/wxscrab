@@ -3,21 +3,19 @@
 import xml.etree.cElementTree as ET
 import time
 import os
-import subprocess
 import random
+import urllib.request
 
 import coord
 import tirage
 
 class partie:
     def __init__(self, options) :
-        self.options = options
-        while True :
-            tree = self.gen_part()
-            tot = int(tree.find("resume/total").text)
-            nbtour = int(tree.find("resume/nbtour").text)
-            if tot >= options.minpoint and options.mintour <= nbtour <= options.maxtour :
-                break
+        r = random.SystemRandom()
+        num = r.randrange(0,2**32)
+        seed = r.randrange(0,2**16)
+        contents = urllib.request.urlopen(f"http://localhost:1964/gen_part/{options.dico}/{options.minpoint}/{options.mintour}/{options.maxtour}").read()
+        tree = ET.fromstring(contents)
         self.liste = []
         tour = 0
         for e in tree.findall("tour"):
@@ -30,24 +28,7 @@ class partie:
             n = e.find("points")
             pts = int(n.text)
             tour += 1
-            self.liste.append( (ttt, ccc, mmm, pts, tour) )
-
-    def get_nom_partie(self) :
-        return  os.path.basename(self.file_partie)
-
-    def gen_part(self):
-        r = random.SystemRandom()
-        pgm = self.options.gen
-        rep = "partie"
-        num = r.randrange(0,2**32)
-        seed = r.randrange(0,2**16)
-        nom_partie = "p_%d_%d.partie" % (num, seed)
-        self.file_partie = os.path.join(rep, nom_partie)
-        f = open(self.file_partie, "w")
-        subprocess.call([pgm, '-d', self.options.dico, '-n', str(num), '-s', str(seed)], stdout = f)
-        f.close()
-        tree = ET.parse(self.file_partie)
-        return tree
+            self.liste.append((ttt, ccc, mmm, pts, tour))
 
 if __name__ == '__main__' :
     import dico

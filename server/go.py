@@ -16,8 +16,8 @@ import net
 
 usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage=usage)
-parser.add_option("-d", "--dico", dest="dico", default="../dic/ods7.dico",
-        help="indique le fichier dictionnaire (defaut ../dic/ods7.dico)")
+parser.add_option("-d", "--dico", dest="dico", default="ods8",
+        help="indique le fichier dictionnaire (defaut ods8)")
 parser.add_option("-g", "--gen", dest="gen", default="/gen_part",
         help="indique executable générateur de partie (défaut /gen_part)")
 parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
