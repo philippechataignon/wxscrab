@@ -7,7 +7,7 @@ class Dico:
         pass
 
     def isMot(self, mot):
-        contents = urllib.request.urlopen(f"http://localhost:1964/is_mot/{mot}").read()
+        contents = urllib.request.urlopen(f"http://api.chataignon.com/is_mot/{mot}").read()
         ret = json.loads(contents)
         return ret["ok"]
 

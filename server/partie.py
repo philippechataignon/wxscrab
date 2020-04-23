@@ -14,7 +14,7 @@ class partie:
         r = random.SystemRandom()
         num = r.randrange(0,2**32)
         seed = r.randrange(0,2**16)
-        contents = urllib.request.urlopen(f"http://localhost:1964/gen_part/{options.dico}/{options.minpoint}/{options.mintour}/{options.maxtour}").read()
+        contents = urllib.request.urlopen(f"http://api.chataignon.com/gen_part/{options.dico}/{options.minpoint}/{options.mintour}/{options.maxtour}").read()
         tree = ET.fromstring(contents)
         self.liste = []
         tour = 0
