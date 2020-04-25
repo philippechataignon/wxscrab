@@ -1,10 +1,21 @@
-#!/bin/sh
+#!/bin/bash
+
+function ctrl_c() {
+    echo "Trapped CTRL-C"
+    echo "kill wxscrab_gen: $RUNNING_PID"
+    kill ${RUNNING_PID}
+}
 
 # serveur de partie/dico
 cd ~/wxscrab_gen/server
 ./server.py &
+RUNNING_PID=$!
+echo $RUNNING_PID
+trap ctrl_c INT
 
 cd ~/wxscrab/server
-OPTS="-p1991 -o -c90 -i10 --mintour 18 --maxtour 20 -d ods8"
+# OPTS=("-p 1991", " -o" , " -c90", " -i10", " --mintour 18", " --maxtour 20")
+OPTS="-p 1991 -o   -c90  -i10  --mintour 18  --maxtour 20"
+
 echo "GO: $OPTS"
 python3 -u go.py $OPTS
