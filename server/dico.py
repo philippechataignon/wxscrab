@@ -3,11 +3,11 @@ import json
 import urllib.request
 
 class Dico:
-    def __init__(self, nom_dico):
-        pass
+    def __init__(self, options):
+        self.host = options.host
 
     def isMot(self, mot):
-        contents = urllib.request.urlopen(f"http://api.chataignon.com/is_mot/{mot}").read()
+        contents = urllib.request.urlopen(f"http://{self.host}/is_mot/{mot}").read()
         ret = json.loads(contents)
         return ret["ok"]
 

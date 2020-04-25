@@ -16,8 +16,8 @@ import net
 
 usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage=usage)
-parser.add_option("-d", "--dico", dest="dico", default="ods8",
-        help="indique le fichier dictionnaire (defaut ods8)")
+parser.add_option("--host", dest="host", default="localhost:1964",
+        help="indique le host du serveur de partie (loalhost:1964 par défaut)")
 parser.add_option("-c", "--chrono", dest="chrono",type="int",default=120,
         help="indique le temps par tour en secondes (defaut 120, soit 2mn)")
 parser.add_option("-i", "--inter", dest="inter", type="int", default=15,

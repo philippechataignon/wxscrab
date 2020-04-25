@@ -19,7 +19,7 @@ import net
 class main:
     def __init__(self, options) :
         self.options = options
-        self.dic = dico.Dico(self.options.dico)
+        self.dic = dico.Dico(self.options)
         self.jo = joueur.joueurs()
         self.categ_vote = ('restart', 'next', 'chrono')
         self.delta_calllater = 1
