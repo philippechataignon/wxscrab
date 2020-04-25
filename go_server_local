@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# serveur de partie/dico
+cd ~/wxscrab_gen/server
+./server.py &
+
+cd ~/wxscrab/server
+OPTS="-p1991 -o -c90 -i10 --mintour 18 --maxtour 20 -d ods8"
+echo "GO: $OPTS"
+python3 -u go.py $OPTS
