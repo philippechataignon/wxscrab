@@ -1,4 +1,3 @@
 #!/bin/sh
-# OPTS='-o -c90 -i10 --mintour 18 --maxtour 20 -d ods8'
 echo "GO: $OPTS"
 python3 -u go.py $OPTS
