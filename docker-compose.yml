@@ -1,0 +1,37 @@
+# start: docker-compose up -d
+version: '3'
+services:
+  wxscrab_gen:
+    image: "philippechataignon/wxscrab_gen"
+    build: "../wxscrab_gen"
+    restart: always
+    ports:
+        - "1964:1964"
+  wxscrab_norm:
+    image: "philippechataignon/wxscrab"
+    environment:
+        -  OPTS=--host wxscrab_gen:1964 -o -c90 -i10 --mintour 18 --maxtour 20
+    build: .
+    restart: always
+    ports:
+        - "1989:12345"
+    depends_on:
+        - wxscrab_gen
+  wxscrab_top:
+    image: "philippechataignon/wxscrab"
+    environment:
+        -  OPTS=--host wxscrab_gen:1964 -o -c90 -i10 --mintour 18 --maxtour 20
+    restart: always
+    ports:
+        - "1991:12345"
+    depends_on:
+        - wxscrab_gen
+  wxscrab_pub:
+    image: "philippechataignon/wxscrab"
+    environment:
+        -  OPTS=--host wxscrab_gen:1964 -o -c90 -i10 --mintour 18 --maxtour 20
+    restart: always
+    ports:
+        - "12345:12345"
+    depends_on:
+        - wxscrab_gen
