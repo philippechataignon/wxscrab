@@ -1,4 +1,4 @@
-FROM alpine:3.11.5
+FROM alpine:3.15
 
 RUN apk --update add python3 py3-twisted
 RUN adduser -u 50000 -D -H scrabble
