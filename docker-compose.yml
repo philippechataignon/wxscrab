@@ -5,12 +5,10 @@ services:
     image: "philippechataignon/wxscrab_gen"
     build: "../wxscrab_gen"
     restart: always
-    ports:
-        - "1964:1964"
   wxscrab_norm:
     image: "philippechataignon/wxscrab"
     environment:
-        -  OPTS=--host wxscrab_gen:1964 -o -c90 -i10 --mintour 18 --maxtour 20
+        -  OPTS=--host wxscrab_gen:1964
     build: .
     restart: always
     ports:
@@ -26,12 +24,7 @@ services:
         - "1991:12345"
     depends_on:
         - wxscrab_gen
-  wxscrab_pub:
-    image: "philippechataignon/wxscrab"
-    environment:
-        -  OPTS=--host wxscrab_gen:1964 -o -c90 -i10 --mintour 18 --maxtour 20
-    restart: always
-    ports:
-        - "12345:12345"
-    depends_on:
-        - wxscrab_gen
+
+networks:
+  default:
+    driver: bridge
